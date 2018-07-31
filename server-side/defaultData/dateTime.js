@@ -1,4 +1,3 @@
-
 var monthFormats = {
     "Jan": 01,
     "Feb": 02,
@@ -16,7 +15,7 @@ var monthFormats = {
 
 var semesters = {
     "Fall 2018": "201808",
-    "Srping 2018": "201801"
+    "Spring 2018": "201801"
 }
 
 module.exports = {
