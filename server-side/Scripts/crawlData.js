@@ -2,12 +2,13 @@ const puppeteer = require('puppeteer');
 const servicesData = require('../defaultData/dateTime.js');
 const url = 'https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched';
 const semester = servicesData.semesters['Fall 2018'];
+const fs = require('fs');
 
 function crawlSubjects() {
     let scrape = async () => {
 
         // Setup
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
         await page.goto(url);
         await page.waitFor(1000);
@@ -29,167 +30,120 @@ function crawlSubjects() {
             return dictionary;
         })
 
-        // Select Subjects to move on
-        await page.select('#subj_id', 'ACCT');
-        await page.waitFor(1000);
-        await page.click('body > div.pagebodydiv > form > input[type="submit"]:nth-child(15)');
-        await page.waitFor(3000);
+        // Wrap get function in a function
+        async function getMajor(major = "ACCT") {
+            try {
+                // Setup
+                const browser = await puppeteer.launch({ headless: true });
+                const page = await browser.newPage();
+                await page.goto(url);
+                await page.waitFor(1000);
 
-        const output = await page.evaluate(() => {
-            console.log(123);
+                // Select Terms
+                await page.select('body > div.pagebodydiv > form > table > tbody > tr > td > select', semester);
+                await page.click('body > div.pagebodydiv > form > input[type="submit"]:nth-child(5)');
+                await page.waitFor(3000);
 
-            // HELPER METHODS
+                // Select Subjects to move on
+                await page.select('#subj_id', major);
+                await page.waitFor(1000);
+                await page.click('body > div.pagebodydiv > form > input[type="submit"]:nth-child(15)');
+                //await page.waitForNavigation({
+                //    waitUntil: 'networkidle0',
+                //    timeout: 35000
+                //});
+                await page.waitForSelector(".ntdefault");
 
-            // Time convert format from 12 HR to 24 HR
-            function timeFormat(str) {
-                var afterSplit = str.split('-');
-                var output = '';
+                await page.addScriptTag({ path: './helper.js' });
+                const output = await page.evaluate((major) => {
 
-                for (var ele of afterSplit) {
-                    var timeSet = ele.slice(ele.length - 3, ele.length).trim(); //am or pm
-                    var timeBlock = ele.slice(0, ele.indexOf(timeSet)).trim(); // 9:05 , 9:55
-                    var timePre = timeBlock.slice(0, timeBlock.indexOf(':'));
+                    // Initlize Variables
+                    var val = 7;
+                    var index = 1;
+                    var timeRange = '';
+                    var dataOut = {};
+                    var nested = [];
+                    let elements = document.querySelectorAll('.ddtitle');
+                    let details = document.querySelectorAll('.datadisplaytable .dddefault td');
 
-                    if (timeSet === 'am') {
-                        if (timePre.length == 1) {
-                            timeBlock = '0' + timeBlock;
-                            timeBlock.replace(':', '');
+                    for (var i = 0; i < elements.length; i++) {
+                        var staffs = [];
+                        let courseName = elements[i].innerText;
+                        let classSectionVal = classNumber(courseName);
+                        let sectionNum = sectionLetter(courseName);
+                        let CRN = crnNumber(courseName);
+                        staffs = [courseName, classSectionVal, sectionNum, CRN];
+
+                        while (index < val) {
+                            var value = details[index].innerText;
+
+                            if (value.includes('-') && (value.includes('am') || value.includes('pm'))) { // detect time => convert to 24HR
+                                value = timeFormat(value);
+                                timeRange = value;
+                                index++;
+                                continue;
+                            }
+                            else if (value.includes('(') || value.includes(')')) { // detect professor
+                                value = professorFormat(value);
+                            }
+                            else if (value.includes('MWF') || value.includes('MW') || value.includes('TR') || value.includes('MTWR')) { // detect time range
+                                value = value + '|' + timeRange;
+                            }
+                            else if (value.includes('*')) {
+                                value = value.replace('*', '');
+                            } else if (((value.includes('Jan')) && (value.includes('May'))) || ((value.includes('Aug')) && (value.includes('Dec')))) { // detect time date range
+                                value = reformatDate(value);
+                            }
+                            index++;
+                            staffs.push(value);
                         }
-                    } else if (timeSet === 'pm') {
-                        if (parseInt(timePre) != 12) {
-                            timeBlock = (parseInt(timePre) + 12).toString() + ele.slice(ele.indexOf(':'), ele.indexOf(':') + 3);
-                        }
+                        nested.push(staffs);
+                        dataOut[major] = nested;
+                        index++;
+                        val += 7;
                     }
-                    output += timeBlock.replace(':', '');;
+
+                    return dataOut;
+                }, major)
+
+                // Return a value
+                browser.close();
+                return {
+                    success: true,
+                    data: output
                 }
-                return output;
             }
-
-            // Reformat Professor style
-            function professorFormat(str) {
-                if (str.slice(str.length - 3, str.length).includes('P')) {
-                    var output = 'P. ' + str.slice(0, str.length - 3);
-                } else {
-                    var output = 'I. ' + str.slice(0, str.length - 3);
+            catch (err) {
+                browser.close()
+                return {
+                    success: false,
+                    data: [major, err]
                 }
-                return output.trim();
             }
+            
+        }
 
-            // Get out the CRN number
-            function crnNumber(str) {
-                var dashIndex = str.indexOf('-') + 1;
-                var output = '';
-                for (var i = dashIndex; i < str.length; i++) {
-                    if (str[i] == '-') {
-                        break;
-                    } else {
-                        output += str[i];
-                    }
-                }
-                return output.trim();
+        let errorData = [];
+        fs.writeFile("text.txt", "", () => { });
+        fs.writeFile("errorKey.txt", "", () => { });
+        fs.writeFile("error.txt", "", () => { });
+        for (key in result) {
+            console.log(key);
+            var response = await getMajor(key);
+            if (!response.success) {
+                fs.appendFile("errorKey.txt", response.data[0], () => { });
+                fs.appendFile("error.txt", JSON.stringify(response.data[1]), () => { })
             }
-
-            // Get out the shortcut class number
-            function classNumber(str) {
-                var dashIndex = str.lastIndexOf('-') - 1;
-                var output = '';
-                while (str[dashIndex] != '-') {
-                    output += str[dashIndex];
-                    dashIndex --;
-                }
-                return output.split("").reverse().join("").trim();
+            else {
+                fs.appendFile("text.txt", JSON.stringify(response.data, null, 4), () => { });
             }
+        }
 
-            // Get out the section Letter of the course
-            function sectionLetter(str) {
-                return str[str.length - 1];
-            }
-
-            // Reformat the date
-            function reformatDate(str) {
-                var output = '';
-                var monthFormats = {
-                    "Jan": 01,
-                    "Feb": 02,
-                    "Mar": 03,
-                    "Apr": 04,
-                    "May": 05,
-                    "Jun": 06,
-                    "Jul": 07,
-                    "Aug": 08,
-                    "Sep": 09,
-                    "Oct": 10,
-                    "Nov": 11,
-                    "Dec": 12
-                };
-                var dateSplit = str.split('-');
-                for (var ele of dateSplit) {
-                    var timeRange = ele.trim();
-                    var month = monthFormats[timeRange.slice(0,3)];
-                    var day = timeRange.slice(4, timeRange.indexOf(','));
-                    var year = timeRange.slice(timeRange.length - 4, timeRange.length);
-                    var fullDate = month + '/' + day + '/' + year;
-                    output += '|' + fullDate;
-                }
-                return output.slice(1, output.length); 	// Format: MM/DD/YYYY
-            }
-
-            // Initlize Variables
-            var val = 7;
-            var index = 1;
-            var timeRange = '';
-            var dataOut = {};
-            var nested = [];
-            let elements = document.querySelectorAll('.ddtitle');
-            let details = document.querySelectorAll('.datadisplaytable .dddefault td');
-
-            for (var i = 0; i < elements.length; i++) {
-                var staffs = [];
-                let courseName = elements[i].innerText;
-                let classSectionVal = classNumber(courseName);
-                let sectionNum = sectionLetter(courseName);
-                let CRN = crnNumber(courseName);
-                staffs = [courseName, classSectionVal, sectionNum, CRN];
-
-                while (index < val) {
-                    var value = details[index].innerText;
-
-                    if (value.includes('-') && (value.includes('am') || value.includes('pm'))) { // detect time => convert to 24HR
-                        value = timeFormat(value);
-                        timeRange = value;
-                        index ++;
-                        continue;
-                    }
-                    else if (value.includes('(') || value.includes(')')) { // detect professor
-                        value = professorFormat(value);
-                    }
-                    else if (value.includes('MWF') || value.includes('MW') || value.includes('TR') || value.includes('MTWR')) { // detect time range
-                        value = value + '|' + timeRange;
-                    }
-                    else if (value.includes('*')) {
-                        value = value.replace('*', '');
-                    } else if (((value.includes('Jan')) && (value.includes('May'))) || ((value.includes('Aug')) && (value.includes('Dec')))) { // detect time date range
-                        value = reformatDate(value);
-                    }
-                    index ++;
-                    staffs.push(value);
-                }
-                nested.push(staffs);
-                dataOut['ACCT'] = nested;
-                index ++;
-                val += 7;
-            }
-
-            return dataOut;
-        })
-
-        // Return a value
-        browser.close()
-        return output;
+        return allData;
     };
 
   scrape().then((value) => {
-    console.log(value);
+    //console.log(value);
 });
 }
 crawlSubjects()
