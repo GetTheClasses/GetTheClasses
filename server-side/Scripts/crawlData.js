@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
-const helperMethods = require('./helper');
-const servicesData = require('../mockData/servicesData.js');
+const servicesData = require('../defaultData/dateTime.js');
 const url = 'https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched';
 const semester = servicesData.semesters['Fall 2018'];
 
@@ -27,7 +26,7 @@ function crawlSubjects() {
                 var subject = elements[i].innerText;
                 dictionary[shortCut] = subject;
             }
-            // return dictionary;
+            return dictionary;
         })
 
         // Select Subjects to move on
@@ -37,6 +36,7 @@ function crawlSubjects() {
         await page.waitFor(3000);
 
         const output = await page.evaluate(() => {
+            console.log(123);
 
             // HELPER METHODS
 
