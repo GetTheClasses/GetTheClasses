@@ -1,5 +1,6 @@
-var servicesData = require('../mockData/servicesData.js');
+var servicesData = require('../defaultData/dateTime');
 
+// Deep copy an object (or array)
 function copy(object) {
 	return JSON.parse(JSON.stringify(object));
 }
@@ -27,6 +28,15 @@ function timeFormat(str) {
 		output += timeBlock.replace(':', '');;
 	}
 	return output;
+}
+
+// Transform from ['12001330','14001550'] to [[1200, 1330], [1400, 1550]]
+function convertTime(timeList) {
+    var response = [];
+    timeList.forEach((time) => {
+        response.push([parseInt(time.slice(0, 4)), parseInt(time.slice(4))]);
+    })
+    return response;
 }
 
 // Reformat Professor style
@@ -86,7 +96,8 @@ function reformatDate(str) {
 
 module.exports = {
 	copy,
-	timeFormat,
+    timeFormat,
+    convertTime,
 	professorFormat,
 	crnNumber,
 	sectionLetter,
