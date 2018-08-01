@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Criteria } from '../models/criteria';
 import { HttpMethodService } from '../http-method.service';
+import { Course } from '../models/course';
 
 @Component({
   selector: 'app-input',
@@ -10,8 +11,7 @@ import { HttpMethodService } from '../http-method.service';
 export class InputComponent {
   constructor(private methodHelper: HttpMethodService) { }
 
-  
-
+  result: any[] = [];
   criteria: Criteria[] = [];
   major: string;
   courseNumber: string;
@@ -38,10 +38,12 @@ export class InputComponent {
   }
 
   submit(): void {
-    console.log(123);
     this.methodHelper.post('http://localhost:8000/api/course', this.criteria)
-    .subscribe((data) => {
-      console.log(data);
-    });
+      .subscribe((data) => {
+        console.log(data);
+        //if (data.success) {
+        //  this.result.push(data.result);
+        //}
+      });
   }
 }
