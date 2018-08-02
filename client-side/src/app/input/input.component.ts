@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Criteria } from '../models/criteria';
 import { HttpMethodService } from '../http-method.service';
-import { Course } from '../models/course';
+import { CourseCriteria } from '../models/courseCriteria';
 
 @Component({
   selector: 'app-input',
