@@ -1,4 +1,4 @@
-export class Course {
+export class CourseCriteria {
   crn: string;
   time: string;
 }
