@@ -87,6 +87,7 @@ async function reSchedule(courseList, freeTime, crnList = []) {
 async function main(course, freeTime = defaultFreeTime) {
     if (freeTime == null)
         freeTime = defaultFreeTime;
+    console.log(freeTime);
     await reSchedule(course, freeTime, []);
     for (combination of combinations) {
         for (var i = 0; i < combination.length; i++) {

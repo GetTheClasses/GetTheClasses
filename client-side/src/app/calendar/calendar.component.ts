@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TransferDataService } from '../services/transfer-data.service';
 
 declare var $: any;
 declare var moment: any;
@@ -10,10 +11,11 @@ declare var moment: any;
 })
 export class CalendarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private transferDataService: TransferDataService) { }
 
   ngOnInit() {
   	$('#calendar').fullCalendar({
+  		aspectRadio: 1,
   		header: false,
   		defaultView: "agendaWeek",
   		hiddenDays: [0],
@@ -25,13 +27,14 @@ export class CalendarComponent implements OnInit {
   		editable: true,
   		unselectAuto: false,
   		snapDuration: '00:05:00',
-  		nowIndicator: false,
+  		aspectRatio: 1.1,
+  		contentHeight: "auto",
+  		// eventColor: "red",
 			select: function (start, end, jsEvent, view) {
 			    $("#calendar").fullCalendar('addEventSource', [{
 			        start: start,
 			        end: end,
-			        // rendering: 'background',
-			        block: true,
+			        block: true
 			    }]);
 			},
 			selectOverlap: function(event) {
@@ -47,10 +50,10 @@ export class CalendarComponent implements OnInit {
           $('#calendar').fullCalendar('removeEvents',event._id);
           console.log('delete');
         });
-	    }  	
+	    }	
 	  });
 
-  	$("#button").click(function() {
+  	$("#button").click(() => {
   		$('#calendar').fullCalendar('refetchEvents');
   		var events = $('#calendar').fullCalendar('clientEvents');
   		var stringTime = [];
@@ -77,7 +80,18 @@ export class CalendarComponent implements OnInit {
   				[parseInt(time.substring(1,5)), parseInt(time.substring(5, time.length))]
   				);
   		}
-  		console.log(dictTime)
+  		console.log("Time Saved.")
+  		this.transferDataService.setData(dictTime);
+  	});
+
+  	$('#button1').click(function() {
+  		var start = moment("Mo, 12:20", "dd, HH:mm");
+  		var end = moment("Mo, 14:50", "dd, HH:mm");
+  		$('#calendar').fullCalendar('renderEvent', {
+  			title: "CS 2050",
+  			start: start,
+  			end: end
+  		})
   	})
   }
 }
