@@ -5,12 +5,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { InputComponent } from './input/input.component';
 import { CalendarComponent } from './calendar/calendar.component';
+import { SubmitButtonsComponent } from './submit-buttons/submit-buttons.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InputComponent,
-    CalendarComponent
+    CalendarComponent,
+    SubmitButtonsComponent
   ],
   imports: [
     BrowserModule,
