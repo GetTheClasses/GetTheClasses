@@ -12,7 +12,7 @@ declare var moment: any;
   encapsulation: ViewEncapsulation.None
 })
 export class CalendarComponent implements OnInit {
-  dictTime = { m: [], t: [], w: [], r: [], f: [], s: [] };
+  dictTime = { 1: 'm', 2: 't', 3: 'w', 4: 'r', 5: 'f', 6: 's' };
 
   constructor(private transferDataService: TransferDataService,
   	private calendarHelperService: CalendarHelperService) { }
@@ -43,6 +43,40 @@ export class CalendarComponent implements OnInit {
   			start: "08:00",
   			end: "21:00"
   		},
+      dayClick: (date, jsEvent, view) => {
+        if ($(jsEvent.target).hasClass('fc-day')) {
+          var freeTime = this.transferDataService.getFreeTime();
+          if (freeTime == undefined || freeTime[this.dictTime[date.day()]] == []
+            || freeTime[this.dictTime[date.day()]].toString() != [[800, 2100]].toString()) {
+            
+            for (var e of $('#calendar').fullCalendar('clientEvents')) {
+              if (e.start.day() == date.day()) {
+                $('#calendar').fullCalendar('removeEvents', e._id);
+              }
+            }
+
+            var start = moment("08:00", "hh:mm");
+            start.day(date.day());
+            var end = moment("21:00", "hh:mm");
+            end.day(date.day());
+
+            $('#calendar').fullCalendar('renderEvent', {
+              start: start,
+              end: end
+            })
+          }
+          else {
+            for (var e of $('#calendar').fullCalendar('clientEvents')) {
+              if (e.start.day() == date.day()) {
+                $('#calendar').fullCalendar('removeEvents', e._id);
+                var events = $('#calendar').fullCalendar('clientEvents');
+                var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+                this.transferDataService.setFreeTime(freeTimeDict);
+              }
+            }
+          }
+        }
+      },
 			select: (start, end) => {
 				if (!this.calendarHelperService.isValidTime(start, end)) {
 					end = start.clone().add(45, 'm');
@@ -82,8 +116,8 @@ export class CalendarComponent implements OnInit {
 	    },
 	  });
 
-    console.log($('.fc-day-grid').find('.fc-day').append("<input type='checkbox' checked data-toggle='toggle'>"));
-
+    // console.log($('.fc-day-grid').find('.fc-day').prepend(`<div class="mat-checkbox-inner-container" style="z-index:10"><input class="mat-checkbox-input cdk-visually-hidden" type="checkbox" id="mat-checkbox-2-input" tabindex="0" aria-checked="true"><div class="mat-checkbox-ripple mat-ripple" matripple="" ng-reflect-centered="true" ng-reflect-radius="25" ng-reflect-animation="[object Object]" ng-reflect-disabled="false" ng-reflect-trigger="[object HTMLLabelElement]"></div><div class="mat-checkbox-frame"></div><div class="mat-checkbox-background"><svg xml:space="preserve" class="mat-checkbox-checkmark" focusable="false" version="1.1" viewBox="0 0 24 24"><path class="mat-checkbox-checkmark-path" d="M4.1,12.7 9,17.6 20.3,6.3" fill="none" stroke="white"></path></svg><div class="mat-checkbox-mixedmark"></div></div></div>`));
+    // $('.fc-day-grid').removeClass('')
   	$('#button1').click(() => {
   		var start = moment("Mo, 12:20", "dd, HH:mm");
   		var end = moment("Mo, 14:50", "dd, HH:mm");
