@@ -8,7 +8,7 @@ import { TransferDataService } from '../services/transfer-data.service';
 })
 export class SubmitButtonsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private transferDataService: TransferDataService) { }
 
   ngOnInit() {
   }
