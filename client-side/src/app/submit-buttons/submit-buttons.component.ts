@@ -6,11 +6,13 @@ import { TransferDataService } from '../services/transfer-data.service';
   templateUrl: './submit-buttons.component.html',
   styleUrls: ['./submit-buttons.component.css']
 })
-export class SubmitButtonsComponent implements OnInit {
+export class SubmitButtonsComponent {
 
   constructor(private transferDataService: TransferDataService) { }
 
-  ngOnInit() {
+  displayFreeTime(): void {
+  	var freeTime = this.transferDataService.getFreeTime();
+  	console.log(freeTime);
   }
 
 }
