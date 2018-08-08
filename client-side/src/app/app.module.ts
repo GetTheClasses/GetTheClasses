@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { InputComponent } from './input/input.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { SubmitButtonsComponent } from './submit-buttons/submit-buttons.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { SubmitButtonsComponent } from './submit-buttons/submit-buttons.componen
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

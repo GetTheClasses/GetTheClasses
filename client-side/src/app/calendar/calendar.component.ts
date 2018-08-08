@@ -12,6 +12,7 @@ declare var moment: any;
   encapsulation: ViewEncapsulation.None
 })
 export class CalendarComponent implements OnInit {
+  dictTime = { m: [], t: [], w: [], r: [], f: [], s: [] };
 
   constructor(private transferDataService: TransferDataService,
   	private calendarHelperService: CalendarHelperService) { }
@@ -40,12 +41,18 @@ export class CalendarComponent implements OnInit {
   		},
   		selectConstraint: {
   			start: "08:00",
-  			end: "22:00"
+  			end: "21:00"
   		},
 			select: (start, end) => {
-				console.log(123);
 				if (!this.calendarHelperService.isValidTime(start, end)) {
 					end = start.clone().add(45, 'm');
+          for (var e of $('#calendar').fullCalendar('clientEvents')) {
+            if (start < e.start && end > e.start ) {
+              $('#calendar').fullCalendar('unselect');
+              alert("Not enough space");
+              return ;
+            }
+          }
 				}
 				$('#calendar').fullCalendar('unselect');
 		    $("#calendar").fullCalendar('addEventSource', [{
@@ -57,52 +64,27 @@ export class CalendarComponent implements OnInit {
 			selectOverlap: function(event) {
 		    return ! event.block;
 			},
-			eventRender: function(event, element, view) {
+			eventRender: (event, element, view) => {
         if (view.name == 'listDay') {
             element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
         } else {
             element.find(".fc-content").prepend("<button class='closeon'>X</button>")
         }
-        element.find(".closeon").on('click', function() {
+        element.find(".closeon").on('click', () => {
           $('#calendar').fullCalendar('removeEvents',event._id);
-          console.log('delete');
+          var events = $('#calendar').fullCalendar('clientEvents');
+          var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+          this.transferDataService.setFreeTime(freeTimeDict);
         });
   			var events = $('#calendar').fullCalendar('clientEvents');
-	    }
+        var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+        this.transferDataService.setFreeTime(freeTimeDict);
+	    },
 	  });
 
-  	$("#button").click(() => {
-  		$('#calendar').fullCalendar('refetchEvents');
-  		var events = $('#calendar').fullCalendar('clientEvents');
-  		var stringTime = [];
-  		var dictTime = {
-  			m: [],
-  			t: [],
-  			w: [],
-  			r: [],
-  			f: [],
-  			s: []
-  		};
-  		for (var e of events) {
-  			if ((moment(e.start).format('dd')) == "Th") {
-  				var period = "r" + e.start.format("HHmm") + e.end.format("HHmm");
-  			}
-  			else {
-  				var period = ("" + e.start.format("dd")[0]).toLowerCase() + e.start.format("HHmm") + e.end.format("HHmm");
-  			}
-  			stringTime.push(period);
-  		}
-  		stringTime.sort();
-  		for (var time of stringTime) {
-  			dictTime[time[0]].push(
-  				[parseInt(time.substring(1,5)), parseInt(time.substring(5, time.length))]
-  				);
-  		}
-  		console.log("Time Saved.")
-  		console.log(dictTime);
-  	});
+    console.log($('.fc-day-grid').find('.fc-day').append("<input type='checkbox' checked data-toggle='toggle'>"));
 
-  	$('#button1').click(function() {
+  	$('#button1').click(() => {
   		var start = moment("Mo, 12:20", "dd, HH:mm");
   		var end = moment("Mo, 14:50", "dd, HH:mm");
   		$('#calendar').fullCalendar('renderEvent', {
