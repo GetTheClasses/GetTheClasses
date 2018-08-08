@@ -6,13 +6,22 @@ import { Injectable } from '@angular/core';
 export class TransferDataService {
 
   constructor() { }
-  private data
+  private freeTime;
+  private courseCriteria;
 
-  setData(data): void {
-  	this.data = data;
+  setCourse(data): void {
+  	this.courseCriteria = data;
   }
 
-  getData(): any {
-  	return this.data;
+  getCourses(): any {
+  	return this.courseCriteria;
+  }
+
+  setFreeTime(data): void {
+  	this.freeTime = data;
+  }
+
+  getFreeTime(): any {
+  	return this.freeTime;
   }
 }

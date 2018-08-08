@@ -52,7 +52,6 @@ export class InputComponent {
 
   getClasses() {
     this.timeSchedule = this.transferDataService.getData();
-    console.log(this.timeSchedule);
     this.methodHelper.post('http://localhost:8000/api/course', {
       criteria: this.criteria,
       freeTime: this.timeSchedule

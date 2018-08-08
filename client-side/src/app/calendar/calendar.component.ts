@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TransferDataService } from '../services/transfer-data.service';
+import { CalendarHelperService } from '../services/calendar-helper.service';
 
 declare var $: any;
 declare var moment: any;
@@ -7,15 +8,16 @@ declare var moment: any;
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  styleUrls: ['./calendar.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class CalendarComponent implements OnInit {
 
-  constructor(private transferDataService: TransferDataService) { }
+  constructor(private transferDataService: TransferDataService,
+  	private calendarHelperService: CalendarHelperService) { }
 
   ngOnInit() {
   	$('#calendar').fullCalendar({
-  		aspectRadio: 1,
   		header: false,
   		defaultView: "agendaWeek",
   		hiddenDays: [0],
@@ -27,30 +29,46 @@ export class CalendarComponent implements OnInit {
   		editable: true,
   		unselectAuto: false,
   		snapDuration: '00:05:00',
-  		aspectRatio: 1.1,
   		contentHeight: "auto",
+  		eventOverlap: false,
   		// eventColor: "red",
-			select: function (start, end, jsEvent, view) {
-			    $("#calendar").fullCalendar('addEventSource', [{
-			        start: start,
-			        end: end,
-			        block: true
-			    }]);
+  		eventResize: (event) => {
+
+  			// Handle resize issue here (start-end range is too small)
+  			console.log(event.start.format("HH:mm"));
+  			console.log(event.end.format("HH:mm"));
+  		},
+  		selectConstraint: {
+  			start: "08:00",
+  			end: "22:00"
+  		},
+			select: (start, end) => {
+				console.log(123);
+				if (!this.calendarHelperService.isValidTime(start, end)) {
+					end = start.clone().add(45, 'm');
+				}
+				$('#calendar').fullCalendar('unselect');
+		    $("#calendar").fullCalendar('addEventSource', [{
+		        start: start,
+		        end: end,
+		        block: true
+		    }]);
 			},
 			selectOverlap: function(event) {
-			    return ! event.block;
+		    return ! event.block;
 			},
 			eventRender: function(event, element, view) {
         if (view.name == 'listDay') {
-            element.find(".fc-list-item-time").append("<span class='closeon'>X</span>");
+            element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
         } else {
-            element.find(".fc-content").prepend("<span class='closeon'>X</span>");
+            element.find(".fc-content").prepend("<button class='closeon'>X</button>")
         }
         element.find(".closeon").on('click', function() {
           $('#calendar').fullCalendar('removeEvents',event._id);
           console.log('delete');
         });
-	    }	
+  			var events = $('#calendar').fullCalendar('clientEvents');
+	    }
 	  });
 
   	$("#button").click(() => {
@@ -67,10 +85,10 @@ export class CalendarComponent implements OnInit {
   		};
   		for (var e of events) {
   			if ((moment(e.start).format('dd')) == "Th") {
-  				var period = "r" + moment(e.start).format("HHmm") + moment(e.end).format("HHmm");
+  				var period = "r" + e.start.format("HHmm") + e.end.format("HHmm");
   			}
   			else {
-  				var period = ("" + moment(e.start).format("dd")[0]).toLowerCase() + moment(e.start).format("HHmm") + moment(e.end).format("HHmm");
+  				var period = ("" + e.start.format("dd")[0]).toLowerCase() + e.start.format("HHmm") + e.end.format("HHmm");
   			}
   			stringTime.push(period);
   		}
@@ -81,7 +99,7 @@ export class CalendarComponent implements OnInit {
   				);
   		}
   		console.log("Time Saved.")
-  		this.transferDataService.setData(dictTime);
+  		console.log(dictTime);
   	});
 
   	$('#button1').click(function() {
