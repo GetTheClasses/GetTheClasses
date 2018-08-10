@@ -1,4 +1,12 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 .closeon {
 	/*background-color: green;*/
 	font-size: 7px !important;
+}
+
+.timeRangeStyle {
+	color: blue;
+	background-color: transparent!;
+	width: auto;
 }
