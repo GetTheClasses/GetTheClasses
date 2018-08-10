@@ -1,3 +1,8 @@
-<button id="button1">Test</button>
-<div id="calendar"></div>
-<mat-checkbox>Checked</mat-checkbox>
+<div class="row">
+	<div class="col-9">
+		<div id="calendar"></div>
+	</div>
+	<div class="col-3">
+		<app-input (courseClicked)="recieveMess($event)"></app-input>
+	</div>
+</div>
