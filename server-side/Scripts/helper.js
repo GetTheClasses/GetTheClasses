@@ -5,6 +5,18 @@ function copy(object) {
 	return JSON.parse(JSON.stringify(object));
 }
 
+
+// Compare two JSON objects
+function compareJSON(obj1, obj2) {
+    var ret = {}
+  for(var i in obj2) {
+    if(!obj1.hasOwnProperty(i) || obj2[i] !== obj1[i]) {
+      ret[i] = obj1[i] + " *VS* " + obj2[i];
+    }
+  }
+  return ret;
+};
+
 // Time convert format from 12 HR to 24 HR
 function timeFormat(str) {
     var afterSplit = str.split('-');
@@ -110,6 +122,7 @@ function reformatDate(str) {
 
 module.exports = {
 	copy,
+    compareJSON,
     timeFormat,
     convertTime,
 	professorFormat,
