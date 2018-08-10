@@ -70,7 +70,6 @@ function syncSchedule(courseList, freeTime, crnList = []) {
 // Get all data for all the classes
 async function reSchedule(courseList, freeTime, crnList = []) {
     var newCourseList = copy(courseList);
-
     var allClasses = [];
     if (!crnList.length) {
         for (course of courseList) {
@@ -81,7 +80,7 @@ async function reSchedule(courseList, freeTime, crnList = []) {
                     });
             }));
         }
-    } 
+    }
     syncSchedule(allClasses, freeTime, []);
 }
 
