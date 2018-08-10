@@ -19,6 +19,8 @@ export class CalendarComponent implements OnInit {
 	  	courseSelected: any;
 		eventsData: any[] = [];
 		timeRanges = {};
+		clicked: boolean = false;
+		dateRangeClicked: string = '';
 
 	calendarCompo() {
 		$('#calendar').fullCalendar({
@@ -92,8 +94,6 @@ export class CalendarComponent implements OnInit {
 				}
 			}
 			$('#calendar').fullCalendar('unselect');
-			// console.log(start);
-			// console.log(end);
 			$("#calendar").fullCalendar('addEventSource', [{
 				start: start,
 				end: end,
@@ -104,11 +104,10 @@ export class CalendarComponent implements OnInit {
 			return ! event.block;
 		},
 		eventRender: (event, element, view) => {
-			// element.find(".fc-mon").prepend("<button class='closeon'>X</button>")
-			// element.find("fc-day fc-widget-content fc-mon fc-past").append("<button class='closeon'>X</button>")
 			if (view.name == 'listDay') {
 				element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
-			} else {
+			}
+			else {
 				element.find(".fc-content").prepend("<button class='closeon'>X</button>")
 			}
 			element.find(".closeon").on('click', () => {
@@ -145,9 +144,12 @@ export class CalendarComponent implements OnInit {
 							date ='.fc-sat';
 							break
 					}
-					$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select Time</button></div>")
+					$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
 				}
 			}
+			element.find(".timeRangeStyle").on('click', ($event) => {
+				this.selectTimeFrame($event);
+			})
 		}
 	});
 	}
@@ -155,6 +157,23 @@ export class CalendarComponent implements OnInit {
   ngOnInit() {
 	  this.calendarCompo();
   	}
+
+	selectTimeFrame(event) {
+		var dateEvent = event.currentTarget.offsetParent.attributes[0].textContent;
+		var dates = dateEvent.split(' ');
+		var dateEvent = dates[2].slice(dates[2].length - 3, dates[2].length);
+		this.clicked = !this.clicked;
+		if (this.clicked == true) {
+			var id = dateEvent;
+			$("#calendar").fullCalendar('addEventSource', [{
+				id: id,
+				start: moment("08:00", "hh:mm").day(dateEvent),
+				end: moment("21:00", "hh:mm").day(dateEvent),
+			}])
+		} else {
+			$('#calendar').fullCalendar('removeEvents', dateEvent);
+		}
+	}
 
 	recieveMess($event) {
 		console.log($event);
