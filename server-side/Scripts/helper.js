@@ -1,9 +1,9 @@
-const servicesData = require('../DefaultData/dateTime.js');
+const servicesData = require('../defaultData/dateTime.js');
+
 // Deep copy an object (or array)
 function copy(object) {
 	return JSON.parse(JSON.stringify(object));
 }
-
 
 // Compare two JSON objects
 function compareJSON(obj1, obj2) {
