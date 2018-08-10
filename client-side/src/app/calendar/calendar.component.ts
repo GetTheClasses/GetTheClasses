@@ -177,42 +177,62 @@ export class CalendarComponent implements OnInit {
 
 	recieveMess($event) {
 		console.log($event);
-		this.timeRanges = {
-			'start': [],
-			'end': []
-		};
-		var timeData = $event.time.split('|');
-		for (var ele of timeData) {
-			this.analyzeDate(ele);
-		}
-		console.log(this.timeRanges);
+		// var timeData = $event.time.split('|');
+		var timeRanges = this.analyzeDates($event.time);
+		console.log(timeRanges);
+		var timeStarts = this.analyzetimeStart($event.time);
+		var timeEnds = this.analyzetimeEnd($event.time);
 		this.eventsData = [];
 		var randomColor = this.getRandomColor();
-		for (var i = 0; i < this.timeRanges['start'].length; i++) {
-			this.eventsData.push({
-				title: $event.name + '  Professor: ' + $event.professor,
-				// start: this.timeRanges['start'][i],
-				// end: this.timeRanges['end'][i],
-				start: moment("08:00", "hh:mm").day("Monday"),
-				end: moment("12:00", "hh:mm").day("Monday"),
-				borderColor: 'black',
-				textColor: 'white',
-				color: randomColor,
-				editable: true,
-				overlap: false,
-			})
+
+		for (var i = 0; i < timeRanges.length; i++) {
+			for (var j = 0; j < timeRanges[i].length; j++) {
+				// console.log(timeRanges[i][j]);
+				// console.log(timeStarts[i]);
+				// console.log(timeEnds[i]);
+				$("#calendar").fullCalendar('addEventSource', [{
+					title: 'Need to update',
+					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+					borderColor: 'black',
+					textColor: 'white',
+					color: randomColor,
+					editable: true,
+					overlap: false,
+				}]);
+				// this.eventsData.push({
+				// 	title: 'Need to update',
+				// 	start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+				// 	end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+				// 	borderColor: 'black',
+				// 	textColor: 'white',
+				// 	color: randomColor,
+				// 	editable: true,
+				// 	overlap: false,
+				// })
+			}
 		}
-		console.log(this.eventsData);
-		for (var ele of this.eventsData) {
-			$("#calendar").fullCalendar('addEventSource', [ele])
-		}
+
+		// console.log(this.eventsData);
+		// for (var ele of this.eventsData) {
+		// 	$("#calendar").fullCalendar('addEventSource', [ele]);
+		// }
+
+		// for (var i = 0; i < this.timeRanges['start'].length; i++) {
+		// 	this.eventsData.push({
+		// 		title: $event.name + '  Professor: ' + $event.professor,
+		// 		start: moment("08:00", "hh:mm").day("Monday"),
+		// 		end: moment("12:00", "hh:mm").day("Monday"),
+		// 		borderColor: 'black',
+		// 		textColor: 'white',
+		// 		color: randomColor,
+		// 		editable: true,
+		// 		overlap: false,
+		// 	})
+		// }
 	}
 
-	// var start = moment("08:00", "hh:mm");
-	// start.day(date.day());
-	// var end = moment("21:00", "hh:mm");
-	// end.day(date.day());
-
+	// Auto generate random colors
 	getRandomColor() {
 		var letters = '0123456789ABCDEF'; //HEX
 		var color = '#';
@@ -223,33 +243,88 @@ export class CalendarComponent implements OnInit {
 	}
 
 	analyzetimeStart(str) {
-		var time = str.slice(str.indexOf('-') + 1, str.indexOf('-') + 7);
-		return time.trim()
+		var datas = str.split('|');
+		var output = [];
+		for (var i = 0; i < datas.length; i++) {
+			var timeStart = '';
+			switch (i) {
+				case 1:
+				case 3:
+					timeStart = datas[i].slice(0, 2) + ":" + datas[i].slice(2, 4);
+					output.push(timeStart);
+					break
+			}
+		}
+		return output;
 	}
 
 	analyzetimeEnd(str) {
-		var time = str.slice(str.length - 6, str.length);
-		return time.trim()
+		var datas = str.split('|');
+		var output = [];
+		for (var i = 0; i < datas.length; i++) {
+			var timeEnd = '';
+			switch (i) {
+				case 1:
+				case 3:
+					timeEnd = datas[i].slice(datas[i].length - 4, datas[i].length -2) + ":" + datas[i].slice(datas[i].length - 2, datas[i].length);
+					output.push(timeEnd);
+					break
+			}
+		}
+		return output;
 	}
 
-
-	analyzeDate(str) {
+	analyzeDates(str) {
+		// var str = "TW|12001350|W|14001530";
 		var date = {
-			'M': 'Monday',
-			'T': 'Tuesday',
-			'W': 'Wednesday',
-			'Th': 'Thursday',
-			'F': 'Friday',
-			'Sa': 'Sartuday'
+			'M': 'Mon',
+			'T': 'Tue',
+			'W': 'Wed',
+			'R': 'Thu',
+			'F': 'Fri',
+			'Sa': 'Sat'
 		}
-		var timeRange = str.slice(0, str.indexOf('-') - 1).trim();
-		for (var i = 0; i < timeRange.length; i++) {
-			var currDate = timeRange[i];
-			var dateFormat = date[currDate];
-			// var timeStart = this.analyzetimeStart(str);
-			// var timeEnd = this.analyzetimeEnd(str);
-			this.timeRanges['start'].push(dateFormat);
-			this.timeRanges['end'].push(dateFormat)
+		var datas = str.split('|');
+		var timeRanges = [];
+		// var timeStarts = [];
+		// var timeEnds = [];
+
+		for (var i = 0; i < datas.length; i ++) {
+			var getDate = '';
+			var actualDate = [];
+			// var timeStart = '';
+			// var timeEnd = '';
+			switch (i) {
+				case 0:
+				case 2:
+					// Dates
+					for (var ele of datas[i]) {
+						getDate = ele;
+						actualDate.push(date[getDate]);
+					}
+					timeRanges.push(actualDate);
+					break;
+
+				// case 1:
+				// case 3:
+				// 	// Time Start
+				// 	timeStart = datas[i].slice(0, 2) + ":" + datas[i].slice(2, 4);
+				// 	timeStarts.push(timeStart);
+				// 	// Time End
+				// 	timeEnd = datas[i].slice(datas[i].length - 4, datas[i].length -2) + ":" + datas[i].slice(datas[i].length - 2, datas[i].length);
+				// 	timeEnds.push(timeEnd);
+				// 	break;
+			}
 		}
+
+		return timeRanges;
+		// for (var i = 0; i < timeRanges.length; i++) {
+		// 	for (var j = 0; j < timeRanges[i].length; j++) {
+		// 		$("#calendar").fullCalendar('addEventSource', [{
+		// 			start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+		// 			end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+		// 		}])
+		// 	}
+		// }
 	}
 }
