@@ -1,28 +1,23 @@
-const firebase = require('firebase');
-
-firebase.initializeApp({
-	apiKey: "AIzaSyCPxuyldQzVJ05GSgDcMK8qthfC4ZJGvPI",
-	authDomain: "gettheclassdevelop.firebaseapp.com",
-	databaseURL: "https://gettheclassdevelop.firebaseio.com",
-	projectId: "gettheclassdevelop",
-	storageBucket: "",
-	messagingSenderId: "760366761022"
-});
-
-let database = firebase.database();
+const database = require('./database');
 
 async function readSpecific(url, key, value) {
 	return new Promise((resolve) => {
 		database.ref(url).orderByChild(key).equalTo(value)
 		.once('value').then((snapshot) => {
+			// console.log(snapshot.val())
 			var result = [];
 			for (key in snapshot.val()) {
 				result.push(snapshot.val()[key]);
 			}
+			console.log(result)
 			resolve(result);
 		});
 	})
 }
+
+
+// Ex: readSpecific('detailCourses/ACCT/2101', 'crn', "87484");
+readSpecific('generalCoursesInfo/ACCT/2101', 'crn', "87484")
 
 async function moveObject(oldLocation, newLocation) {
 	var temp = await new Promise(resolve => {
@@ -37,7 +32,6 @@ async function moveObject(oldLocation, newLocation) {
 }
 
 module.exports = {
-	database,
 	moveObject,
 	readSpecific
 }
