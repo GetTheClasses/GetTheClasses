@@ -1,7 +1,19 @@
-Major: <input (keyup)="getMajor($event)" />
-Course Number: <input (keyup)="getCourseNumber($event)" />
-<<button style="display:block" class="mat-raised-button" (click)="clear()">clear</button>
-<button style="display:block" class="mat-raised-button" (click)="save()">Save</button>
-<button class="mat-raised-button" (click)="submit()">Submit</button>
-
-<input ng-model="result">
+<div class="row">
+    <div class="col">
+        <ng-select [items]="courseList" [(ngModel)]="selectedCourse" bindLabel="name" bindValue="name" (change)="onCourseSelect($event)">
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div *ngIf="item.name === 'Kaunas'">{{item.name}}</div>
+                <div style="margin: 10px 0;" class="card" *ngIf="item.name !== 'Kaunas'">
+                    <div class="card-body">
+                        <h5 class="card-title" [ngOptionHighlight]="search">{{item.name}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{item.time}}</h6>
+                        <p class="card-text">
+                            <img height="15" width="15" [src]="item.avatar"/>
+                            {{item.professor}}
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-select>
+    </div>
+</div>
