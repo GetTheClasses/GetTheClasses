@@ -12,13 +12,15 @@ import { DropdownModule } from 'primeng/primeng';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { SubmitButtonsComponent } from './submit-buttons/submit-buttons.component';
+import { DisplayDataComponent } from './display-data/display-data.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InputComponent,
     CalendarComponent,
-    SubmitButtonsComponent
+    SubmitButtonsComponent,
+    DisplayDataComponent
   ],
   imports: [
     BrowserModule,
