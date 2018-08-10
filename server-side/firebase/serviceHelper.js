@@ -4,7 +4,6 @@ async function readSpecific(url, key, value) {
 	return new Promise((resolve) => {
 		database.ref(url).orderByChild(key).equalTo(value)
 		.once('value').then((snapshot) => {
-			// console.log(snapshot.val())
 			var result = [];
 			for (key in snapshot.val()) {
 				result.push(snapshot.val()[key]);
