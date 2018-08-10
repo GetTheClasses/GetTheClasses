@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Criteria } from '../models/criteria';
 import { HttpMethodService } from '../http-method.service';
 import { CourseCriteria } from '../models/courseCriteria';
+import { TransferDataService } from '../services/transfer-data.service';
 
 @Component({
   selector: 'app-input',
@@ -9,12 +10,14 @@ import { CourseCriteria } from '../models/courseCriteria';
   styleUrls: ['./input.component.css']
 })
 export class InputComponent {
-  constructor(private methodHelper: HttpMethodService) { }
+  constructor(private methodHelper: HttpMethodService,
+    private transferDataService: TransferDataService) { }
 
-  result: any[] = [];
-  criteria: Criteria[] = [];
-  major: string;
-  courseNumber: string;
+  private result: any[] = [];
+  private criteria: Criteria[] = [];
+  private major: string;
+  private courseNumber: string;
+  private timeSchedule;
 
   getMajor(event: any): void {
     this.major = event.target.value;
@@ -39,6 +42,20 @@ export class InputComponent {
 
   submit(): void {
     this.methodHelper.post('http://localhost:8000/api/course', this.criteria)
+      .subscribe((data) => {
+        console.log(data);
+        //if (data.success) {
+        //  this.result.push(data.result);
+        //}
+      });
+  }
+
+  getClasses() {
+    this.timeSchedule = this.transferDataService.getFreeTime();
+    this.methodHelper.post('http://localhost:8000/api/course', {
+      criteria: this.criteria,
+      freeTime: this.timeSchedule
+    })
       .subscribe((data) => {
         console.log(data);
         //if (data.success) {
