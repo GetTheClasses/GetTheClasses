@@ -1,1 +1,4 @@
-@import "~fullcalendar/dist/fullcalendar.css";
+.closeon {
+	/*background-color: green;*/
+	font-size: 7px !important;
+}
