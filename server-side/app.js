@@ -13,7 +13,7 @@ app.listen(8000, () => {
 
 app.route('/api/course').post((req, res) => {
     console.log("Recieved call to api/course")
-    if (req.body.freeTime == undefined) 
+    if (req.body.freeTime == undefined)
         req.body.freeTime = null;
 
     main(req.body.criteria, req.body.freeTime).then((data) => {
