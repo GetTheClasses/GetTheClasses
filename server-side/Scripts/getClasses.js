@@ -11,6 +11,8 @@ function putClass(scheduleRoot, classTimeString) {
     let schedule = copy(scheduleRoot);
     classTime = classTimeString.split('|');
     for (var i = 0; i < classTime.length; i += 2) {
+        if (classTime[i+1] == "TBA")
+            continue;
         var startTime = parseInt(classTime[i + 1].slice(0, 4));
         var endTime = parseInt(classTime[i + 1].slice(4));
         var dates = classTime[i].toLowerCase().split('');
@@ -68,18 +70,17 @@ function syncSchedule(courseList, freeTime, crnList = []) {
 // Get all data for all the classes
 async function reSchedule(courseList, freeTime, crnList = []) {
     var newCourseList = copy(courseList);
-
     var allClasses = [];
     if (!crnList.length) {
         for (course of courseList) {
             allClasses.push(await new Promise((resolve) => {
-                db.ref('majors/' + course.major + '/' + course.courseNumber)
+                db.ref('generalCoursesInfo/' + course.major + '/' + course.courseNumber)
                     .once('value').then((courseInfo) => {
                         resolve(courseInfo.val());
                     });
             }));
         }
-    } 
+    }
     syncSchedule(allClasses, freeTime, []);
 }
 
@@ -87,6 +88,7 @@ async function reSchedule(courseList, freeTime, crnList = []) {
 async function main(course, freeTime = defaultFreeTime) {
     if (freeTime == null)
         freeTime = defaultFreeTime;
+    console.log(freeTime);
     await reSchedule(course, freeTime, []);
     for (combination of combinations) {
         for (var i = 0; i < combination.length; i++) {
