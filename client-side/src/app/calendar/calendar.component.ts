@@ -42,6 +42,10 @@ export class CalendarComponent implements OnInit {
   			console.log(event.start.format("HH:mm"));
   			console.log(event.end.format("HH:mm"));
   		},
+      eventConstraint: {
+        start: "08:00",
+        end: "21:00"
+      },
   		selectConstraint: {
   			start: "08:00",
   			end: "21:00"
