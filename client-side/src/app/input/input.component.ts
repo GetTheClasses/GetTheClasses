@@ -3,7 +3,7 @@ import { Criteria } from '../models/criteria';
 import { HttpMethodService } from '../http-method.service';
 import { CourseCriteria } from '../models/courseCriteria';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators'
+import { TransferDataService } from '../services/transfer-data.service';
 
 @Component({
   selector: 'app-input',
@@ -14,23 +14,21 @@ import { distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators'
   ]
 })
 export class InputComponent {
-  // @Output() courseClicked = new EventEmitter<any>();
-  // message: string = 'Hello world';
   @Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-  constructor(private methodHelper: HttpMethodService) { }
-
-  // sendMess() {
-  //   this.courseClicked.emit("hello world");
-  //   console.log("click");
-  //   // console.log(this.courseClicked);
-  //   // return "dsdsds";
-  // }
     subject: string[] = ['--', 'ACCT', 'AE', 'APPH', 'ARBC', 'ARCH', 'AS', 'ASE', 'BCP', 'BMED'];
     filteredsubject: any[];
     eventClicked: boolean = false;
     subjectChoose: string;
     subjectSelected: string = '';
+    constructor(private methodHelper: HttpMethodService,
+      private transferDataService: TransferDataService) { }
+
+    private result: any[] = [];
+    private criteria: Criteria[] = [];
+    private major: string;
+    private courseNumber: string;
+    private timeSchedule;
 
     classDetails: string[] = ['ACCT 2101', 'ACCT 2102'];
     filteredClassDetails: any[];
@@ -117,43 +115,43 @@ unselectAll() {
 onCourseSelect($event) {
   this.courseClicked.emit($event);
 }
-
-
-// TUAN CODE
-
   // result: any[] = [];
   // criteria: Criteria[] = [];
   // major: string;
   // courseNumber: string;
 
-  // getMajor(event: any): void {
-  //   this.major = event.target.value;
-  // }
+  getMajor(event: any): void {
+    this.major = event.target.value;
+  }
 
-  // getCourseNumber(event: any): void {
-  //   this.courseNumber = event.target.value;
-  // }
+  getCourseNumber(event: any): void {
+    this.courseNumber = event.target.value;
+  }
 
-  // clear(): void {
-  //   this.criteria = [];
-  //   console.log(this.criteria);
-  // }
+  clear(): void {
+    this.criteria = [];
+    console.log(this.criteria);
+  }
 
-  // save(): void {
-  //   this.criteria.push({
-  //     major: this.major,
-  //     courseNumber: this.courseNumber
-  //   });
-  //   console.log(this.criteria);
-  // }
+  save(): void {
+    this.criteria.push({
+      major: this.major,
+      courseNumber: this.courseNumber
+    });
+    console.log(this.criteria);
+  }
 
-  // submit(): void {
-  //   this.methodHelper.post('http://localhost:8000/api/course', this.criteria)
-  //     .subscribe((data) => {
-  //       console.log(data);
-  //       //if (data.success) {
-  //       //  this.result.push(data.result);
-  //       //}
-  //     });
-  // }
+  getClasses() {
+    this.timeSchedule = this.transferDataService.getFreeTime();
+    this.methodHelper.post('http://localhost:8000/api/course', {
+      criteria: this.criteria,
+      freeTime: this.timeSchedule
+    })
+      .subscribe((data) => {
+        console.log(data);
+        //if (data.success) {
+        //  this.result.push(data.result);
+        //}
+      });
+  }
 }
