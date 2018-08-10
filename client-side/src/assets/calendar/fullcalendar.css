@@ -1023,7 +1023,7 @@ NOTE: use percentage font sizes or else old IE chokes
   /* each cell is responsible for its top border */ }
 
 .fc-time-grid .fc-slats .fc-minor td {
-  border-top-style: dotted; }
+  border-top-style: none; }
 
 /* TimeGrid Highlighting Slots
 --------------------------------------------------------------------------------------------------*/
