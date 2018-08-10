@@ -8,8 +8,8 @@ require('dotenv').config();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.listen(8000, () => {
-    console.log('Listening to 8000');
+app.listen(process.env.PORT || 8000, () => {
+    console.log('Listening on port', process.env.PORT || 8000);
 });
 
 app.route('/api/course').post((req, res) => {
