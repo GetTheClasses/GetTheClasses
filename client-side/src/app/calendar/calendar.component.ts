@@ -15,7 +15,10 @@ export class CalendarComponent implements OnInit {
   dictTime = { 1: 'm', 2: 't', 3: 'w', 4: 'r', 5: 'f', 6: 's' };
 
   constructor(private transferDataService: TransferDataService,
-  	private calendarHelperService: CalendarHelperService) { }
+	  private calendarHelperService: CalendarHelperService) { }
+	  	courseSelected: any;
+		eventsData: any[] = [];
+		timeRanges = {};
 
   ngOnInit() {
   	$('#calendar').fullCalendar({
@@ -48,7 +51,7 @@ export class CalendarComponent implements OnInit {
           var freeTime = this.transferDataService.getFreeTime();
           if (freeTime == undefined || freeTime[this.dictTime[date.day()]] == []
             || freeTime[this.dictTime[date.day()]].toString() != [[800, 2100]].toString()) {
-            
+
             for (var e of $('#calendar').fullCalendar('clientEvents')) {
               if (e.start.day() == date.day()) {
                 $('#calendar').fullCalendar('removeEvents', e._id);
@@ -115,17 +118,75 @@ export class CalendarComponent implements OnInit {
         this.transferDataService.setFreeTime(freeTimeDict);
 	    },
 	  });
+  	}
 
-    // console.log($('.fc-day-grid').find('.fc-day').prepend(`<div class="mat-checkbox-inner-container" style="z-index:10"><input class="mat-checkbox-input cdk-visually-hidden" type="checkbox" id="mat-checkbox-2-input" tabindex="0" aria-checked="true"><div class="mat-checkbox-ripple mat-ripple" matripple="" ng-reflect-centered="true" ng-reflect-radius="25" ng-reflect-animation="[object Object]" ng-reflect-disabled="false" ng-reflect-trigger="[object HTMLLabelElement]"></div><div class="mat-checkbox-frame"></div><div class="mat-checkbox-background"><svg xml:space="preserve" class="mat-checkbox-checkmark" focusable="false" version="1.1" viewBox="0 0 24 24"><path class="mat-checkbox-checkmark-path" d="M4.1,12.7 9,17.6 20.3,6.3" fill="none" stroke="white"></path></svg><div class="mat-checkbox-mixedmark"></div></div></div>`));
-    // $('.fc-day-grid').removeClass('')
-  	$('#button1').click(() => {
-  		var start = moment("Mo, 12:20", "dd, HH:mm");
-  		var end = moment("Mo, 14:50", "dd, HH:mm");
-  		$('#calendar').fullCalendar('renderEvent', {
-  			title: "CS 2050",
-  			start: start,
-  			end: end
-  		})
-  	})
-  }
+	recieveMess($event) {
+		console.log($event);
+		this.timeRanges = {
+			'start': [],
+			'end': []
+		};
+		var timeData = $event.time.split('|');
+		for (var ele of timeData) {
+			this.analyzeDate(ele);
+		}
+		console.log(this.timeRanges);
+		this.eventsData = [];
+		var randomColor = this.getRandomColor();
+		for (var i = 0; i < this.timeRanges['start'].length; i++) {
+			this.eventsData.push({
+				title: $event.name + '  Professor: ' + $event.professor,
+				start: this.timeRanges['start'][i],
+				end: this.timeRanges['end'][i],
+				borderColor: 'black',
+				textColor: 'white',
+				color: randomColor,
+				editable: true,
+				overlap: false,
+			})
+		}
+		console.log(this.eventsData);
+		for (var ele of this.eventsData) {
+			$("#calendar").fullCalendar('addEventSource', [ele])
+		}
+	}
+
+	getRandomColor() {
+		var letters = '0123456789ABCDEF';
+		var color = '#';
+		for (var i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+		}
+		return color;
+	}
+
+	analyzetimeStart(str) {
+		var time = str.slice(str.indexOf('-') + 1, str.indexOf('-') + 7);
+		return time.trim() + ':00'
+	}
+
+	analyzetimeEnd(str) {
+		var time = str.slice(str.length - 6, str.length);
+		return time.trim() + ':00'
+	}
+
+
+	analyzeDate(str) {
+		var date = {
+			'M': '2018-08-20',
+			'T': '2018-08-21',
+			'W': '2018-08-22',
+			'Th': '2018-08-23',
+			'F': '2018-08-24'
+		}
+		var timeRange = str.slice(0, str.indexOf('-') - 1).trim();
+		for (var i = 0; i < timeRange.length; i++) {
+			var currDate = timeRange[i];
+			var dateFormat = date[currDate];
+			var timeStart = this.analyzetimeStart(str);
+			var timeEnd = this.analyzetimeEnd(str);
+			this.timeRanges['start'].push(dateFormat + 'T' + timeStart);
+			this.timeRanges['end'].push(dateFormat + 'T' + timeEnd)
+		}
+	}
 }
