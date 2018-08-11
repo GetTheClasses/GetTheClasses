@@ -1,14 +1,16 @@
 const db = require('./database');
 const fs = require('fs');
 const _ = require('lodash');
-const read = require('readline-sync');
+const prompt = require('syncprompt');
 const helper = require('../scripts/helper.js')
+const path = require('path');
+const folder = path.join(__dirname, '../', 'defaultData');
 
 async function run() {
 	
 	// Get old data and new data
-	var rawOldCourses = fs.readFileSync('./defaultData/oldCoursesData.json');
-	var rawNewCourses = fs.readFileSync('./defaultData/newCoursesData.json');
+	var rawOldCourses = fs.readFileSync(path.join(folder, 'oldCoursesData.json'));
+	var rawNewCourses = fs.readFileSync(path.join(folder, 'newCoursesData.json'));
 	var oldCourses = JSON.parse(rawOldCourses);
 	var newCourses = JSON.parse(rawNewCourses); 
 
@@ -34,7 +36,7 @@ async function run() {
 						}
 					}
 					catch (err) {
-						fs.appendFileSync('./log/error.txt', err + "\n", () => {});
+						fs.appendFileSync(path.join(__dirname, '../', 'log/error.txt'), err + "\n", () => {});
 					}
 				}
 			}
@@ -43,7 +45,7 @@ async function run() {
 		// Log out differences as an object with identifier and characteristic to log window.
 		console.log(diffResult);
 
-		var answer =read.question('Do you want to update by create a whole new database? (Y/N) ');
+		var answer = prompt('Do you want to update by create a whole new database? (Y/N) ');
 		if (answer.toUpperCase() == "Y") {
 			for (var eachDiff of diffResult) {
 				console.log(eachDiff)
@@ -82,9 +84,9 @@ async function run() {
 			}
 
 			// Update data in oldCoursesData with data from newCoursesData
-			fs.writeFileSync('./defaultData/oldCoursesData.json',
+			fs.writeFileSync(path.join(folder, 'oldCoursesData.json'),
 				JSON.stringify(newCourses, null, 2), (err) => {})
-			fs.writeFileSync('./defaultData/DataDifferences.json',
+			fs.writeFileSync(path.join(folder, 'dataDifferences.json'),
 				"", (err) => {console.log(err)});
 			console.log('\nUpdated database');
 		}
@@ -93,9 +95,9 @@ async function run() {
 		else {
 
 			// Write differences to DefaultData/DataDifferences.json
-			fs.writeFileSync('./defaultData/DataDifferences.json',
+			fs.writeFileSync(path.join(folder, 'dataDifferences.json'),
 				JSON.stringify(diffResult, null, 2), (err) => {console.log(err)});
-			console.log("\nDifferences has been saved to server-side/defaultData/DataDifferences.json");
+			console.log("\nDifferences has been saved to server-side/defaultData/dataDifferences.json");
 		}
 	}
 

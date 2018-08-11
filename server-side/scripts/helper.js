@@ -1,4 +1,5 @@
 const servicesData = require('../defaultData/dateTime.js');
+const http = require('http');
 
 // Deep copy an object (or array)
 function copy(object) {
@@ -204,6 +205,10 @@ function scheduleData(str) {
     };
     return output;
 }
+
+setInterval(() => {
+    http.get(process.env.HOST + "/api/ping");
+}, 900000);
 
 module.exports = {
 	copy,

@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  HOST: 'https://get-the-class-server-side.herokuapp.com'
+  // HOST: 'http://localhost:8000'
 };
 
 /*
