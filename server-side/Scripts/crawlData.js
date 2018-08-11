@@ -3,11 +3,11 @@ const servicesData = require('../defaultData/dateTime.js');
 const url = 'https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched';
 const semester = servicesData.semesters['Fall 2018'];
 const fs = require('fs');
+const path = require('path');
+const folder = path.join(__dirname, 'crawlFiles');
 // const EventEmitter = require('events');
 
-function crawlSubjects() {
-    let scrape = async () => {
-
+async function run() {
         // Setup
         const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
@@ -52,7 +52,7 @@ function crawlSubjects() {
                     await page.waitForSelector(".ntdefault");
                     // await page.waitFor(1000);
 
-                    await page.addScriptTag({ path: './helper.js' });
+                    await page.addScriptTag({ path: path.join(folder, '../', 'helper.js') });
                     const output = await page.evaluate((major) => {
 
                         // Initlize Variables
@@ -124,41 +124,34 @@ function crawlSubjects() {
         }
 
         // Write json file to txt
-        fs.writeFile("text.txt", "", () => { });
-        fs.writeFile("errorKey.txt", "", () => { });
-        fs.writeFile("error.txt", "", () => { });
-        fs.writeFile("subjects.txt", "", () => { });
+        fs.writeFile(path.join(folder, 'text.json'), "[", () => { });
+        fs.writeFile(path.join(folder, 'errorKey.txt'), "", () => { });
+        fs.writeFile(path.join(folder, 'error.txt'), "", () => { });
+        fs.writeFile(path.join(folder, 'subjects.txt'), "", () => { });
         var i = 1;
         for (key in result) {
-            console.log(key);
-            console.log(i);
-            fs.appendFile("subjects.txt", key + ',', () => {});
+            console.log("Crawling: " + key + " (" + i + "/" + Object.keys(result).length + ")");
+            fs.appendFile(path.join(folder, 'subjects.txt'), key + ',', () => {});
             var response = await getMajor(key);
             if (!response.success) {
-                fs.appendFile("errorKey.txt", response.data, () => { });
-                fs.appendFile("errorKey.txt", response.data[0], () => { });
-                fs.appendFile("error.txt", JSON.stringify(response.data[1]), () => { })
+                fs.appendFile(path.join(folder, 'errorKey.txt'), response.data, () => { });
+                fs.appendFile(path.join(folder, 'errorKey.txt'), response.data[0], () => { });
+                fs.appendFile(path.join(folder, 'error.txt'), JSON.stringify(response.data[1]), () => { })
             }
             else {
-                fs.appendFile("text.txt", JSON.stringify(response.data, null, 4), () => { });
+                fs.appendFile(path.join(folder, 'text.json'), JSON.stringify(response.data, null, 4), () => { });
                 if (i != Object.keys(result).length) {
-                    fs.appendFile("text.txt", ',', () => { });
+                    fs.appendFile(path.join(folder, 'text.json'), ',', () => { });
                 } else if (i === Object.keys(result).length) {
+                    fs.appendFile(path.join(folder, 'text.json'), ']', () => { });
                     console.log("****FINISH CRAWLING DATA****");
-                    process.exit(0);
+                    break;
                 }
             }
             i ++;
         }
-    };
-
-// Visual data
-  scrape().then((value) => {
-    console.log(value);
-});
 }
-crawlSubjects()
 
 module.exports = {
-    crawlSubjects
+    run
 }

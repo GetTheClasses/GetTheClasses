@@ -4,6 +4,7 @@ import { HttpMethodService } from '../http-method.service';
 import { CourseCriteria } from '../models/courseCriteria';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TransferDataService } from '../services/transfer-data.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-input',
@@ -115,10 +116,6 @@ unselectAll() {
 onCourseSelect($event) {
   this.courseClicked.emit($event);
 }
-  // result: any[] = [];
-  // criteria: Criteria[] = [];
-  // major: string;
-  // courseNumber: string;
 
   getMajor(event: any): void {
     this.major = event.target.value;
@@ -143,15 +140,35 @@ onCourseSelect($event) {
 
   getClasses() {
     this.timeSchedule = this.transferDataService.getFreeTime();
-    this.methodHelper.post('http://localhost:8000/api/course', {
+    this.methodHelper.post(environment.HOST + '/api/course', {
       criteria: this.criteria,
       freeTime: this.timeSchedule
     })
       .subscribe((data) => {
         console.log(data);
-        //if (data.success) {
-        //  this.result.push(data.result);
-        //}
       });
+  }
+
+  sample() {
+    this.methodHelper.get(environment.HOST + '/api/classDetailInfo/?crn=82849')
+    .subscribe((data) => {
+      console.log("Class Detail: ");
+      console.log(data);
+    });
+    this.methodHelper.get(environment.HOST + '/api/classGeneralInfo/?major=CS&courseNumber=1331&crn=82849')
+    .subscribe((data) => {
+      console.log("Class General: ");
+      console.log(data);
+    });
+    this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=CS&courseNumber=1331')
+    .subscribe((data) => {
+      console.log("Course Detail: ");
+      console.log(data);
+    });
+    this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?major=CS&courseNumber=1331')
+    .subscribe((data) => {
+      console.log("Course General: ");
+      console.log(data);
+    });
   }
 }

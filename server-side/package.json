@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
-    "db": "nodemon ./firebase/databaseSetting.js"
+    "db": "node ./firebase/databaseSetting.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "puppeteer": "^1.6.1",
     "readline-sync": "^1.4.9",
     "request": "^2.87.0",
-    "rxjs": "^6.2.2"
+    "rxjs": "^6.2.2",
+    "syncprompt": "^2.0.0"
   }
 }
