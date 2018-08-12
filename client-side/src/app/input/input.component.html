@@ -1,4 +1,5 @@
 <mat-card>
+    <button (click)="sample()">Sample Log</button>
     <div class="form-row">
         <div class="col containner">
             <mat-form-field appearance="outline">
@@ -63,22 +64,31 @@
 <mat-card *ngIf="outputLength >= 0">
     <div class="form-row">
         <div *ngIf="outputLength > 0" class="col">
-            <h4>
-                Here is your available options
+            <p>
+                We found some available options
                 <button mat-raised-button color="primary"
-                    matBadge="{{outputLength}}" matBadgePosition="before" matBadgeColor="accent">
+                    matBadge="{{outputLength}}" matBadgePosition="before" matBadgeColor="accent" (click)="viewDetailsClicked()">
                     View Detail
                 </button>
-            </h4>
+            </p>
         </div>
 
         <div *ngIf="outputLength == 0" class="col">
-            <h4>
-                No options available. Please try other time range
-            </h4>
+            <p>
+                No options available. Please try other Time Range!!!
+            </p>
         </div>
     </div>
-    <div class="row">
+    <div *ngIf="viewDetails" class="form-row">
+        <div class="col" *ngFor="let data of dataReturned; let i = index">
+            {{i}}
+        </div>
+    </div>
+</mat-card>
+
+<mat-card>
+    <p> Test component </p>
+     <div class="row">
         <div class="col">
             <ng-select [items]="courseList" [(ngModel)]="selectedCourse" bindLabel="name" bindValue="name" (change)="onCourseSelect($event)">
                 <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
@@ -100,6 +110,6 @@
         <div class="col">
             <p> Thinh nguyen</p>
         </div>
-        <button (click)="sample()">Sample Log</button>
     </div>
+
 </mat-card>

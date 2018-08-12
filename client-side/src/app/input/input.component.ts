@@ -37,6 +37,9 @@ export class InputComponent {
 		COURSE: string = '';
 		selectedValue: string = '';
 		outputLength: number;
+		viewDetails: boolean = false;
+		presentData = [];
+		testing = {};
 
 		constructor(private methodHelper: HttpMethodService,
 			private transferDataService: TransferDataService) { }
@@ -185,6 +188,7 @@ export class InputComponent {
 			console.log(data);
 			if (data.success) {
 				this.dataReturned = data.result;
+				console.log(this.dataReturned);
 				this.outputLength = this.dataReturned.length;
 			} else {
 				this.dataReturned = [];
@@ -193,20 +197,24 @@ export class InputComponent {
 		});
 	}
 
+	viewDetailsClicked() {
+		this.viewDetails = true;
+	}
+
 	sample() {
 		this.methodHelper.get(environment.HOST + '/api/classDetailInfo/?crn=82849')
 		.subscribe((data) => {
-		console.log("Class Detail: ");
+		console.log("Class Staff Info: ");
 		console.log(data);
 		});
 		this.methodHelper.get(environment.HOST + '/api/classGeneralInfo/?major=CS&courseNumber=1331&crn=82849')
 		.subscribe((data) => {
-		console.log("Class General: ");
+		console.log("Course Time Range: ");
 		console.log(data);
 		});
 		this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=CS&courseNumber=1331')
 		.subscribe((data) => {
-		console.log("Course Detail: ");
+		console.log("Specific class each section details: ");
 		console.log(data);
 		});
 		this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?major=CS&courseNumber=1331')

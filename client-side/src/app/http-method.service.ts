@@ -15,7 +15,6 @@ export class HttpMethodService {
   criteria: Criteria;
 
   get(url: string): Observable<any> {
-    console.log(1234);
     return this.http.get<any>(url);
   }
 
