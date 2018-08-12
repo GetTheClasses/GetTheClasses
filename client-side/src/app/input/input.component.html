@@ -37,6 +37,19 @@
         </div>
     </div>
 
+    <div *ngIf="COURSE != '' && COURSE != '--'" class="form-row">
+        <div class="col containner">
+            <mat-form-field appearance="outline">
+                <mat-label>Sessions</mat-label>
+                <mat-select placeholder="Select Session" (selectionChange)="sessionSelected($event.value)">
+                    <mat-option *ngFor="let session of sessions" [value]="session">
+                        {{session}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+
     <div class="form-row">
         <div class="col">
             <mat-form-field *ngIf="criteria.length > 0" class="chip-list">

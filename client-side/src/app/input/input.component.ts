@@ -22,6 +22,7 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
+	sessions = [];
 	defaultCourses = [];
 	subjects: string[] = ['--'];
 	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
@@ -36,6 +37,7 @@ export class InputComponent {
 	TERM: string = '';
 	SUBJECT: string = '';
 	COURSE: string = '';
+	SESSION: string = '';
 	selectedValue: string = '';
 	outputLength: number;
 	viewDetails: boolean = false;
@@ -163,15 +165,18 @@ export class InputComponent {
 	}
 
 	subjectSelected(subject: string) {
-		console.log(subject);
+		// console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
-		this.defaultCourses = [];
+			this.COURSE = '--';
+			this.defaultCourses = [];
 		} else {
 			this.SUBJECT = subject;
+			this.COURSE = '--';
 			if (this.saveSubjects[subject] == undefined) {
 				this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=' + subject)
 				.subscribe((data) => {
+					data.unshift('--')
 					this.saveSubjects[subject] = data;
 					this.defaultCourses = data;
 				});
@@ -183,16 +188,43 @@ export class InputComponent {
 	}
 
 	courseSelected(course: string) {
-		if (course != '') {
-			this.COURSE = course;
-			this.criteria.push({
+		this.COURSE = course;
+		if (course != '' && course != '--') {
+			var temp = {
 				major: this.SUBJECT,
 				courseNumber: course
-			});
-			var eleIndx = this.defaultCourses.indexOf(course);
-			this.defaultCourses.splice(eleIndx, 1);
+			}
+			var hasCourse = false;
+			this.criteria.forEach((course) => {
+				if (course.major == temp.major
+					&& course.courseNumber == temp.courseNumber) {
+					hasCourse = true;
+				}
+			})
+			if (!hasCourse) {
+				this.criteria.push(temp);
+			}
+			this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
+				+ 'major=' + this.SUBJECT + '&courseNumber=' + this.COURSE)
+			.subscribe((data) => {
+				this.sessions = []
+				data.forEach((val) => {
+					this.sessions.push(val.section)
+				})
+			})
+			// var eleIndx = this.defaultCourses.indexOf(course);
+			// this.defaultCourses.splice(eleIndx, 1);
+			// this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
+			// 	+ 'major=' + this.SUBJECT + '&courseNumber=' + course)
+			// .subscribe((data) => {
+			// 	console.log(data);
+			// })
 		}
-		console.log(this.criteria);
+		
+	}
+
+	sessionSelected(session: string) {
+		console.log(session);
 	}
 
 	getClasses() {

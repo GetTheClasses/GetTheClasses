@@ -31,6 +31,10 @@ async function getSpecificMajorCourseNumbers(major) {
 	return await getCourseCatalog.getSpecificMajorCourseNumbers(major);
 }
 
+async function getAllClassesInCourse(major, courseNumber) {
+	return await getClass.getAllClassesInCourse(major, courseNumber);
+}
+
 module.exports = {
 	getClassDetailWithCrn,
 	getClassGeneral,
@@ -38,5 +42,6 @@ module.exports = {
 	getCourseGeneral,
 	getAllMajorsName,
 	getAllMajorsAndCourseNumbers,
-	getSpecificMajorCourseNumbers
+	getSpecificMajorCourseNumbers,
+	getAllClassesInCourse
 }

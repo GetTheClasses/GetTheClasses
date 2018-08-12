@@ -108,3 +108,11 @@ app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
         console.log("Returned data from api/getSpecificMajorCourseNumbers")
     })
 })
+
+app.get('/api/getAllClassesInCourse', (req, res) => {
+    console.log("Recieved call to api/getAllClassesInCourse")
+    getInfo.getAllClassesInCourse(req.query.major, req.query.courseNumber).then((result) => {
+        res.send(result);
+        console.log("Returned data from api/getAllClassesInCourse")
+    })
+})
