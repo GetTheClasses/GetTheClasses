@@ -21,7 +21,25 @@ async function getClassGeneralWithCrnFromDB(major, courseNumber, crn) {
 	})	
 }
 
+async function getAllClassesInCourse(major, courseNumber) {
+    return new Promise(resolve => {
+        db.ref('generalCoursesInfo/' + major)
+        .child(courseNumber).once('value').then((data) => {
+            var result = [];
+            Object.keys(data.val()).forEach((key) => {
+                result.push(data.val()[key]);
+            })
+            resolve(result);
+        })
+    })
+}
+
+// (async function() {
+//     await getAllClassesInCourse('CS', '1331');
+// })()
+
 module.exports = {
 	getClassDetailWithCrnFromDB,
-	getClassGeneralWithCrnFromDB
+	getClassGeneralWithCrnFromDB,
+    getAllClassesInCourse
 }

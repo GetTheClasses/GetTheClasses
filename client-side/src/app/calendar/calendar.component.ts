@@ -61,7 +61,7 @@ export class CalendarComponent implements OnInit {
 
 			  var start = moment("08:00", "hh:mm");
 				start.day(date.day());
-				console.log(start);
+				// console.log(start);
 			  var end = moment("21:00", "hh:mm");
 				end.day(date.day());
 

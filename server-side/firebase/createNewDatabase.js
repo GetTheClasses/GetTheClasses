@@ -40,6 +40,7 @@ async function run() {
 							db.ref('generalCoursesInfo/' + major
 								+ "/" + courseNumber).push({
 									crn: eachCourse.crn,
+									section: eachCourse.section,
 									time: eachCourse.classTime
 								})
 						}))
@@ -68,9 +69,9 @@ async function run() {
 	}
 }
 
-(async function() {
-	await run();
-})()
+// (async function() {
+// 	await run();
+// })()
 
 module.exports = {
 	run
