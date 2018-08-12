@@ -1,29 +1,104 @@
-<div class="row">
-    <div class="col">
-        <ng-select [items]="courseList" [(ngModel)]="selectedCourse" bindLabel="name" bindValue="name" (change)="onCourseSelect($event)">
-            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                <div *ngIf="item.name === 'Kaunas'">{{item.name}}</div>
-                <div style="margin: 10px 0;" class="card" *ngIf="item.name !== 'Kaunas'">
-                    <div class="card-body">
-                        <h5 class="card-title" [ngOptionHighlight]="search">{{item.name}}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{item.time}}</h6>
-                        <p class="card-text">
-                            <img height="15" width="15" [src]="item.avatar"/>
-                            {{item.professor}}
-                        </p>
-                    </div>
-                </div>
-            </ng-template>
-        </ng-select>
+<mat-card>
+    <div class="form-row">
+        <div class="col containner">
+            <mat-form-field appearance="outline">
+                <mat-label>Select Terms</mat-label>
+                <mat-select placeholder="Select Subject" [formControl]='position' (selectionChange)="termSelected($event.value)">
+                    <mat-option *ngFor="let term of terms" [value]="term">
+                    {{term}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="col containner">
+            <mat-form-field appearance="outline">
+            <mat-label>Select Subject</mat-label>
+                <mat-select placeholder="Select Subject" (selectionChange)="subjectSelected($event.value)">
+                    <mat-option *ngFor="let subject of subjects" [value]="subject">
+                    {{subject}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
     </div>
-</div>
-<div class="row">
-    Major: <input (keyup)="getMajor($event)" />
-    <div style="display:block">Course Number: <input (keyup)="getCourseNumber($event)" /></div>
-    <br>
-    <button style="display:inline-block" (click)="clear()">clear</button>
-    <button (click)="save()">Save</button>
-    <button (click)="getClasses()">Get Classes!</button>
-    <br>
-    <br>
-</div>
+
+    <div *ngIf="SUBJECT != ''" class="form-row">
+        <div class="col containner">
+            <mat-form-field appearance="outline">
+                <mat-label>Select Course</mat-label>
+                <mat-select placeholder="Select Course" (selectionChange)="courseSelected($event.value)">
+                    <mat-option *ngFor="let course of defaultCourses" [value]="course">
+                        {{course}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col">
+            <mat-form-field *ngIf="criteria.length > 0" class="chip-list">
+                <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let course of courses" [selectable]="selectable"
+                            [removable]="removable" (removed)="remove(course)">
+                    {{course.major + ' - ' + course.courseNumber}}
+                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div *ngIf="criteria.length != 0" class="form-row">
+        <div class="col containner">
+            <button type="button" class="btn btn-outline-primary" (click)="getClasses()">Get The Classes</button>
+        </div>
+        <div class="col containner">
+            <button type="button" class="btn btn-outline-dark" (click)="deleteAll()">Clear All</button>
+        </div>
+    </div>
+</mat-card><br>
+
+<mat-card *ngIf="outputLength >= 0">
+    <div class="form-row">
+        <div *ngIf="outputLength > 0" class="col">
+            <h4>
+                Here is your available options
+                <button mat-raised-button color="primary"
+                    matBadge="{{outputLength}}" matBadgePosition="before" matBadgeColor="accent">
+                    View Detail
+                </button>
+            </h4>
+        </div>
+
+        <div *ngIf="outputLength == 0" class="col">
+            <h4>
+                No options available. Please try other time range
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <ng-select [items]="courseList" [(ngModel)]="selectedCourse" bindLabel="name" bindValue="name" (change)="onCourseSelect($event)">
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                    <div *ngIf="item.name === 'Kaunas'">{{item.name}}</div>
+                    <div style="margin: 10px 0;" class="card" *ngIf="item.name !== 'Kaunas'">
+                        <div class="card-body">
+                            <h5 class="card-title" [ngOptionHighlight]="search">{{item.name}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{item.time}}</h6>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-select>
+        </div>
+    </div> <br>
+    <div class="row">
+        <div class="col">
+            <p-toggleButton [(ngModel)]="checked1" onLabel="View" offLabel="Off" ></p-toggleButton>
+        </div>
+        <div class="col">
+            <p> Thinh nguyen</p>
+        </div>
+    </div>
+</mat-card>
