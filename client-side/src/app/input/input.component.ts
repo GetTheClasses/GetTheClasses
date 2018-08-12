@@ -22,8 +22,8 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-		defaultCourses = ['1355', '2010', '1365'];
-		subjects: string[] = ['--', 'ACCT', 'AE','AS', 'APPH', 'ASE', 'ARBC', 'ARCH', 'BIOL', 'BMEJ', 'BMED', 'BCP'];
+		defaultCourses = [];
+		subjects: string[] = ['--'];
 		terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
 		position = new FormControl(this.terms[0]);
 		filteredsubject: any[];
@@ -37,6 +37,9 @@ export class InputComponent {
 		COURSE: string = '';
 		selectedValue: string = '';
 		outputLength: number;
+		viewDetails: boolean = false;
+		presentData = [];
+		testing = {};
 
 		constructor(private methodHelper: HttpMethodService,
 			private transferDataService: TransferDataService) { }
@@ -134,6 +137,11 @@ export class InputComponent {
 	// LIFE CYCLE
 	ngOnInit() {
 		this.TERM = this.position.value;
+    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
+    .subscribe((data) => {
+      data.unshift('--')
+      this.subjects = data;
+    });
 	}
 
 	// METHODS
@@ -156,8 +164,13 @@ export class InputComponent {
 		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
+      this.defaultCourses = [];
 		} else {
 			this.SUBJECT = subject;
+      this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=' + subject)
+      .subscribe((data) => {
+        this.defaultCourses = data;
+      });
 		}
 	}
 
@@ -185,12 +198,17 @@ export class InputComponent {
 			console.log(data);
 			if (data.success) {
 				this.dataReturned = data.result;
+				console.log(this.dataReturned);
 				this.outputLength = this.dataReturned.length;
 			} else {
 				this.dataReturned = [];
 				this.outputLength = 0;
 			}
 		});
+	}
+
+	viewDetailsClicked() {
+		this.viewDetails = true;
 	}
 
 	sample() {
