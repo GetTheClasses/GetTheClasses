@@ -108,11 +108,21 @@ async function getDetail() {
 }
 
 // DFS through reSchedule function
-async function main(course, freeTime = defaultFreeTime) {
+async function main(course, freeTime = defaultFreeTime, requiredCrn = []) {
     if (freeTime == null)
         freeTime = defaultFreeTime;
     await reSchedule(course, freeTime, []);
     await getDetail();
+    requiredCrn.forEach((crn) => {
+        var index = 0;
+        while (index < combinations.length) {
+            if (!combinations[index].includes(crn)) {
+                combinations.splice(index, 1);
+            } else {
+                index += 1
+            }
+        }
+    })
     for (combination of combinations) {
         for (var i = 0; i < combination.length; i++) {
             combination[i] = runtimeDict[combination[i]];
@@ -125,6 +135,7 @@ async function main(course, freeTime = defaultFreeTime) {
         else
             index += 1;
     }
+    // console.log(combinations)
     return combinations;
 }
 

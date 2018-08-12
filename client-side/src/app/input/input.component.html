@@ -40,6 +40,7 @@
     <div class="form-row">
         <div class="col">
             <mat-form-field *ngIf="criteria.length > 0" class="chip-list">
+                <mat-label>Courses</mat-label>
                 <mat-chip-list #chipList>
                     <mat-chip *ngFor="let course of courses" [selectable]="selectable"
                             [removable]="removable" (removed)="remove(course)">

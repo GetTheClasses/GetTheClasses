@@ -22,41 +22,43 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-		defaultCourses = [];
-		subjects: string[] = ['--'];
-		terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
-		position = new FormControl(this.terms[0]);
-		filteredsubject: any[];
-		eventClicked: boolean = false;
-		subjectChoose: string;
-		// subjectSelected: string = '';
-		dataReturned: any;
-		checked1: boolean = true;
-		TERM: string = '';
-		SUBJECT: string = '';
-		COURSE: string = '';
-		selectedValue: string = '';
-		outputLength: number;
-		viewDetails: boolean = false;
-		presentData = [];
-		testing = {};
+	defaultCourses = [];
+	subjects: string[] = ['--'];
+	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
+	terms = ['Fall 2018'];
+	position = new FormControl(this.terms[0]);
+	filteredsubject: any[];
+	eventClicked: boolean = false;
+	subjectChoose: string;
+	// subjectSelected: string = '';
+	dataReturned: any;
+	checked1: boolean = true;
+	TERM: string = '';
+	SUBJECT: string = '';
+	COURSE: string = '';
+	selectedValue: string = '';
+	outputLength: number;
+	viewDetails: boolean = false;
+	presentData = [];
+	testing = {};
+	saveSubjects = {};
 
-		constructor(private methodHelper: HttpMethodService,
-			private transferDataService: TransferDataService) { }
+	constructor(private methodHelper: HttpMethodService,
+		private transferDataService: TransferDataService) { }
 
-		private result: any[] = [];
-		private criteria: Criteria[] = [];
-		private major: string;
-		private courseNumber: string;
-		private timeSchedule;
+	private result: any[] = [];
+	private criteria: Criteria[] = [];
+	private major: string;
+	private courseNumber: string;
+	private timeSchedule;
 
-		// classDetails: string[] = ['ACCT 2101', 'ACCT 2102'];
-		filteredClassDetails: any[];
-		classChoose: string;
-		classSelected: string = '';
-		classClicked: boolean = false;
+	// classDetails: string[] = ['ACCT 2101', 'ACCT 2102'];
+	filteredClassDetails: any[];
+	classChoose: string;
+	classSelected: string = '';
+	classClicked: boolean = false;
 
-		// sectionDetails: string[] = ['ACCT 2101 - A'];
+	// sectionDetails: string[] = ['ACCT 2101 - A'];
 
 	// Filter function for autocomplete search
 	// filterSearch(event) {
@@ -137,11 +139,11 @@ export class InputComponent {
 	// LIFE CYCLE
 	ngOnInit() {
 		this.TERM = this.position.value;
-    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
-    .subscribe((data) => {
-      data.unshift('--')
-      this.subjects = data;
-    });
+	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
+	    .subscribe((data) => {
+	      data.unshift('--')
+	      this.subjects = data;
+	    });
 	}
 
 	// METHODS
@@ -164,13 +166,19 @@ export class InputComponent {
 		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
-      this.defaultCourses = [];
+		this.defaultCourses = [];
 		} else {
 			this.SUBJECT = subject;
-      this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=' + subject)
-      .subscribe((data) => {
-        this.defaultCourses = data;
-      });
+			if (this.saveSubjects[subject] == undefined) {
+				this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=' + subject)
+				.subscribe((data) => {
+					this.saveSubjects[subject] = data;
+					this.defaultCourses = data;
+				});
+			}
+			else {
+				this.defaultCourses = this.saveSubjects[subject]
+			}
 		}
 	}
 
