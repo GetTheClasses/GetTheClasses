@@ -22,41 +22,45 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-		defaultCourses = [];
-		subjects: string[] = ['--'];
-		terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
-		position = new FormControl(this.terms[0]);
-		filteredsubject: any[];
-		eventClicked: boolean = false;
-		subjectChoose: string;
-		// subjectSelected: string = '';
-		dataReturned: any;
-		checked1: boolean = true;
-		TERM: string = '';
-		SUBJECT: string = '';
-		COURSE: string = '';
-		selectedValue: string = '';
-		outputLength: number;
-		viewDetails: boolean = false;
-		presentData = [];
-		testing = {};
+	sessions = [];
+	defaultCourses = [];
+	subjects: string[] = ['--'];
+	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
+	terms = ['Fall 2018'];
+	position = new FormControl(this.terms[0]);
+	filteredsubject: any[];
+	eventClicked: boolean = false;
+	subjectChoose: string;
+	// subjectSelected: string = '';
+	dataReturned: any;
+	checked1: boolean = true;
+	TERM: string = '';
+	SUBJECT: string = '';
+	COURSE: string = '';
+	SESSION: string = '';
+	selectedValue: string = '';
+	outputLength: number;
+	viewDetails: boolean = false;
+	presentData = [];
+	testing = {};
+	saveSubjects = {};
 
-		constructor(private methodHelper: HttpMethodService,
-			private transferDataService: TransferDataService) { }
+	constructor(private methodHelper: HttpMethodService,
+		private transferDataService: TransferDataService) { }
 
-		private result: any[] = [];
-		private criteria: Criteria[] = [];
-		private major: string;
-		private courseNumber: string;
-		private timeSchedule;
+	private result: any[] = [];
+	private criteria: Criteria[] = [];
+	private major: string;
+	private courseNumber: string;
+	private timeSchedule;
 
-		// classDetails: string[] = ['ACCT 2101', 'ACCT 2102'];
-		filteredClassDetails: any[];
-		classChoose: string;
-		classSelected: string = '';
-		classClicked: boolean = false;
+	// classDetails: string[] = ['ACCT 2101', 'ACCT 2102'];
+	filteredClassDetails: any[];
+	classChoose: string;
+	classSelected: string = '';
+	classClicked: boolean = false;
 
-		// sectionDetails: string[] = ['ACCT 2101 - A'];
+	// sectionDetails: string[] = ['ACCT 2101 - A'];
 
 	// Filter function for autocomplete search
 	// filterSearch(event) {
@@ -137,11 +141,11 @@ export class InputComponent {
 	// LIFE CYCLE
 	ngOnInit() {
 		this.TERM = this.position.value;
-    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
-    .subscribe((data) => {
-      data.unshift('--')
-      this.subjects = data;
-    });
+	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
+	    .subscribe((data) => {
+	      data.unshift('--')
+	      this.subjects = data;
+	    });
 	}
 
 	// METHODS
@@ -161,30 +165,66 @@ export class InputComponent {
 	}
 
 	subjectSelected(subject: string) {
-		console.log(subject);
+		// console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
-      this.defaultCourses = [];
+			this.COURSE = '--';
+			this.defaultCourses = [];
 		} else {
 			this.SUBJECT = subject;
-      this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=' + subject)
-      .subscribe((data) => {
-        this.defaultCourses = data;
-      });
+			this.COURSE = '--';
+			if (this.saveSubjects[subject] == undefined) {
+				this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=' + subject)
+				.subscribe((data) => {
+					data.unshift('--')
+					this.saveSubjects[subject] = data;
+					this.defaultCourses = data;
+				});
+			}
+			else {
+				this.defaultCourses = this.saveSubjects[subject]
+			}
 		}
 	}
 
 	courseSelected(course: string) {
-		if (course != '') {
-			this.COURSE = course;
-			this.criteria.push({
+		this.COURSE = course;
+		if (course != '' && course != '--') {
+			var temp = {
 				major: this.SUBJECT,
 				courseNumber: course
-			});
-			var eleIndx = this.defaultCourses.indexOf(course);
-			this.defaultCourses.splice(eleIndx, 1);
+			}
+			var hasCourse = false;
+			this.criteria.forEach((course) => {
+				if (course.major == temp.major
+					&& course.courseNumber == temp.courseNumber) {
+					hasCourse = true;
+				}
+			})
+			if (!hasCourse) {
+				this.criteria.push(temp);
+			}
+			this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
+				+ 'major=' + this.SUBJECT + '&courseNumber=' + this.COURSE)
+			.subscribe((data) => {
+				this.sessions = []
+				data.forEach((val) => {
+					this.sessions.push(val.section)
+				})
+			})
+			// var eleIndx = this.defaultCourses.indexOf(course);
+			// this.defaultCourses.splice(eleIndx, 1);
+			// this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
+			// 	+ 'major=' + this.SUBJECT + '&courseNumber=' + course)
+			// .subscribe((data) => {
+			// 	console.log(data);
+			// })
 		}
-		console.log(this.criteria);
+		
+	}
+
+	sessionSelected(session: string) {
+		console.log(session);
 	}
 
 	getClasses() {
