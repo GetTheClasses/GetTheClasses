@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  // HOST: 'https://get-the-class-server-side.herokuapp.com'
-  HOST: 'http://localhost:8000'
+  HOST: 'https://get-the-class-server-side.herokuapp.com'
+  // HOST: 'http://localhost:8000'
 };
 
 /*

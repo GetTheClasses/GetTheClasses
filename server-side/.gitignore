@@ -64,3 +64,7 @@ typings/
 firebase/test.js
 scripts/text.txt
 test.js
+
+# local data
+defaultData
+scripts/crawlFiles
