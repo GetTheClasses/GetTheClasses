@@ -170,5 +170,20 @@ onCourseSelect($event) {
       console.log("Course General: ");
       console.log(data);
     });
+    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
+    .subscribe((data) => {
+      console.log("getAllMajorsName: ");
+      console.log(data);
+    });
+    this.methodHelper.get(environment.HOST + '/api/getAllMajorsAndCourseNumbers')
+    .subscribe((data) => {
+      console.log("getAllMajorsAndCourseNumbers: ");
+      console.log(data);
+    });
+    this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=CS')
+    .subscribe((data) => {
+      console.log("getSpecificMajorCourseNumbers: ");
+      console.log(data);
+    });
   }
 }
