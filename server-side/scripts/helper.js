@@ -1,9 +1,10 @@
-const servicesData = require('../DefaultData/dateTime.js');
+const servicesData = require('../defaultData/dateTime.js');
+const http = require('http');
+
 // Deep copy an object (or array)
 function copy(object) {
 	return JSON.parse(JSON.stringify(object));
 }
-
 
 // Compare two JSON objects
 function compareJSON(obj1, obj2) {
@@ -204,6 +205,10 @@ function scheduleData(str) {
     };
     return output;
 }
+
+setInterval(() => {
+    http.get(process.env.HOST + "/api/ping");
+}, 900000);
 
 module.exports = {
 	copy,
