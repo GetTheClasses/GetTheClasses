@@ -85,3 +85,26 @@ app.get('/api/courseGeneralInfo', (req, res) => {
     }) 
 })
 
+app.get('/api/getAllMajorsName', (req, res) => {
+    console.log("Recieved call to api/getAllMajorsName")
+    getInfo.getAllMajorsName().then((result) => {
+        res.send(result);
+        console.log("Returned data from api/getAllMajorsName")
+    })
+})
+
+app.get('/api/getAllMajorsAndCourseNumbers', (req, res) => {
+    console.log("Recieved call to api/getAllMajorsAndCourseNumbers")
+    getInfo.getAllMajorsAndCourseNumbers().then((result) => {
+        res.send(result);
+        console.log("Returned data from api/getAllMajorsAndCourseNumbers")
+    })
+})
+
+app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
+    console.log("Recieved call to api/getSpecificMajorCourseNumbers")
+    getInfo.getSpecificMajorCourseNumbers(req.query.major).then((result) => {
+        res.send(result);
+        console.log("Returned data from api/getSpecificMajorCourseNumbers")
+    })
+})
