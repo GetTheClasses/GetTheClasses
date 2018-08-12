@@ -43,6 +43,10 @@ async function run() {
 									time: eachCourse.classTime
 								})
 						}))
+						db.ref('courseCatalog/sections/' + eachCourse.crn).set({
+							course: major + "|" + courseNumber + "|" + eachCourse.section,
+							time: eachCourse.classTime
+	 					})
 					}
 				})
 			}
