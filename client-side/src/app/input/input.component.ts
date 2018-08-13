@@ -6,6 +6,8 @@ import { TransferDataService } from '../services/transfer-data.service';
 import { FormControl } from '@angular/forms'
 // import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 export interface Course {
 	name: string;
@@ -22,8 +24,9 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-	// sessions = [];
+	// sections = [];
 	defaultCourses = [];
+	coursePosition = new FormControl(this.defaultCourses[0]);
 	subjects: string[] = ['--'];
 	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
 	terms = ['Fall 2018'];
@@ -37,7 +40,7 @@ export class InputComponent {
 	TERM: string = '';
 	SUBJECT: string = '';
 	COURSE: string = '';
-	SESSION: string = '';
+	section: string = '';
 	CRN: string = '';
 	selectedValue: string = '';
 	outputLength: number;
@@ -45,8 +48,10 @@ export class InputComponent {
 	presentData = [];
 	testing = {};
 	saveSubjects = {};
-	sessionsData = [];
+	sectionsData = [];
 	crnsList = [];
+	filteredOptions: Observable<string[]>;
+	testSubject = new FormControl();
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -62,44 +67,6 @@ export class InputComponent {
 	classChoose: string;
 	classSelected: string = '';
 	classClicked: boolean = false;
-
-	// sectionDetails: string[] = ['ACCT 2101 - A'];
-
-	// Filter function for autocomplete search
-	// filterSearch(event) {
-	// 	this.filteredsubject = [];
-	// 	for (let i = 0; i < this.subject.length; i++) {
-	// 		let subjectChoose = this.subject[i];
-	// 		if (subjectChoose.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
-	// 			this.filteredsubject.push(subjectChoose);
-	// 		}
-	// 	}
-	// }
-
-	// Capture the selected subject
-	// captureId($event) {
-	// 	// this.subjectSelected = $event;
-	// 	if ($event != '' && $event != '--') {
-	// 		this.eventClicked = true;
-	// 	} else if ($event == '--') {
-	// 		this.eventClicked = false;
-	// 	}
-	// }
-
-	// filterClassSearch(event) {
-	// 	this.filteredClassDetails = [];
-	// 	for (let i = 0; i < this.classDetails.length; i++) {
-	// 		let classChoose = this.classDetails[i];
-	// 		if (classChoose.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
-	// 			this.filteredClassDetails.push(classChoose);
-	// 		}
-	// 	}
-	// }
-
-	// captureClass($event) {
-	// 	this.classSelected = $event;
-	// 	this.classClicked = true;
-	// }
 
 	cities = [
 		{id: 1, name: ' AE 1355 - MAV', professor: '', time: 'TR|18002045|T|16301720', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
@@ -130,7 +97,14 @@ export class InputComponent {
 			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
 		}
+		console.log(course.sectionVal.split(' - '));
+		const sectionIndex = this.crnsList.indexOf(course.sectionVal.split(' - ')[2]);
+		console.log(sectionIndex);
+		if (sectionIndex >= 0) {
+			this.crnsList.splice(sectionIndex, 1);
+		}
 		this.defaultCourses.sort();
+		this.coursePosition = new FormControl(this.subjects[0]);
 	}
 
 	// LIFE CYCLE
@@ -139,9 +113,22 @@ export class InputComponent {
 	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
 	    .subscribe((data) => {
 	      data.unshift('--')
-	      this.subjects = data;
-	    });
+		  this.subjects = data;
+
+		 	 // Auto complete for Subject
+			this.filteredOptions = this.testSubject.valueChanges
+			.pipe(
+				startWith(''),
+				map(value => this._subjectFilter(value))
+			);
+		});
 	}
+
+	private _subjectFilter(value: string): string[] {
+		const filterValue = value.toLowerCase();
+		console.log(this.subjects);
+		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
+	  }
 
 	// METHODS
 	deleteAll() {
@@ -151,8 +138,9 @@ export class InputComponent {
 		this.defaultCourses.sort();
 		this.criteria = [];
 		this.courses = this.criteria;
-		this.outputLength = 0;
+		// this.outputLength = 0;
 		this.COURSE = '';
+		this.coursePosition = new FormControl(this.subjects[0]);
 	}
 
 	termSelected(term: string) {
@@ -160,8 +148,20 @@ export class InputComponent {
 		this.TERM = term;
 	}
 
+	// Subject Autocomplete data binding
+	keySubjectSelected(event) {
+		console.log(event.target.value);
+		if (event.code == "Enter") {
+			this.subjectSelected(event.target.value);
+		}
+	}
+
+	subjectClicked(event) {
+		this.subjectSelected(event.target.innerText.trim());
+	}
+
 	subjectSelected(subject: string) {
-		// console.log(subject);
+		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
 			this.COURSE = '--';
@@ -179,6 +179,7 @@ export class InputComponent {
 			}
 			else {
 				this.defaultCourses = this.saveSubjects[subject]
+				console.log(this.defaultCourses);
 			}
 		}
 	}
@@ -189,7 +190,7 @@ export class InputComponent {
 			var temp = {
 				major: this.SUBJECT,
 				courseNumber: course,
-				sessionVal: ''
+				sectionVal: ''
 			}
 			var hasCourse = false;
 			this.criteria.forEach((course) => {
@@ -205,10 +206,10 @@ export class InputComponent {
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
 				console.log(data);
-				this.sessionsData = data;
-				for (var ele of data) {
-					this.crnsList.push(this.getListOfCRN(ele));
-				}
+				this.sectionsData = data;
+				// for (var ele of data) {
+				// 	this.crnsList.push(this.getListOfCRN(ele));
+				// }
 				console.log(this.crnsList);
 			})
 			console.log(this.criteria);
@@ -219,15 +220,15 @@ export class InputComponent {
 		return object.crn;
 	}
 
-	sessionSelected(session: any) {
-		console.log(session)
-		this.SESSION = session;
-		this.CRN = session.crn;
-		var data = session.courseName;
+	sectionSelected(section: any) {
+		console.log(section)
+		this.section = section;
+		this.CRN = section.crn;
+		var data = section.courseName;
 		// console.log(this.CRN);
 
-		// If session selected
-		if (this.SESSION != '') {
+		// If section selected
+		if (this.section != '') {
 			var datas = data.split(' ');
 			var subj = datas[0];
 			var number = datas[1];
@@ -237,11 +238,12 @@ export class InputComponent {
 					var temp = {
 						major: subj,
 						courseNumber: number,
-						sessionVal: ' - ' + this.CRN
+						sectionVal: ' - ' + section.section + ' - ' + this.CRN
 					}
 					this.courses.push(temp);
-					this.crnsList = [];
-					this.crnsList.push(this.CRN);
+					if (!this.crnsList.includes(this.CRN)) {
+						this.crnsList.push(this.CRN);
+					}
 				}
 			}
 			// console.log(this.crnsList);
@@ -255,7 +257,7 @@ export class InputComponent {
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
-			crnList: this.crnsList,
+			crnList: this.crnsList
 		})
 		.subscribe((data) => {
 			console.log(data);

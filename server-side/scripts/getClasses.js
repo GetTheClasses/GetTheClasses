@@ -135,7 +135,7 @@ async function main(course, freeTime = defaultFreeTime, requiredCrn = []) {
         else
             index += 1;
     }
-    // console.log(combinations)
+    console.log(combinations)
     return combinations;
 }
 
