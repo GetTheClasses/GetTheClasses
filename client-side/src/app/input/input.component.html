@@ -1,5 +1,4 @@
 <mat-card>
-    <button (click)="sample()">Sample Log</button>
     <div class="form-row">
         <div class="col containner">
             <mat-form-field appearance="outline">
@@ -40,10 +39,10 @@
     <div *ngIf="COURSE != '' && COURSE != '--'" class="form-row">
         <div class="col containner">
             <mat-form-field appearance="outline">
-                <mat-label>Sessions (Optional)</mat-label>
-                <mat-select placeholder="Select Session" (selectionChange)="sessionSelected($event.value)">
-                    <mat-option *ngFor="let session of sessionsData" [value]="session">
-                        {{'Section: ' + session.section + ' - ' + 'CRN: ' + session.crn}}
+                <mat-label>sections (Optional)</mat-label>
+                <mat-select placeholder="Select section" (selectionChange)="sectionSelected($event.value)">
+                    <mat-option *ngFor="let section of sectionsData" [value]="section">
+                        {{'Section: ' + section.section + ' - ' + 'CRN: ' + section.crn}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -57,7 +56,7 @@
                 <mat-chip-list #chipList>
                     <mat-chip *ngFor="let course of courses" [selectable]="selectable"
                             [removable]="removable" (removed)="remove(course)" selected [color]="primary" >
-                    {{course.major + ' - ' + course.courseNumber + course.sessionVal}}
+                    {{course.major + ' ' + course.courseNumber + course.sectionVal}}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                     </mat-chip>
                 </mat-chip-list>

@@ -48,110 +48,114 @@ export class CalendarComponent implements OnInit {
 				start: "08:00",
 				end: "21:00"
 			},
-		dayClick: (date, jsEvent, view) => {
-		  if ($(jsEvent.target).hasClass('fc-day')) {
-			var freeTime = this.transferDataService.getFreeTime();
-			if (freeTime == undefined || freeTime[this.dictTime[date.day()]] == []
-			  || freeTime[this.dictTime[date.day()]].toString() != [[800, 2100]].toString()) {
-			  for (var e of $('#calendar').fullCalendar('clientEvents')) {
-					if (e.start.day() == date.day()) {
-						$('#calendar').fullCalendar('removeEvents', e._id);
-					}
-			  }
+			eventConstraint: {
+				start: "08:00",
+				end: "21:00"
+			},
+			dayClick: (date, jsEvent, view) => {
+			  if ($(jsEvent.target).hasClass('fc-day')) {
+				var freeTime = this.transferDataService.getFreeTime();
+				if (freeTime == undefined || freeTime[this.dictTime[date.day()]] == []
+				  || freeTime[this.dictTime[date.day()]].toString() != [[800, 2100]].toString()) {
+				  for (var e of $('#calendar').fullCalendar('clientEvents')) {
+						if (e.start.day() == date.day()) {
+							$('#calendar').fullCalendar('removeEvents', e._id);
+						}
+				  }
 
-			  var start = moment("08:00", "hh:mm");
-				start.day(date.day());
-				// console.log(start);
-			  var end = moment("21:00", "hh:mm");
-				end.day(date.day());
+				  var start = moment("08:00", "hh:mm");
+					start.day(date.day());
+					// console.log(start);
+				  var end = moment("21:00", "hh:mm");
+					end.day(date.day());
 
-			  $('#calendar').fullCalendar('renderEvent', {
-				start: start,
-				end: end
-			  })
-			}
-			else {
-			  for (var e of $('#calendar').fullCalendar('clientEvents')) {
-					if (e.start.day() == date.day()) {
-						$('#calendar').fullCalendar('removeEvents', e._id);
-						var events = $('#calendar').fullCalendar('clientEvents');
-						var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
-						this.transferDataService.setFreeTime(freeTimeDict);
-					}
+				  $('#calendar').fullCalendar('renderEvent', {
+					start: start,
+					end: end
+				  })
+				}
+				else {
+				  for (var e of $('#calendar').fullCalendar('clientEvents')) {
+						if (e.start.day() == date.day()) {
+							$('#calendar').fullCalendar('removeEvents', e._id);
+							var events = $('#calendar').fullCalendar('clientEvents');
+							var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+							this.transferDataService.setFreeTime(freeTimeDict);
+						}
+				  }
+				}
 			  }
-			}
-		  }
-		},
-		select: (start, end) => {
-			if (!this.calendarHelperService.isValidTime(start, end)) {
-				end = start.clone().add(45, 'm');
-				for (var e of $('#calendar').fullCalendar('clientEvents')) {
-					if (start < e.start && end > e.start ) {
-						$('#calendar').fullCalendar('unselect');
-						alert("Not enough space");
-						return;
+			},
+			select: (start, end) => {
+				if (!this.calendarHelperService.isValidTime(start, end)) {
+					end = start.clone().add(45, 'm');
+					for (var e of $('#calendar').fullCalendar('clientEvents')) {
+						if (start < e.start && end > e.start ) {
+							$('#calendar').fullCalendar('unselect');
+							alert("Not enough space");
+							return;
+						}
 					}
 				}
-			}
-			$('#calendar').fullCalendar('unselect');
-			$("#calendar").fullCalendar('addEventSource', [{
-				start: start,
-				end: end,
-				block: true
-			}]);
-		},
-		selectOverlap: function(event) {
-			return ! event.block;
-		},
-		eventRender: (event, element, view) => {
-			if (view.name == 'listDay') {
-				element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
-			}
-			else {
-				element.find(".fc-content").prepend("<button class='closeon'>X</button>")
-			}
-			element.find(".closeon").on('click', () => {
-				$('#calendar').fullCalendar('removeEvents',event._id);
+				$('#calendar').fullCalendar('unselect');
+				$("#calendar").fullCalendar('addEventSource', [{
+					start: start,
+					end: end,
+					block: true
+				}]);
+			},
+			selectOverlap: function(event) {
+				return ! event.block;
+			},
+			eventRender: (event, element, view) => {
+				if (view.name == 'listDay') {
+					element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
+				}
+				else {
+					element.find(".fc-content").prepend("<button class='closeon'>X</button>")
+				}
+				element.find(".closeon").on('click', () => {
+					$('#calendar').fullCalendar('removeEvents',event._id);
+					var events = $('#calendar').fullCalendar('clientEvents');
+					var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+					this.transferDataService.setFreeTime(freeTimeDict);
+				});
 				var events = $('#calendar').fullCalendar('clientEvents');
 				var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
 				this.transferDataService.setFreeTime(freeTimeDict);
-			});
-			var events = $('#calendar').fullCalendar('clientEvents');
-			var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
-			this.transferDataService.setFreeTime(freeTimeDict);
-		},
-		viewRender: (view, element) => {
-			if (view.name == 'agendaWeek') {
-				for (var i = 0; i < 6; i++) {
-					var date = '';
-					switch (i) {
-						case 0:
-							date = '.fc-mon';
-							break
-						case 1:
-							date = '.fc-tue';
-							break
-						case 2:
-							date = '.fc-wed';
-							break
-						case 3:
-							date = '.fc-thu';
-							break
-						case 4:
-							date = '.fc-fri';
-							break
-						case 5:
-							date ='.fc-sat';
-							break
+			},
+			viewRender: (view, element) => {
+				if (view.name == 'agendaWeek') {
+					for (var i = 0; i < 6; i++) {
+						var date = '';
+						switch (i) {
+							case 0:
+								date = '.fc-mon';
+								break
+							case 1:
+								date = '.fc-tue';
+								break
+							case 2:
+								date = '.fc-wed';
+								break
+							case 3:
+								date = '.fc-thu';
+								break
+							case 4:
+								date = '.fc-fri';
+								break
+							case 5:
+								date ='.fc-sat';
+								break
+						}
+						$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
 					}
-					$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
 				}
+				element.find(".timeRangeStyle").on('click', ($event) => {
+					this.selectTimeFrame($event);
+				})
 			}
-			element.find(".timeRangeStyle").on('click', ($event) => {
-				this.selectTimeFrame($event);
-			})
-		}
-	});
+		});
 	}
 
   ngOnInit() {

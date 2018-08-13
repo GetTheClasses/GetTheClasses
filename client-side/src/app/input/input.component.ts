@@ -24,7 +24,7 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-	// sessions = [];
+	// sections = [];
 	defaultCourses = [];
 	coursePosition = new FormControl(this.defaultCourses[0]);
 	subjects: string[] = ['--'];
@@ -40,7 +40,7 @@ export class InputComponent {
 	TERM: string = '';
 	SUBJECT: string = '';
 	COURSE: string = '';
-	SESSION: string = '';
+	section: string = '';
 	CRN: string = '';
 	selectedValue: string = '';
 	outputLength: number;
@@ -48,7 +48,7 @@ export class InputComponent {
 	presentData = [];
 	testing = {};
 	saveSubjects = {};
-	sessionsData = [];
+	sectionsData = [];
 	crnsList = [];
 	filteredOptions: Observable<string[]>;
 	testSubject = new FormControl();
@@ -96,6 +96,12 @@ export class InputComponent {
 		if (index >= 0) {
 			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
+		}
+		console.log(course.sectionVal.split(' - '));
+		const sectionIndex = this.crnsList.indexOf(course.sectionVal.split(' - ')[2]);
+		console.log(sectionIndex);
+		if (sectionIndex >= 0) {
+			this.crnsList.splice(sectionIndex, 1);
 		}
 		this.defaultCourses.sort();
 		this.coursePosition = new FormControl(this.subjects[0]);
@@ -184,7 +190,7 @@ export class InputComponent {
 			var temp = {
 				major: this.SUBJECT,
 				courseNumber: course,
-				sessionVal: ''
+				sectionVal: ''
 			}
 			var hasCourse = false;
 			this.criteria.forEach((course) => {
@@ -200,10 +206,10 @@ export class InputComponent {
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
 				console.log(data);
-				this.sessionsData = data;
-				for (var ele of data) {
-					this.crnsList.push(this.getListOfCRN(ele));
-				}
+				this.sectionsData = data;
+				// for (var ele of data) {
+				// 	this.crnsList.push(this.getListOfCRN(ele));
+				// }
 				console.log(this.crnsList);
 			})
 			console.log(this.criteria);
@@ -214,14 +220,15 @@ export class InputComponent {
 		return object.crn;
 	}
 
-	sessionSelected(session: any) {
-		this.SESSION = session;
-		this.CRN = session.crn;
-		var data = session.courseName;
-		console.log(this.CRN);
+	sectionSelected(section: any) {
+		console.log(section)
+		this.section = section;
+		this.CRN = section.crn;
+		var data = section.courseName;
+		// console.log(this.CRN);
 
-		// If session selected
-		if (this.SESSION != '') {
+		// If section selected
+		if (this.section != '') {
 			var datas = data.split(' ');
 			var subj = datas[0];
 			var number = datas[1];
@@ -231,15 +238,16 @@ export class InputComponent {
 					var temp = {
 						major: subj,
 						courseNumber: number,
-						sessionVal: ' - ' + this.CRN
+						sectionVal: ' - ' + section.section + ' - ' + this.CRN
 					}
 					this.courses.push(temp);
-					this.crnsList = [];
-					this.crnsList.push(this.CRN);
+					if (!this.crnsList.includes(this.CRN)) {
+						this.crnsList.push(this.CRN);
+					}
 				}
 			}
-			console.log(this.crnsList);
-			console.log(this.criteria);
+			// console.log(this.crnsList);
+			// console.log(this.criteria);
 		}
 	}
 
@@ -249,7 +257,7 @@ export class InputComponent {
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
-			crnList: this.crnsList,
+			crnList: this.crnsList
 		})
 		.subscribe((data) => {
 			console.log(data);
