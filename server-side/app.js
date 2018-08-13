@@ -23,7 +23,7 @@ app.route('/api/course').post((req, res) => {
     if (req.body.freeTime == undefined)
         req.body.freeTime = null;
 
-    main(req.body.criteria, req.body.freeTime).then((data) => {
+    main(req.body.criteria, req.body.freeTime, req.body.crnList).then((data) => {
         if (data.length > 0 && data[0].length == 0)
             data.splice(0,1);
         if (data.length > 0 && data[0].length > 0) {
@@ -108,11 +108,3 @@ app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
         console.log("Returned data from api/getSpecificMajorCourseNumbers")
     });
 });
-
-// app.get('/api/getAllClassesInCourse', (req, res) => {
-//     console.log("Recieved call to api/getAllClassesInCourse")
-//     getInfo.getAllClassesInCourse(req.query.major, req.query.courseNumber).then((result) => {
-//         res.send(result);
-//         console.log("Returned data from api/getAllClassesInCourse")
-//     })
-// })

@@ -4,7 +4,7 @@
         <div class="col containner">
             <mat-form-field appearance="outline">
                 <mat-label>Select Terms</mat-label>
-                <mat-select placeholder="Select Subject" [formControl]='position' (selectionChange)="termSelected($event.value)">
+                <mat-select placeholder="Select Term" [formControl]='position' (selectionChange)="termSelected($event.value)">
                     <mat-option *ngFor="let term of terms" [value]="term">
                     {{term}}
                     </mat-option>
@@ -40,10 +40,10 @@
     <div *ngIf="COURSE != '' && COURSE != '--'" class="form-row">
         <div class="col containner">
             <mat-form-field appearance="outline">
-                <mat-label>Sessions</mat-label>
+                <mat-label>Sessions (Optional)</mat-label>
                 <mat-select placeholder="Select Session" (selectionChange)="sessionSelected($event.value)">
-                    <mat-option *ngFor="let session of sessions" [value]="session">
-                        {{session}}
+                    <mat-option *ngFor="let session of sessionsData" [value]="session">
+                        {{'Section: ' + session.section + ' - ' + 'CRN: ' + session.crn}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -53,11 +53,26 @@
     <div class="form-row">
         <div class="col">
             <mat-form-field *ngIf="criteria.length > 0" class="chip-list">
-                <mat-label>Courses</mat-label>
+                <mat-label>Courses Selected</mat-label>
                 <mat-chip-list #chipList>
                     <mat-chip *ngFor="let course of courses" [selectable]="selectable"
                             [removable]="removable" (removed)="remove(course)">
-                    {{course.major + ' - ' + course.courseNumber}}
+                    {{course.major + ' ' + course.courseNumber}}
+                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col">
+            <mat-form-field *ngIf="criteria.length > 0" class="chip-list">
+                <mat-label>Sessions Selected</mat-label>
+                <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let course of courses" [selectable]="selectable"
+                            [removable]="removable" (removed)="remove(course)">
+                    {{course.major + ' - ' + course.courseNumber + course.sessionVal}}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                     </mat-chip>
                 </mat-chip-list>
@@ -125,5 +140,4 @@
             <p> Thinh nguyen</p>
         </div>
     </div>
-
 </mat-card>

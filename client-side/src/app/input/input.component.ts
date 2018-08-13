@@ -22,7 +22,7 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-	sessions = [];
+	// sessions = [];
 	defaultCourses = [];
 	subjects: string[] = ['--'];
 	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
@@ -38,12 +38,15 @@ export class InputComponent {
 	SUBJECT: string = '';
 	COURSE: string = '';
 	SESSION: string = '';
+	CRN: string = '';
 	selectedValue: string = '';
 	outputLength: number;
 	viewDetails: boolean = false;
 	presentData = [];
 	testing = {};
 	saveSubjects = {};
+	sessionsData = [];
+	crnsList = [];
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -124,19 +127,11 @@ export class InputComponent {
 	remove(course: Criteria): void {
 		const index = this.courses.indexOf(course);
 		if (index >= 0) {
-			this.defaultCourses.push(course.courseNumber);
+			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
 		}
 		this.defaultCourses.sort();
 	}
-
-	// HTTP GETs
-	// One for fetching terms
-
-	// One for fetching Subject list of the terms
-
-	// One for fetching course list base on subject of the term
-
 
 	// LIFE CYCLE
 	ngOnInit() {
@@ -157,6 +152,7 @@ export class InputComponent {
 		this.criteria = [];
 		this.courses = this.criteria;
 		this.outputLength = 0;
+		this.COURSE = '';
 	}
 
 	termSelected(term: string) {
@@ -192,7 +188,8 @@ export class InputComponent {
 		if (course != '' && course != '--') {
 			var temp = {
 				major: this.SUBJECT,
-				courseNumber: course
+				courseNumber: course,
+				sessionVal: ''
 			}
 			var hasCourse = false;
 			this.criteria.forEach((course) => {
@@ -204,27 +201,52 @@ export class InputComponent {
 			if (!hasCourse) {
 				this.criteria.push(temp);
 			}
-			this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?'
-				+ 'major=' + this.SUBJECT + '&courseNumber=' + this.COURSE)
+			console.log(this.criteria);
+			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
-				this.sessions = []
-				data.forEach((val) => {
-					this.sessions.push(val.section)
-				})
+				console.log(data);
+				this.sessionsData = data;
+				for (var ele of data) {
+					this.crnsList.push(this.getListOfCRN(ele));
+				}
+				console.log(this.crnsList);
 			})
-			// var eleIndx = this.defaultCourses.indexOf(course);
-			// this.defaultCourses.splice(eleIndx, 1);
-			// this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
-			// 	+ 'major=' + this.SUBJECT + '&courseNumber=' + course)
-			// .subscribe((data) => {
-			// 	console.log(data);
-			// })
+			console.log(this.criteria);
 		}
-		
 	}
 
-	sessionSelected(session: string) {
-		console.log(session);
+	getListOfCRN(object) {
+		return object.crn;
+	}
+
+	sessionSelected(session: any) {
+		console.log(session)
+		this.SESSION = session;
+		this.CRN = session.crn;
+		var data = session.courseName;
+		// console.log(this.CRN);
+
+		// If session selected
+		if (this.SESSION != '') {
+			var datas = data.split(' ');
+			var subj = datas[0];
+			var number = datas[1];
+			for (var i = 0; i < this.courses.length; i++) {
+				if (this.courses[i].major == subj && this.courses[i].courseNumber == number) {
+					this.courses.splice(i, 1);
+					var temp = {
+						major: subj,
+						courseNumber: number,
+						sessionVal: ' - ' + this.CRN
+					}
+					this.courses.push(temp);
+					this.crnsList = [];
+					this.crnsList.push(this.CRN);
+				}
+			}
+			// console.log(this.crnsList);
+			// console.log(this.criteria);
+		}
 	}
 
 	getClasses() {
@@ -232,7 +254,8 @@ export class InputComponent {
 		console.log(this.criteria);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
-			freeTime: this.timeSchedule
+			freeTime: this.timeSchedule,
+			crnList: this.crnsList,
 		})
 		.subscribe((data) => {
 			console.log(data);
