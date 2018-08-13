@@ -204,7 +204,7 @@ export class InputComponent {
 			if (!hasCourse) {
 				this.criteria.push(temp);
 			}
-			this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
+			this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?'
 				+ 'major=' + this.SUBJECT + '&courseNumber=' + this.COURSE)
 			.subscribe((data) => {
 				this.sessions = []

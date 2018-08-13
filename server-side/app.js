@@ -16,7 +16,7 @@ app.listen(process.env.PORT || 8000, () => {
 app.get('/api/ping', (req, res) => {
     console.log('PING PING PING!!!');
     res.send("Awake");
-})
+});
 
 app.route('/api/course').post((req, res) => {
     console.log("Recieved call to api/course")
@@ -47,8 +47,8 @@ app.get('/api/classDetailInfo', (req, res) => {
     getInfo.getClassDetailWithCrn(req.query.crn).then((result) => {
         res.send(result);
         console.log("Returned data from api/classDetailInfo")
-    })
-})
+    });
+});
 
 app.get('/api/classGeneralInfo', (req, res) => {
     console.log("Recieved call to api/classGeneralInfo")
@@ -60,8 +60,8 @@ app.get('/api/classGeneralInfo', (req, res) => {
     .then((result) => {
         res.send(result);
         console.log("Returned data from api/classGeneralInfo")
-    })
-})
+    });
+});
 
 app.get('/api/courseDetailInfo', (req, res) => {
     console.log("Recieved call to api/courseDetailInfo")
@@ -71,8 +71,8 @@ app.get('/api/courseDetailInfo', (req, res) => {
     getInfo.getCourseDetail(major, courseNumber).then((data) => {
         res.send(data);
         console.log("Returned data from api/courseDetailInfo")
-    }) 
-})
+    }); 
+});
 
 app.get('/api/courseGeneralInfo', (req, res) => {
     console.log("Recieved call to api/courseGeneralInfo")
@@ -82,37 +82,37 @@ app.get('/api/courseGeneralInfo', (req, res) => {
     getInfo.getCourseGeneral(major, courseNumber).then((data) => {
         res.send(data);
         console.log("Returned data from api/courseGeneralInfo")
-    }) 
-})
+    }); 
+});
 
 app.get('/api/getAllMajorsName', (req, res) => {
     console.log("Recieved call to api/getAllMajorsName")
     getInfo.getAllMajorsName().then((result) => {
         res.send(result);
         console.log("Returned data from api/getAllMajorsName")
-    })
-})
+    });
+});
 
 app.get('/api/getAllMajorsAndCourseNumbers', (req, res) => {
     console.log("Recieved call to api/getAllMajorsAndCourseNumbers")
     getInfo.getAllMajorsAndCourseNumbers().then((result) => {
         res.send(result);
         console.log("Returned data from api/getAllMajorsAndCourseNumbers")
-    })
-})
+    });
+});
 
 app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
     console.log("Recieved call to api/getSpecificMajorCourseNumbers")
     getInfo.getSpecificMajorCourseNumbers(req.query.major).then((result) => {
         res.send(result);
         console.log("Returned data from api/getSpecificMajorCourseNumbers")
-    })
-})
+    });
+});
 
-app.get('/api/getAllClassesInCourse', (req, res) => {
-    console.log("Recieved call to api/getAllClassesInCourse")
-    getInfo.getAllClassesInCourse(req.query.major, req.query.courseNumber).then((result) => {
-        res.send(result);
-        console.log("Returned data from api/getAllClassesInCourse")
-    })
-})
+// app.get('/api/getAllClassesInCourse', (req, res) => {
+//     console.log("Recieved call to api/getAllClassesInCourse")
+//     getInfo.getAllClassesInCourse(req.query.major, req.query.courseNumber).then((result) => {
+//         res.send(result);
+//         console.log("Returned data from api/getAllClassesInCourse")
+//     })
+// })
