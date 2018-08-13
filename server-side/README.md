@@ -13,3 +13,5 @@ Run setting for the database:
 ```
 npm run db
 ```
+
+## List of API call:
