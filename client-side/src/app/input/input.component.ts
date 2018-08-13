@@ -6,6 +6,8 @@ import { TransferDataService } from '../services/transfer-data.service';
 import { FormControl } from '@angular/forms'
 // import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 export interface Course {
 	name: string;
@@ -24,6 +26,7 @@ export class InputComponent {
 
 	// sessions = [];
 	defaultCourses = [];
+	coursePosition = new FormControl(this.defaultCourses[0]);
 	subjects: string[] = ['--'];
 	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
 	terms = ['Fall 2018'];
@@ -47,6 +50,8 @@ export class InputComponent {
 	saveSubjects = {};
 	sessionsData = [];
 	crnsList = [];
+	filteredOptions: Observable<string[]>;
+	testSubject = new FormControl();
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -62,44 +67,6 @@ export class InputComponent {
 	classChoose: string;
 	classSelected: string = '';
 	classClicked: boolean = false;
-
-	// sectionDetails: string[] = ['ACCT 2101 - A'];
-
-	// Filter function for autocomplete search
-	// filterSearch(event) {
-	// 	this.filteredsubject = [];
-	// 	for (let i = 0; i < this.subject.length; i++) {
-	// 		let subjectChoose = this.subject[i];
-	// 		if (subjectChoose.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
-	// 			this.filteredsubject.push(subjectChoose);
-	// 		}
-	// 	}
-	// }
-
-	// Capture the selected subject
-	// captureId($event) {
-	// 	// this.subjectSelected = $event;
-	// 	if ($event != '' && $event != '--') {
-	// 		this.eventClicked = true;
-	// 	} else if ($event == '--') {
-	// 		this.eventClicked = false;
-	// 	}
-	// }
-
-	// filterClassSearch(event) {
-	// 	this.filteredClassDetails = [];
-	// 	for (let i = 0; i < this.classDetails.length; i++) {
-	// 		let classChoose = this.classDetails[i];
-	// 		if (classChoose.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
-	// 			this.filteredClassDetails.push(classChoose);
-	// 		}
-	// 	}
-	// }
-
-	// captureClass($event) {
-	// 	this.classSelected = $event;
-	// 	this.classClicked = true;
-	// }
 
 	cities = [
 		{id: 1, name: ' AE 1355 - MAV', professor: '', time: 'TR|18002045|T|16301720', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
@@ -131,6 +98,7 @@ export class InputComponent {
 			this.courses.splice(index, 1);
 		}
 		this.defaultCourses.sort();
+		this.coursePosition = new FormControl(this.subjects[0]);
 	}
 
 	// LIFE CYCLE
@@ -139,9 +107,22 @@ export class InputComponent {
 	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
 	    .subscribe((data) => {
 	      data.unshift('--')
-	      this.subjects = data;
-	    });
+		  this.subjects = data;
+
+		 	 // Auto complete for Subject
+			this.filteredOptions = this.testSubject.valueChanges
+			.pipe(
+				startWith(''),
+				map(value => this._subjectFilter(value))
+			);
+		});
 	}
+
+	private _subjectFilter(value: string): string[] {
+		const filterValue = value.toLowerCase();
+		console.log(this.subjects);
+		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
+	  }
 
 	// METHODS
 	deleteAll() {
@@ -151,8 +132,9 @@ export class InputComponent {
 		this.defaultCourses.sort();
 		this.criteria = [];
 		this.courses = this.criteria;
-		this.outputLength = 0;
+		// this.outputLength = 0;
 		this.COURSE = '';
+		this.coursePosition = new FormControl(this.subjects[0]);
 	}
 
 	termSelected(term: string) {
@@ -160,8 +142,20 @@ export class InputComponent {
 		this.TERM = term;
 	}
 
+	// Subject Autocomplete data binding
+	keySubjectSelected(event) {
+		console.log(event.target.value);
+		if (event.code == "Enter") {
+			this.subjectSelected(event.target.value);
+		}
+	}
+
+	subjectClicked(event) {
+		this.subjectSelected(event.target.innerText.trim());
+	}
+
 	subjectSelected(subject: string) {
-		// console.log(subject);
+		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
 			this.COURSE = '--';
@@ -179,6 +173,7 @@ export class InputComponent {
 			}
 			else {
 				this.defaultCourses = this.saveSubjects[subject]
+				console.log(this.defaultCourses);
 			}
 		}
 	}

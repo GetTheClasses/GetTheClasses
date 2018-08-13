@@ -25,6 +25,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule, MatFormFieldModule } from '@angular/material';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 
 
@@ -60,7 +61,8 @@ import { MatBadgeModule } from '@angular/material/badge';
     ReactiveFormsModule,
     MatInputModule,
     MatStepperModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]
