@@ -18,7 +18,7 @@ npm run db
 __NOTE__: If your 
 
 ## List of API call: ##
-<u>POST</u> _/api/ping_: pings heroku server to keep alive (send dummy request).
+<ins>POST</ins> _/api/ping_: pings heroku server to keep alive (send dummy request).
 
 <u>GET _/api/course_:</u> Run algorithm to get the classes' combinations in the desired time.
 
