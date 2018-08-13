@@ -18,11 +18,11 @@ npm run db
 __NOTE__: If your 
 
 ## List of API call: ##
-<ins>POST</ins> _/api/ping_: pings heroku server to keep alive (send dummy request).
+<ins>POST _/api/ping_:<ins> pings heroku server to keep alive (send dummy request).
 
 <u>GET _/api/course_:</u> Run algorithm to get the classes' combinations in the desired time.
 
-**GET _/api/classDetailInfo_:** Get class detail information using **crn**.
+<ins>GET _/api/classDetailInfo_:<ins> Get class detail information using **crn**.
 
 **GET _/api/classGeneralInfo_:** Get class general information using **major**, **courseNumber**, and **crn** (yes I know it does not make sense but... it works).
 
