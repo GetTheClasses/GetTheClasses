@@ -22,12 +22,16 @@ __NOTE__: If your
 
 **GET _/api/course_:** Run algorithm to get the classes' combinations in the desired time.
 
-**GET _/api/classDetailInfo_:** Get class detail information using crn.
+**GET _/api/classDetailInfo_:** Get class detail information using **crn**.
 
-**GET _/api/classGeneralInfo_:** Get class general information using major, course number, and CRN (yes I know it does not make sense but... it works).
+**GET _/api/classGeneralInfo_:** Get class general information using **major**, **courseNumber**, and **crn** (yes I know it does not make sense but... it works).
 
-**GET _/api/courseDetailInfo_:** Get course general information using major and course number
-****
-****
-****
-****
+**GET _/api/courseDetailInfo_:** Get all sections detail information using **major** and **courseNumber**.
+
+**GET _/api/courseGeneralInfo_:** Get all sections general information using **major** and **courseNumber**.
+
+**GET _/api/getAllMajorsName_:** Get all majors' name (82 of them).
+
+**GET _/api/getAllMajorsAndCourseNumbers_:** Get all availabe majors offer at Tech along with their course numbers.
+
+**GET _/api/getSpecificMajorCourseNumbers_:** Get all course number of a major at Tech using **major**.
