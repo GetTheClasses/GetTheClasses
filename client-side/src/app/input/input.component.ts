@@ -6,6 +6,8 @@ import { TransferDataService } from '../services/transfer-data.service';
 import { FormControl } from '@angular/forms'
 // import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 export interface Course {
 	name: string;
@@ -22,8 +24,9 @@ export interface Course {
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
-	sessions = [];
+	// sessions = [];
 	defaultCourses = [];
+	coursePosition = new FormControl(this.defaultCourses[0]);
 	subjects: string[] = ['--'];
 	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
 	terms = ['Fall 2018'];
@@ -38,12 +41,17 @@ export class InputComponent {
 	SUBJECT: string = '';
 	COURSE: string = '';
 	SESSION: string = '';
+	CRN: string = '';
 	selectedValue: string = '';
 	outputLength: number;
 	viewDetails: boolean = false;
 	presentData = [];
 	testing = {};
 	saveSubjects = {};
+	sessionsData = [];
+	crnsList = [];
+	filteredOptions: Observable<string[]>;
+	testSubject = new FormControl();
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -59,44 +67,6 @@ export class InputComponent {
 	classChoose: string;
 	classSelected: string = '';
 	classClicked: boolean = false;
-
-	// sectionDetails: string[] = ['ACCT 2101 - A'];
-
-	// Filter function for autocomplete search
-	// filterSearch(event) {
-	// 	this.filteredsubject = [];
-	// 	for (let i = 0; i < this.subject.length; i++) {
-	// 		let subjectChoose = this.subject[i];
-	// 		if (subjectChoose.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
-	// 			this.filteredsubject.push(subjectChoose);
-	// 		}
-	// 	}
-	// }
-
-	// Capture the selected subject
-	// captureId($event) {
-	// 	// this.subjectSelected = $event;
-	// 	if ($event != '' && $event != '--') {
-	// 		this.eventClicked = true;
-	// 	} else if ($event == '--') {
-	// 		this.eventClicked = false;
-	// 	}
-	// }
-
-	// filterClassSearch(event) {
-	// 	this.filteredClassDetails = [];
-	// 	for (let i = 0; i < this.classDetails.length; i++) {
-	// 		let classChoose = this.classDetails[i];
-	// 		if (classChoose.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
-	// 			this.filteredClassDetails.push(classChoose);
-	// 		}
-	// 	}
-	// }
-
-	// captureClass($event) {
-	// 	this.classSelected = $event;
-	// 	this.classClicked = true;
-	// }
 
 	cities = [
 		{id: 1, name: ' AE 1355 - MAV', professor: '', time: 'TR|18002045|T|16301720', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
@@ -124,19 +94,12 @@ export class InputComponent {
 	remove(course: Criteria): void {
 		const index = this.courses.indexOf(course);
 		if (index >= 0) {
-			this.defaultCourses.push(course.courseNumber);
+			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
 		}
 		this.defaultCourses.sort();
+		this.coursePosition = new FormControl(this.subjects[0]);
 	}
-
-	// HTTP GETs
-	// One for fetching terms
-
-	// One for fetching Subject list of the terms
-
-	// One for fetching course list base on subject of the term
-
 
 	// LIFE CYCLE
 	ngOnInit() {
@@ -144,9 +107,22 @@ export class InputComponent {
 	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
 	    .subscribe((data) => {
 	      data.unshift('--')
-	      this.subjects = data;
-	    });
+		  this.subjects = data;
+
+		 	 // Auto complete for Subject
+			this.filteredOptions = this.testSubject.valueChanges
+			.pipe(
+				startWith(''),
+				map(value => this._subjectFilter(value))
+			);
+		});
 	}
+
+	private _subjectFilter(value: string): string[] {
+		const filterValue = value.toLowerCase();
+		console.log(this.subjects);
+		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
+	  }
 
 	// METHODS
 	deleteAll() {
@@ -156,7 +132,9 @@ export class InputComponent {
 		this.defaultCourses.sort();
 		this.criteria = [];
 		this.courses = this.criteria;
-		this.outputLength = 0;
+		// this.outputLength = 0;
+		this.COURSE = '';
+		this.coursePosition = new FormControl(this.subjects[0]);
 	}
 
 	termSelected(term: string) {
@@ -164,8 +142,20 @@ export class InputComponent {
 		this.TERM = term;
 	}
 
+	// Subject Autocomplete data binding
+	keySubjectSelected(event) {
+		console.log(event.target.value);
+		if (event.code == "Enter") {
+			this.subjectSelected(event.target.value);
+		}
+	}
+
+	subjectClicked(event) {
+		this.subjectSelected(event.target.innerText.trim());
+	}
+
 	subjectSelected(subject: string) {
-		// console.log(subject);
+		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
 			this.COURSE = '--';
@@ -183,6 +173,7 @@ export class InputComponent {
 			}
 			else {
 				this.defaultCourses = this.saveSubjects[subject]
+				console.log(this.defaultCourses);
 			}
 		}
 	}
@@ -192,7 +183,8 @@ export class InputComponent {
 		if (course != '' && course != '--') {
 			var temp = {
 				major: this.SUBJECT,
-				courseNumber: course
+				courseNumber: course,
+				sessionVal: ''
 			}
 			var hasCourse = false;
 			this.criteria.forEach((course) => {
@@ -204,27 +196,51 @@ export class InputComponent {
 			if (!hasCourse) {
 				this.criteria.push(temp);
 			}
-			this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
-				+ 'major=' + this.SUBJECT + '&courseNumber=' + this.COURSE)
+			console.log(this.criteria);
+			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
-				this.sessions = []
-				data.forEach((val) => {
-					this.sessions.push(val.section)
-				})
+				console.log(data);
+				this.sessionsData = data;
+				for (var ele of data) {
+					this.crnsList.push(this.getListOfCRN(ele));
+				}
+				console.log(this.crnsList);
 			})
-			// var eleIndx = this.defaultCourses.indexOf(course);
-			// this.defaultCourses.splice(eleIndx, 1);
-			// this.methodHelper.get(environment.HOST + '/api/getAllClassesInCourse/?'
-			// 	+ 'major=' + this.SUBJECT + '&courseNumber=' + course)
-			// .subscribe((data) => {
-			// 	console.log(data);
-			// })
+			console.log(this.criteria);
 		}
-		
 	}
 
-	sessionSelected(session: string) {
-		console.log(session);
+	getListOfCRN(object) {
+		return object.crn;
+	}
+
+	sessionSelected(session: any) {
+		this.SESSION = session;
+		this.CRN = session.crn;
+		var data = session.courseName;
+		console.log(this.CRN);
+
+		// If session selected
+		if (this.SESSION != '') {
+			var datas = data.split(' ');
+			var subj = datas[0];
+			var number = datas[1];
+			for (var i = 0; i < this.courses.length; i++) {
+				if (this.courses[i].major == subj && this.courses[i].courseNumber == number) {
+					this.courses.splice(i, 1);
+					var temp = {
+						major: subj,
+						courseNumber: number,
+						sessionVal: ' - ' + this.CRN
+					}
+					this.courses.push(temp);
+					this.crnsList = [];
+					this.crnsList.push(this.CRN);
+				}
+			}
+			console.log(this.crnsList);
+			console.log(this.criteria);
+		}
 	}
 
 	getClasses() {
@@ -232,7 +248,8 @@ export class InputComponent {
 		console.log(this.criteria);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
-			freeTime: this.timeSchedule
+			freeTime: this.timeSchedule,
+			crnList: this.crnsList,
 		})
 		.subscribe((data) => {
 			console.log(data);

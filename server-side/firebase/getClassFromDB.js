@@ -6,7 +6,7 @@ async function getClassDetailWithCrnFromDB(crn) {
         	var key = Object.keys(eachClass.val())[0];
             resolve(eachClass.val()[key]);
         });
-	})	
+	})
 }
 
 async function getClassGeneralWithCrnFromDB(major, courseNumber, crn) {
@@ -18,7 +18,7 @@ async function getClassGeneralWithCrnFromDB(major, courseNumber, crn) {
         	var key = Object.keys(eachClass.val())[0];
             resolve(eachClass.val()[key]);
         });
-	})	
+	})
 }
 
 async function getAllClassesInCourse(major, courseNumber) {

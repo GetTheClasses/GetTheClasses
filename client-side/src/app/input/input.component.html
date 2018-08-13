@@ -4,7 +4,7 @@
         <div class="col containner">
             <mat-form-field appearance="outline">
                 <mat-label>Select Terms</mat-label>
-                <mat-select placeholder="Select Subject" [formControl]='position' (selectionChange)="termSelected($event.value)">
+                <mat-select placeholder="Select Term" [formControl]='position' (selectionChange)="termSelected($event.value)">
                     <mat-option *ngFor="let term of terms" [value]="term">
                     {{term}}
                     </mat-option>
@@ -28,7 +28,7 @@
         <div class="col containner">
             <mat-form-field appearance="outline">
                 <mat-label>Select Course</mat-label>
-                <mat-select placeholder="Select Course" (selectionChange)="courseSelected($event.value)">
+                <mat-select placeholder="Select Course" [formControl]='coursePosition' (selectionChange)="courseSelected($event.value)">
                     <mat-option *ngFor="let course of defaultCourses" [value]="course">
                         {{course}}
                     </mat-option>
@@ -40,10 +40,10 @@
     <div *ngIf="COURSE != '' && COURSE != '--'" class="form-row">
         <div class="col containner">
             <mat-form-field appearance="outline">
-                <mat-label>Sessions</mat-label>
+                <mat-label>Sessions (Optional)</mat-label>
                 <mat-select placeholder="Select Session" (selectionChange)="sessionSelected($event.value)">
-                    <mat-option *ngFor="let session of sessions" [value]="session">
-                        {{session}}
+                    <mat-option *ngFor="let session of sessionsData" [value]="session">
+                        {{'Section: ' + session.section + ' - ' + 'CRN: ' + session.crn}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -53,11 +53,11 @@
     <div class="form-row">
         <div class="col">
             <mat-form-field *ngIf="criteria.length > 0" class="chip-list">
-                <mat-label>Courses</mat-label>
+                <mat-label>Courses Selected</mat-label>
                 <mat-chip-list #chipList>
                     <mat-chip *ngFor="let course of courses" [selectable]="selectable"
-                            [removable]="removable" (removed)="remove(course)">
-                    {{course.major + ' - ' + course.courseNumber}}
+                            [removable]="removable" (removed)="remove(course)" selected [color]="primary" >
+                    {{course.major + ' - ' + course.courseNumber + course.sessionVal}}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                     </mat-chip>
                 </mat-chip-list>
@@ -124,6 +124,17 @@
         <div class="col">
             <p> Thinh nguyen</p>
         </div>
-    </div>
+    </div> <br><br>
 
+    <div class="col containner">
+            <mat-form-field appearance="outline">
+            <mat-label>Select Subject</mat-label>
+                <input type="text" matInput placeholder="Placeholder" [formControl]="testSubject" [matAutocomplete]="auto" (keyup)="keySubjectSelected($event)">
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                    <mat-option (click)="subjectClicked($event)" *ngFor="let option of filteredOptions | async" [value]="option">
+                        {{option}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
 </mat-card>
