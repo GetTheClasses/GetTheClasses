@@ -7,9 +7,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DisplayDataComponent implements OnInit {
 
+  panelOpenState = false;
+
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  mouseEnter(div : string){
+    console.log("mouse enter : " + div);
   }
 
+  mouseLeave(div : string){
+    console.log('mouse leave :' + div);
+  }
+
+  test(event) {
+    console.log(event);
+  }
 }

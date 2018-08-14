@@ -50,8 +50,11 @@ export class InputComponent {
 	saveSubjects = {};
 	sectionsData = [];
 	crnsList = [];
+	// AutoComplete
 	filteredOptions: Observable<string[]>;
-	testSubject = new FormControl();
+	subjectAutoComplete = new FormControl();
+	courseFilter: Observable<string[]>;
+	courseAutoComplete = new FormControl();
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -116,7 +119,7 @@ export class InputComponent {
 		  this.subjects = data;
 
 		 	 // Auto complete for Subject
-			this.filteredOptions = this.testSubject.valueChanges
+			this.filteredOptions = this.subjectAutoComplete.valueChanges
 			.pipe(
 				startWith(''),
 				map(value => this._subjectFilter(value))
@@ -137,6 +140,7 @@ export class InputComponent {
 		}
 		this.defaultCourses.sort();
 		this.criteria = [];
+		this.crnsList = [];
 		this.courses = this.criteria;
 		// this.outputLength = 0;
 		this.COURSE = '';
@@ -175,6 +179,7 @@ export class InputComponent {
 					data.unshift('--')
 					this.saveSubjects[subject] = data;
 					this.defaultCourses = data;
+					this.autoComCouse();
 				});
 			}
 			else {
@@ -182,6 +187,32 @@ export class InputComponent {
 				console.log(this.defaultCourses);
 			}
 		}
+	}
+
+	// Subject Autocomplete data binding
+	keyCourseSelected(event) {
+		console.log(event.target.value);
+		if (event.code == "Enter") {
+			this.courseSelected(event.target.value);
+		}
+	}
+
+	courseSelectClicked(event) {
+		this.courseSelected(event.target.innerText.trim());
+	}
+
+	// Auto complete for Course
+	autoComCouse() {
+		this.courseFilter = this.courseAutoComplete.valueChanges
+		.pipe(
+			startWith(''),
+			map(value => this._courseFilterOption(value))
+		);
+	}
+
+	private _courseFilterOption(value: string): string[] {
+		const filterValue = value.toLowerCase();
+		return this.defaultCourses.filter(option => option.toLowerCase().includes(filterValue));
 	}
 
 	courseSelected(course: string) {
@@ -205,11 +236,7 @@ export class InputComponent {
 			console.log(this.criteria);
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
-				console.log(data);
 				this.sectionsData = data;
-				// for (var ele of data) {
-				// 	this.crnsList.push(this.getListOfCRN(ele));
-				// }
 				console.log(this.crnsList);
 			})
 			console.log(this.criteria);
@@ -241,15 +268,7 @@ export class InputComponent {
 						sectionVal: ' - ' + section.section + ' - ' + this.CRN
 					}
 					this.courses.push(temp);
-					var hasSection = false
-					this.sectionsData.forEach((section) => {
-						if (this.crnsList.includes(section.crn)) {
-							var sectionIndex = this.crnsList.indexOf(section.crn);
-							this.crnsList[sectionIndex] = this.CRN;
-							hasSection = true;
-						}
-					})
-					if (!hasSection) {
+					if (!this.crnsList.includes(this.CRN)) {
 						this.crnsList.push(this.CRN);
 					}
 				}
