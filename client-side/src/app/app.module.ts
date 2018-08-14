@@ -30,6 +30,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { SigninComponent } from './authentication/signin/signin.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
+import { NavigationComponent } from './navigation/navigation.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { AuthenticationComponent } from './authentication/authentication.compone
     DisplayDataComponent,
     SigninComponent,
     SignupComponent,
-    AuthenticationComponent
+    AuthenticationComponent,
+    NavigationComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
