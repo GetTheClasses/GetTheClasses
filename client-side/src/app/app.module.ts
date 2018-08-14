@@ -26,11 +26,8 @@ import { MatInputModule, MatFormFieldModule } from '@angular/material';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
-
-
-
-
+import { NavigationComponent } from './navigation/navigation.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +35,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     InputComponent,
     CalendarComponent,
     SubmitButtonsComponent,
-    DisplayDataComponent
+    DisplayDataComponent,
+    NavigationComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
