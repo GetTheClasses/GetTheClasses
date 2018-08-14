@@ -18,6 +18,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -26,8 +27,13 @@ import { MatInputModule, MatFormFieldModule } from '@angular/material';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDialogModule } from '@angular/material/dialog';
+import { SigninComponent } from './authentication/signin/signin.component';
+import { SignupComponent } from './authentication/signup/signup.component';
+import { AuthenticationComponent } from './authentication/authentication.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { FooterComponent } from './footer/footer.component';
+import { LoaderComponent } from './navigation/loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -36,8 +42,12 @@ import { FooterComponent } from './footer/footer.component';
     CalendarComponent,
     SubmitButtonsComponent,
     DisplayDataComponent,
+    SigninComponent,
+    SignupComponent,
+    AuthenticationComponent,
     NavigationComponent,
-    FooterComponent
+    FooterComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,
@@ -61,9 +71,15 @@ import { FooterComponent } from './footer/footer.component';
     MatInputModule,
     MatStepperModule,
     MatBadgeModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDialogModule,
+    MatSidenavModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    SigninComponent,
+    SignupComponent
+  ]
 })
 export class AppModule { }
