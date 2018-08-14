@@ -241,7 +241,15 @@ export class InputComponent {
 						sectionVal: ' - ' + section.section + ' - ' + this.CRN
 					}
 					this.courses.push(temp);
-					if (!this.crnsList.includes(this.CRN)) {
+					var hasSection = false
+					this.sectionsData.forEach((section) => {
+						if (this.crnsList.includes(section.crn)) {
+							var sectionIndex = this.crnsList.indexOf(section.crn);
+							this.crnsList[sectionIndex] = this.CRN;
+							hasSection = true;
+						}
+					})
+					if (!hasSection) {
 						this.crnsList.push(this.CRN);
 					}
 				}
