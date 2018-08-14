@@ -6,12 +6,14 @@
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
-    "db": "nodemon ./firebase/databaseSetting.js"
+    "db": "node ./firebase/databaseSetting.js",
+    "test": "nodemon ./test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
@@ -21,6 +23,7 @@
     "puppeteer": "^1.6.1",
     "readline-sync": "^1.4.9",
     "request": "^2.87.0",
-    "rxjs": "^6.2.2"
+    "rxjs": "^6.2.2",
+    "syncprompt": "^2.0.0"
   }
 }

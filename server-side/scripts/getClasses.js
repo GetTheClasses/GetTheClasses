@@ -76,7 +76,12 @@ async function reSchedule(courseList, freeTime, crnList = []) {
             allClasses.push(await new Promise((resolve) => {
                 db.ref('generalCoursesInfo/' + course.major + '/' + course.courseNumber)
                     .once('value').then((courseInfo) => {
-                        resolve(courseInfo.val());
+                        var temp = courseInfo.val()
+                        for (var key in temp) {
+                            temp[key]['major'] = course.major;
+                            temp[key]['courseNumber'] = course.courseNumber;
+                        }
+                        resolve(temp);
                     });
             }));
         }
@@ -84,12 +89,40 @@ async function reSchedule(courseList, freeTime, crnList = []) {
     syncSchedule(allClasses, freeTime, []);
 }
 
+async function getDetail() {
+    var promises = [];
+    Object.keys(runtimeDict).forEach((i) => {
+        promises.push(new Promise(resolve => {
+            db.ref('detailCoursesInfo/' + runtimeDict[i].major + '/'
+                + runtimeDict[i].courseNumber + '/')
+            .orderByChild('crn').equalTo(i)
+            .once('value').then((eachClass) => {
+                for (var key in eachClass.val()) {
+                    runtimeDict[i] = eachClass.val()[key];
+                }
+                resolve();
+            });
+        }));
+    });
+    await Promise.all(promises);
+}
+
 // DFS through reSchedule function
-async function main(course, freeTime = defaultFreeTime) {
+async function main(course, freeTime = defaultFreeTime, requiredCrn = []) {
     if (freeTime == null)
         freeTime = defaultFreeTime;
-    console.log(freeTime);
     await reSchedule(course, freeTime, []);
+    await getDetail();
+    requiredCrn.forEach((crn) => {
+        var index = 0;
+        while (index < combinations.length) {
+            if (!combinations[index].includes(crn)) {
+                combinations.splice(index, 1);
+            } else {
+                index += 1
+            }
+        }
+    })
     for (combination of combinations) {
         for (var i = 0; i < combination.length; i++) {
             combination[i] = runtimeDict[combination[i]];
@@ -102,6 +135,7 @@ async function main(course, freeTime = defaultFreeTime) {
         else
             index += 1;
     }
+    console.log(combinations)
     return combinations;
 }
 

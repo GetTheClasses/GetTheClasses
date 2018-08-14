@@ -1,8 +1,10 @@
 <div class="row">
-	<div class="col-9">
-		<div id="calendar"></div>
+	<div class="col-8">
+		<mat-card>
+			<div style="color:blue;" id="calendar"></div>
+		</mat-card>
 	</div>
-	<div class="col-3">
+	<div class="col-4">
 		<app-input (courseClicked)="recieveMess($event)"></app-input>
 	</div>
 </div>

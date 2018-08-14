@@ -19,144 +19,226 @@ export class CalendarComponent implements OnInit {
 	  	courseSelected: any;
 		eventsData: any[] = [];
 		timeRanges = {};
+		clicked: boolean = false;
+		dateRangeClicked: string = '';
 
-  ngOnInit() {
-  	$('#calendar').fullCalendar({
-  		header: false,
-  		defaultView: "agendaWeek",
-  		hiddenDays: [0],
-  		columnHeaderFormat: "dddd",
-  		minTime: '08:00:00',
-  		maxTime: '21:00:00',
-  		selectable: true,
-  		selectHelper: true,
-  		editable: true,
-  		unselectAuto: false,
-  		snapDuration: '00:05:00',
-  		contentHeight: "auto",
-  		eventOverlap: false,
-  		// eventColor: "red",
-  		eventResize: (event) => {
+	calendarCompo() {
+		$('#calendar').fullCalendar({
+			header: false,
+			defaultView: "agendaWeek",
+			hiddenDays: [0],
+			columnHeaderFormat: "dddd",
+			minTime: '08:00:00',
+			maxTime: '21:00:00',
+			selectable: true,
+			selectHelper: true,
+			editable: true,
+			unselectAuto: false,
+			snapDuration: '00:05:00',
+			contentHeight: "auto",
+			eventOverlap: false,
+			// defaultDate: '2018-08-20',
+			// eventColor: "red",
+			eventResize: (event) => {
+				// Handle resize issue here (start-end range is too small)
+				console.log(event.start.format("HH:mm"));
+				console.log(event.end.format("HH:mm"));
+			},
+			selectConstraint: {
+				start: "08:00",
+				end: "21:00"
+			},
+			eventConstraint: {
+				start: "08:00",
+				end: "21:00"
+			},
+			dayClick: (date, jsEvent, view) => {
+			  if ($(jsEvent.target).hasClass('fc-day')) {
+				var freeTime = this.transferDataService.getFreeTime();
+				if (freeTime == undefined || freeTime[this.dictTime[date.day()]] == []
+				  || freeTime[this.dictTime[date.day()]].toString() != [[800, 2100]].toString()) {
+				  for (var e of $('#calendar').fullCalendar('clientEvents')) {
+						if (e.start.day() == date.day()) {
+							$('#calendar').fullCalendar('removeEvents', e._id);
+						}
+				  }
 
-  			// Handle resize issue here (start-end range is too small)
-  			console.log(event.start.format("HH:mm"));
-  			console.log(event.end.format("HH:mm"));
-  		},
-      eventConstraint: {
-        start: "08:00",
-        end: "21:00"
-      },
-  		selectConstraint: {
-  			start: "08:00",
-  			end: "21:00"
-  		},
-      dayClick: (date, jsEvent, view) => {
-        if ($(jsEvent.target).hasClass('fc-day')) {
-          var freeTime = this.transferDataService.getFreeTime();
-          if (freeTime == undefined || freeTime[this.dictTime[date.day()]] == []
-            || freeTime[this.dictTime[date.day()]].toString() != [[800, 2100]].toString()) {
+				  var start = moment("08:00", "hh:mm");
+					start.day(date.day());
+					// console.log(start);
+				  var end = moment("21:00", "hh:mm");
+					end.day(date.day());
 
-            for (var e of $('#calendar').fullCalendar('clientEvents')) {
-              if (e.start.day() == date.day()) {
-                $('#calendar').fullCalendar('removeEvents', e._id);
-              }
-            }
-
-            var start = moment("08:00", "hh:mm");
-            start.day(date.day());
-            var end = moment("21:00", "hh:mm");
-            end.day(date.day());
-
-            $('#calendar').fullCalendar('renderEvent', {
-              start: start,
-              end: end
-            })
-          }
-          else {
-            for (var e of $('#calendar').fullCalendar('clientEvents')) {
-              if (e.start.day() == date.day()) {
-                $('#calendar').fullCalendar('removeEvents', e._id);
-                var events = $('#calendar').fullCalendar('clientEvents');
-                var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
-                this.transferDataService.setFreeTime(freeTimeDict);
-              }
-            }
-          }
-        }
-      },
+				  $('#calendar').fullCalendar('renderEvent', {
+					start: start,
+					end: end
+				  })
+				}
+				else {
+				  for (var e of $('#calendar').fullCalendar('clientEvents')) {
+						if (e.start.day() == date.day()) {
+							$('#calendar').fullCalendar('removeEvents', e._id);
+							var events = $('#calendar').fullCalendar('clientEvents');
+							var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+							this.transferDataService.setFreeTime(freeTimeDict);
+						}
+				  }
+				}
+			  }
+			},
 			select: (start, end) => {
 				if (!this.calendarHelperService.isValidTime(start, end)) {
 					end = start.clone().add(45, 'm');
-          for (var e of $('#calendar').fullCalendar('clientEvents')) {
-            if (start < e.start && end > e.start ) {
-              $('#calendar').fullCalendar('unselect');
-              alert("Not enough space");
-              return ;
-            }
-          }
+					for (var e of $('#calendar').fullCalendar('clientEvents')) {
+						if (start < e.start && end > e.start ) {
+							$('#calendar').fullCalendar('unselect');
+							alert("Not enough space");
+							return;
+						}
+					}
 				}
 				$('#calendar').fullCalendar('unselect');
-		    $("#calendar").fullCalendar('addEventSource', [{
-		        start: start,
-		        end: end,
-		        block: true
-		    }]);
+				$("#calendar").fullCalendar('addEventSource', [{
+					start: start,
+					end: end,
+					block: true
+				}]);
 			},
 			selectOverlap: function(event) {
-		    return ! event.block;
+				return ! event.block;
 			},
 			eventRender: (event, element, view) => {
-        if (view.name == 'listDay') {
-            element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
-        } else {
-            element.find(".fc-content").prepend("<button class='closeon'>X</button>")
-        }
-        element.find(".closeon").on('click', () => {
-          $('#calendar').fullCalendar('removeEvents',event._id);
-          var events = $('#calendar').fullCalendar('clientEvents');
-          var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
-          this.transferDataService.setFreeTime(freeTimeDict);
-        });
-  			var events = $('#calendar').fullCalendar('clientEvents');
-        var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
-        this.transferDataService.setFreeTime(freeTimeDict);
-	    },
-	  });
+				if (view.name == 'listDay') {
+					element.find(".fc-list-item-time").append("<button class='closeon'>X</button>")
+				}
+				else {
+					element.find(".fc-content").prepend("<button class='closeon'>X</button>")
+				}
+				element.find(".closeon").on('click', () => {
+					$('#calendar').fullCalendar('removeEvents',event._id);
+					var events = $('#calendar').fullCalendar('clientEvents');
+					var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+					this.transferDataService.setFreeTime(freeTimeDict);
+				});
+				var events = $('#calendar').fullCalendar('clientEvents');
+				var freeTimeDict = this.calendarHelperService.scheduleTimeFormat(events);
+				this.transferDataService.setFreeTime(freeTimeDict);
+			},
+			viewRender: (view, element) => {
+				if (view.name == 'agendaWeek') {
+					for (var i = 0; i < 6; i++) {
+						var date = '';
+						switch (i) {
+							case 0:
+								date = '.fc-mon';
+								break
+							case 1:
+								date = '.fc-tue';
+								break
+							case 2:
+								date = '.fc-wed';
+								break
+							case 3:
+								date = '.fc-thu';
+								break
+							case 4:
+								date = '.fc-fri';
+								break
+							case 5:
+								date ='.fc-sat';
+								break
+						}
+						$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
+					}
+				}
+				element.find(".timeRangeStyle").on('click', ($event) => {
+					this.selectTimeFrame($event);
+				})
+			}
+		});
+	}
+
+  ngOnInit() {
+	  this.calendarCompo();
   	}
 
-	recieveMess($event) {
-		console.log($event);
-		this.timeRanges = {
-			'start': [],
-			'end': []
-		};
-		var timeData = $event.time.split('|');
-		for (var ele of timeData) {
-			this.analyzeDate(ele);
-		}
-		console.log(this.timeRanges);
-		this.eventsData = [];
-		var randomColor = this.getRandomColor();
-		for (var i = 0; i < this.timeRanges['start'].length; i++) {
-			this.eventsData.push({
-				title: $event.name + '  Professor: ' + $event.professor,
-				start: this.timeRanges['start'][i],
-				end: this.timeRanges['end'][i],
-				borderColor: 'black',
-				textColor: 'white',
-				color: randomColor,
-				editable: true,
-				overlap: false,
-			})
-		}
-		console.log(this.eventsData);
-		for (var ele of this.eventsData) {
-			$("#calendar").fullCalendar('addEventSource', [ele])
+	selectTimeFrame(event) {
+		var dateEvent = event.currentTarget.offsetParent.attributes[0].textContent;
+		var dates = dateEvent.split(' ');
+		var dateEvent = dates[2].slice(dates[2].length - 3, dates[2].length);
+		this.clicked = !this.clicked;
+		if (this.clicked == true) {
+			var id = dateEvent;
+			$("#calendar").fullCalendar('addEventSource', [{
+				id: id,
+				start: moment("08:00", "hh:mm").day(dateEvent),
+				end: moment("21:00", "hh:mm").day(dateEvent),
+			}])
+		} else {
+			$('#calendar').fullCalendar('removeEvents', dateEvent);
 		}
 	}
 
+	recieveMess($event) {
+		console.log($event);
+		// var timeData = $event.time.split('|');
+		var timeRanges = this.analyzeDates($event.time);
+		console.log(timeRanges);
+		var timeStarts = this.analyzetimeStart($event.time);
+		var timeEnds = this.analyzetimeEnd($event.time);
+		this.eventsData = [];
+		var randomColor = this.getRandomColor();
+
+		for (var i = 0; i < timeRanges.length; i++) {
+			for (var j = 0; j < timeRanges[i].length; j++) {
+				// console.log(timeRanges[i][j]);
+				// console.log(timeStarts[i]);
+				// console.log(timeEnds[i]);
+				$("#calendar").fullCalendar('addEventSource', [{
+					title: 'Need to update',
+					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+					borderColor: 'black',
+					textColor: 'white',
+					color: randomColor,
+					editable: true,
+					overlap: false,
+				}]);
+				// this.eventsData.push({
+				// 	title: 'Need to update',
+				// 	start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+				// 	end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+				// 	borderColor: 'black',
+				// 	textColor: 'white',
+				// 	color: randomColor,
+				// 	editable: true,
+				// 	overlap: false,
+				// })
+			}
+		}
+
+		// console.log(this.eventsData);
+		// for (var ele of this.eventsData) {
+		// 	$("#calendar").fullCalendar('addEventSource', [ele]);
+		// }
+
+		// for (var i = 0; i < this.timeRanges['start'].length; i++) {
+		// 	this.eventsData.push({
+		// 		title: $event.name + '  Professor: ' + $event.professor,
+		// 		start: moment("08:00", "hh:mm").day("Monday"),
+		// 		end: moment("12:00", "hh:mm").day("Monday"),
+		// 		borderColor: 'black',
+		// 		textColor: 'white',
+		// 		color: randomColor,
+		// 		editable: true,
+		// 		overlap: false,
+		// 	})
+		// }
+	}
+
+	// Auto generate random colors
 	getRandomColor() {
-		var letters = '0123456789ABCDEF';
+		var letters = '0123456789ABCDEF'; //HEX
 		var color = '#';
 		for (var i = 0; i < 6; i++) {
 		color += letters[Math.floor(Math.random() * 16)];
@@ -165,32 +247,88 @@ export class CalendarComponent implements OnInit {
 	}
 
 	analyzetimeStart(str) {
-		var time = str.slice(str.indexOf('-') + 1, str.indexOf('-') + 7);
-		return time.trim() + ':00'
+		var datas = str.split('|');
+		var output = [];
+		for (var i = 0; i < datas.length; i++) {
+			var timeStart = '';
+			switch (i) {
+				case 1:
+				case 3:
+					timeStart = datas[i].slice(0, 2) + ":" + datas[i].slice(2, 4);
+					output.push(timeStart);
+					break
+			}
+		}
+		return output;
 	}
 
 	analyzetimeEnd(str) {
-		var time = str.slice(str.length - 6, str.length);
-		return time.trim() + ':00'
+		var datas = str.split('|');
+		var output = [];
+		for (var i = 0; i < datas.length; i++) {
+			var timeEnd = '';
+			switch (i) {
+				case 1:
+				case 3:
+					timeEnd = datas[i].slice(datas[i].length - 4, datas[i].length -2) + ":" + datas[i].slice(datas[i].length - 2, datas[i].length);
+					output.push(timeEnd);
+					break
+			}
+		}
+		return output;
 	}
 
-
-	analyzeDate(str) {
+	analyzeDates(str) {
+		// var str = "TW|12001350|W|14001530";
 		var date = {
-			'M': '2018-08-20',
-			'T': '2018-08-21',
-			'W': '2018-08-22',
-			'Th': '2018-08-23',
-			'F': '2018-08-24'
+			'M': 'Mon',
+			'T': 'Tue',
+			'W': 'Wed',
+			'R': 'Thu',
+			'F': 'Fri',
+			'Sa': 'Sat'
 		}
-		var timeRange = str.slice(0, str.indexOf('-') - 1).trim();
-		for (var i = 0; i < timeRange.length; i++) {
-			var currDate = timeRange[i];
-			var dateFormat = date[currDate];
-			var timeStart = this.analyzetimeStart(str);
-			var timeEnd = this.analyzetimeEnd(str);
-			this.timeRanges['start'].push(dateFormat + 'T' + timeStart);
-			this.timeRanges['end'].push(dateFormat + 'T' + timeEnd)
+		var datas = str.split('|');
+		var timeRanges = [];
+		// var timeStarts = [];
+		// var timeEnds = [];
+
+		for (var i = 0; i < datas.length; i ++) {
+			var getDate = '';
+			var actualDate = [];
+			// var timeStart = '';
+			// var timeEnd = '';
+			switch (i) {
+				case 0:
+				case 2:
+					// Dates
+					for (var ele of datas[i]) {
+						getDate = ele;
+						actualDate.push(date[getDate]);
+					}
+					timeRanges.push(actualDate);
+					break;
+
+				// case 1:
+				// case 3:
+				// 	// Time Start
+				// 	timeStart = datas[i].slice(0, 2) + ":" + datas[i].slice(2, 4);
+				// 	timeStarts.push(timeStart);
+				// 	// Time End
+				// 	timeEnd = datas[i].slice(datas[i].length - 4, datas[i].length -2) + ":" + datas[i].slice(datas[i].length - 2, datas[i].length);
+				// 	timeEnds.push(timeEnd);
+				// 	break;
+			}
 		}
+
+		return timeRanges;
+		// for (var i = 0; i < timeRanges.length; i++) {
+		// 	for (var j = 0; j < timeRanges[i].length; j++) {
+		// 		$("#calendar").fullCalendar('addEventSource', [{
+		// 			start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+		// 			end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+		// 		}])
+		// 	}
+		// }
 	}
 }
