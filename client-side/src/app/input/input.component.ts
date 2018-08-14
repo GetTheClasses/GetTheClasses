@@ -50,8 +50,11 @@ export class InputComponent {
 	saveSubjects = {};
 	sectionsData = [];
 	crnsList = [];
+	// AutoComplete
 	filteredOptions: Observable<string[]>;
-	testSubject = new FormControl();
+	subjectAutoComplete = new FormControl();
+	courseFilter: Observable<string[]>;
+	courseAutoComplete = new FormControl();
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -116,10 +119,17 @@ export class InputComponent {
 		  this.subjects = data;
 
 		 	 // Auto complete for Subject
-			this.filteredOptions = this.testSubject.valueChanges
+			this.filteredOptions = this.subjectAutoComplete.valueChanges
 			.pipe(
 				startWith(''),
 				map(value => this._subjectFilter(value))
+			);
+
+			// Auto complete for Course
+			this.courseFilter = this.courseAutoComplete.valueChanges
+			.pipe(
+				startWith(''),
+				map(value => this._courseFilter(value))
 			);
 		});
 	}
@@ -128,7 +138,12 @@ export class InputComponent {
 		const filterValue = value.toLowerCase();
 		console.log(this.subjects);
 		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
-	  }
+	}
+
+	private _courseFilter(value: string): string[] {
+		const filterValue = value.toLowerCase();
+		return this.defaultCourses.filter(option => option.toLowerCase().includes(filterValue));
+	}
 
 	// METHODS
 	deleteAll() {
@@ -137,6 +152,7 @@ export class InputComponent {
 		}
 		this.defaultCourses.sort();
 		this.criteria = [];
+		this.crnsList = [];
 		this.courses = this.criteria;
 		// this.outputLength = 0;
 		this.COURSE = '';
@@ -183,6 +199,8 @@ export class InputComponent {
 			}
 		}
 	}
+
+
 
 	courseSelected(course: string) {
 		this.COURSE = course;
