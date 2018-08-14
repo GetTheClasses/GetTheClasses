@@ -32,7 +32,7 @@ export class CalendarHelperService {
   	stringTime.sort();
 		for (var time of stringTime) {
 			dictTime[time[0]]
-			.push([parseInt(time.substring(1,5)), 
+			.push([parseInt(time.substring(1,5)),
 				parseInt(time.substring(5, time.length))]);
 		}
 		return dictTime;

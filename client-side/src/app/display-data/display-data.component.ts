@@ -7,9 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DisplayDataComponent implements OnInit {
 
+  panelOpenState = false;
+
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
 }
