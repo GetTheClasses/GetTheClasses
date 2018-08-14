@@ -26,11 +26,10 @@ import { MatInputModule, MatFormFieldModule } from '@angular/material';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
-
-
-
-
+import { MatDialogModule } from '@angular/material/dialog';
+import { SigninComponent } from './authentication/signin/signin.component';
+import { SignupComponent } from './authentication/signup/signup.component';
+import { AuthenticationComponent } from './authentication/authentication.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +37,10 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     InputComponent,
     CalendarComponent,
     SubmitButtonsComponent,
-    DisplayDataComponent
+    DisplayDataComponent,
+    SigninComponent,
+    SignupComponent,
+    AuthenticationComponent
   ],
   imports: [
     BrowserModule,
@@ -62,9 +64,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatInputModule,
     MatStepperModule,
     MatBadgeModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDialogModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    SigninComponent,
+    SignupComponent
+  ]
 })
 export class AppModule { }
