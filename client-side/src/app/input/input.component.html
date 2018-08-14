@@ -28,11 +28,12 @@
         <div class="col containner">
             <mat-form-field appearance="outline">
                 <mat-label>Select Course</mat-label>
-                <mat-select placeholder="Select Course" [formControl]='coursePosition' (selectionChange)="courseSelected($event.value)">
-                    <mat-option *ngFor="let course of defaultCourses" [value]="course">
+                <input type="text" matInput placeholder="Select Course" [formControl]="courseAutoComplete" [matAutocomplete]="courseAuto" (keyup)="keyCourseSelected($event)">
+                <mat-autocomplete autoActiveFirstOption #courseAuto="matAutocomplete">
+                    <mat-option (click)="courseSelectClicked($event)" *ngFor="let course of courseFilter | async" [value]="course">
                         {{course}}
                     </mat-option>
-                </mat-select>
+                </mat-autocomplete>
             </mat-form-field>
         </div>
     </div>
@@ -125,16 +126,4 @@
             <p> Thinh nguyen</p>
         </div>
     </div> <br><br>
-
-    <div class="col containner">
-            <mat-form-field appearance="outline">
-            <mat-label>Select Course</mat-label>
-                <input type="text" matInput placeholder="Select Course" [formControl]="subjectAutoComplete" [matAutocomplete]="auto" (keyup)="keySubjectSelected($event)">
-                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                    <mat-option (click)="subjectClicked($event)" *ngFor="let subject of filteredOptions | async" [value]="subject">
-                        {{subject}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
-        </div>
 </mat-card>

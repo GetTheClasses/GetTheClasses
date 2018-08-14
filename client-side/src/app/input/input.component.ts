@@ -124,13 +124,6 @@ export class InputComponent {
 				startWith(''),
 				map(value => this._subjectFilter(value))
 			);
-
-			// Auto complete for Course
-			this.courseFilter = this.courseAutoComplete.valueChanges
-			.pipe(
-				startWith(''),
-				map(value => this._courseFilter(value))
-			);
 		});
 	}
 
@@ -138,12 +131,7 @@ export class InputComponent {
 		const filterValue = value.toLowerCase();
 		console.log(this.subjects);
 		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
-	}
-
-	private _courseFilter(value: string): string[] {
-		const filterValue = value.toLowerCase();
-		return this.defaultCourses.filter(option => option.toLowerCase().includes(filterValue));
-	}
+	  }
 
 	// METHODS
 	deleteAll() {
@@ -191,6 +179,7 @@ export class InputComponent {
 					data.unshift('--')
 					this.saveSubjects[subject] = data;
 					this.defaultCourses = data;
+					this.autoComCouse();
 				});
 			}
 			else {
@@ -200,7 +189,31 @@ export class InputComponent {
 		}
 	}
 
+	// Subject Autocomplete data binding
+	keyCourseSelected(event) {
+		console.log(event.target.value);
+		if (event.code == "Enter") {
+			this.courseSelected(event.target.value);
+		}
+	}
 
+	courseSelectClicked(event) {
+		this.courseSelected(event.target.innerText.trim());
+	}
+
+	// Auto complete for Course
+	autoComCouse() {
+		this.courseFilter = this.courseAutoComplete.valueChanges
+		.pipe(
+			startWith(''),
+			map(value => this._courseFilterOption(value))
+		);
+	}
+
+	private _courseFilterOption(value: string): string[] {
+		const filterValue = value.toLowerCase();
+		return this.defaultCourses.filter(option => option.toLowerCase().includes(filterValue));
+	}
 
 	courseSelected(course: string) {
 		this.COURSE = course;
@@ -223,11 +236,7 @@ export class InputComponent {
 			console.log(this.criteria);
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
-				console.log(data);
 				this.sectionsData = data;
-				// for (var ele of data) {
-				// 	this.crnsList.push(this.getListOfCRN(ele));
-				// }
 				console.log(this.crnsList);
 			})
 			console.log(this.criteria);
