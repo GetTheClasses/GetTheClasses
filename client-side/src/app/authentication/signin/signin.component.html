@@ -32,11 +32,12 @@
 						<label for="lg_remember">Remember me</label>
 					</div>
 				</div>
-				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
+				<button (click)="submit()" class="login-button"><i class="fa fa-chevron-right"></i></button>
 			</div>
+			<app-loader *ngIf="loading"></app-loader>
 			<div class="etc-login-form">
 				<p>Forgot your password? <a href="#">click here</a></p>
-				<p>New user? <a href="#">Sign up</a></p>
+				<p>New user? <a href="#" (click)='openSignup()'>Sign up</a></p>
 			</div>
 		</form>
 	</div>

@@ -18,6 +18,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -32,6 +33,7 @@ import { SignupComponent } from './authentication/signup/signup.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { FooterComponent } from './footer/footer.component';
+import { LoaderComponent } from './navigation/loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { FooterComponent } from './footer/footer.component';
     SignupComponent,
     AuthenticationComponent,
     NavigationComponent,
-    FooterComponent
+    FooterComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,
@@ -69,7 +72,8 @@ import { FooterComponent } from './footer/footer.component';
     MatStepperModule,
     MatBadgeModule,
     MatAutocompleteModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSidenavModule
   ],
   providers: [],
   bootstrap: [AppComponent],
