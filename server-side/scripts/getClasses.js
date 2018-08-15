@@ -1,4 +1,4 @@
-const db = require('../firebase/database');
+const db = require('../firebase/database').database;
 const defaultFreeTime = require('../defaultData/freeTime');
 const copy = require('./helper.js').copy;
 const convertTime = require('./helper').convertTime

@@ -1,4 +1,4 @@
-const database = require('./database');
+const database = require('./database').database;
 
 async function readSpecific(url, key, value) {
 	return new Promise((resolve) => {

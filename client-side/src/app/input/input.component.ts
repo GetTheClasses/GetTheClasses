@@ -9,6 +9,9 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
+declare var $: any;
+declare var moment: any;
+
 export interface Course {
 	name: string;
 	courseNum: string;
@@ -17,10 +20,11 @@ export interface Course {
 	selector: 'app-input',
 	templateUrl: './input.component.html',
 	styleUrls: [
-					'./input.component.css',
-					"../../../node_modules/primeng/resources/themes/bootstrap/theme.css"
+		'./input.component.css',
+		"../../../node_modules/primeng/resources/themes/bootstrap/theme.css"
 	]
 })
+
 export class InputComponent {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 
@@ -304,40 +308,53 @@ export class InputComponent {
 	}
 
 	sample() {
-    this.methodHelper.get(environment.HOST + '/api/classDetailInfo/?crn=82849')
-    .subscribe((data) => {
-      console.log("Class Detail: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/classGeneralInfo/?major=CS&courseNumber=1331&crn=82849')
-    .subscribe((data) => {
-      console.log("Class General: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=CS&courseNumber=1331')
-    .subscribe((data) => {
-      console.log("Course Detail: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?major=CS&courseNumber=1331')
-    .subscribe((data) => {
-      console.log("Course General: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
-    .subscribe((data) => {
-      console.log("getAllMajorsName: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/getAllMajorsAndCourseNumbers')
-    .subscribe((data) => {
-      console.log("getAllMajorsAndCourseNumbers: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=CS')
-    .subscribe((data) => {
-      console.log("getSpecificMajorCourseNumbers: ");
-      console.log(data);
-    });
-  }
+	    this.methodHelper.get(environment.HOST + '/api/classDetailInfo/?crn=82849')
+	    .subscribe((data) => {
+	      console.log("Class Detail: ");
+	      console.log(data);
+	    });
+	    this.methodHelper.get(environment.HOST + '/api/classGeneralInfo/?major=CS&courseNumber=1331&crn=82849')
+	    .subscribe((data) => {
+	      console.log("Class General: ");
+	      console.log(data);
+	    });
+	    this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=CS&courseNumber=1331')
+	    .subscribe((data) => {
+	      console.log("Course Detail: ");
+	      console.log(data);
+	    });
+	    this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?major=CS&courseNumber=1331')
+	    .subscribe((data) => {
+	      console.log("Course General: ");
+	      console.log(data);
+	    });
+	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
+	    .subscribe((data) => {
+	      console.log("getAllMajorsName: ");
+	      console.log(data);
+	    });
+	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsAndCourseNumbers')
+	    .subscribe((data) => {
+	      console.log("getAllMajorsAndCourseNumbers: ");
+	      console.log(data);
+	    });
+	    this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=CS')
+	    .subscribe((data) => {
+	      console.log("getSpecificMajorCourseNumbers: ");
+	      console.log(data);
+	    });
+  	}
+
+  	saveUserFreeTime() {
+  		var userFreeTime = []
+		$('#calendar').fullCalendar('clientEvents').forEach((event) => {
+			var temp = {
+				start: event.start.day() + '|' + event.start.hours() + event.start.minutes(),
+				end: event.end.day() + '|' + event.end.hours() + event.end.minutes()
+			}
+			userFreeTime.push(temp);
+		})
+		this.methodHelper.post(environment.HOST + '/api/saveUserFreeTime', userFreeTime)
+		.subscribe();
+  	}
 }

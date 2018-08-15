@@ -1,4 +1,4 @@
-const db = require('./database');
+const db = require('./database').database();
 const fs = require('fs');
 const _ = require('lodash');
 const prompt = require('syncprompt');
