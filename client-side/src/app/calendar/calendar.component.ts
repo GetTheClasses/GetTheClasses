@@ -16,11 +16,14 @@ export class CalendarComponent implements OnInit {
 
   constructor(private transferDataService: TransferDataService,
 	  private calendarHelperService: CalendarHelperService) { }
-	  	courseSelected: any;
-		eventsData: any[] = [];
-		timeRanges = {};
-		clicked: boolean = false;
-		dateRangeClicked: string = '';
+
+	courseSelected: any;
+	eventsData: any[] = [];
+	timeRanges = {};
+	clicked: boolean = false;
+	dateRangeClicked: string = '';
+	private userID = "";
+
 
 	calendarCompo() {
 		$('#calendar').fullCalendar({
@@ -70,6 +73,7 @@ export class CalendarComponent implements OnInit {
 					end.day(date.day());
 
 				  $('#calendar').fullCalendar('renderEvent', {
+					id: 903139168,
 					start: start,
 					end: end
 				  })
@@ -86,7 +90,8 @@ export class CalendarComponent implements OnInit {
 				}
 			  }
 			},
-			select: (start, end) => {
+			select: (start, end, event) => {
+				console.log(event);
 				if (!this.calendarHelperService.isValidTime(start, end)) {
 					end = start.clone().add(45, 'm');
 					for (var e of $('#calendar').fullCalendar('clientEvents')) {
@@ -99,6 +104,7 @@ export class CalendarComponent implements OnInit {
 				}
 				$('#calendar').fullCalendar('unselect');
 				$("#calendar").fullCalendar('addEventSource', [{
+					id: 903139168,
 					start: start,
 					end: end,
 					block: true
@@ -181,41 +187,46 @@ export class CalendarComponent implements OnInit {
 
 	recieveMess($event) {
 		console.log($event);
-		// var timeData = $event.time.split('|');
-		var timeRanges = this.analyzeDates($event.time);
-		console.log(timeRanges);
-		var timeStarts = this.analyzetimeStart($event.time);
-		var timeEnds = this.analyzetimeEnd($event.time);
-		this.eventsData = [];
-		var randomColor = this.getRandomColor();
-
-		for (var i = 0; i < timeRanges.length; i++) {
-			for (var j = 0; j < timeRanges[i].length; j++) {
-				// console.log(timeRanges[i][j]);
-				// console.log(timeStarts[i]);
-				// console.log(timeEnds[i]);
-				$("#calendar").fullCalendar('addEventSource', [{
-					title: 'Need to update',
-					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
-					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
-					borderColor: 'black',
-					textColor: 'white',
-					color: randomColor,
-					editable: true,
-					overlap: false,
-				}]);
-				// this.eventsData.push({
-				// 	title: 'Need to update',
-				// 	start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
-				// 	end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
-				// 	borderColor: 'black',
-				// 	textColor: 'white',
-				// 	color: randomColor,
-				// 	editable: true,
-				// 	overlap: false,
-				// })
+		var eventCloseorOpen = $event["on/off"];
+		// if status == 1 then update
+		if (eventCloseorOpen == 1) {
+			for (var ele of $event) {
+				if (typeof(ele) === 'object') {
+					this.updateCalendar(ele);
+				}
 			}
 		}
+		// else status == 0 then remove event
+		else {
+			for (var ele of $event) {
+				if (typeof(ele) === 'object') {
+					this.removeEventCalendar(ele);
+				}
+			}
+		}
+
+		// var timeRanges = this.analyzeDates($event.time);
+		// console.log(timeRanges);
+		// var timeStarts = this.analyzetimeStart($event.time);
+		// var timeEnds = this.analyzetimeEnd($event.time);
+		// this.eventsData = [];
+		// var randomColor = this.getRandomColor();
+
+		// WORKING
+		// for (var i = 0; i < timeRanges.length; i++) {
+		// 	for (var j = 0; j < timeRanges[i].length; j++) {
+		// 		$("#calendar").fullCalendar('addEventSource', [{
+		// 			title: 'Need to update',
+		// 			start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+		// 			end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+		// 			borderColor: 'black',
+		// 			textColor: 'white',
+		// 			color: randomColor,
+		// 			editable: true,
+		// 			overlap: false,
+		// 		}]);
+		// 	}
+		// }
 
 		// console.log(this.eventsData);
 		// for (var ele of this.eventsData) {
@@ -234,6 +245,37 @@ export class CalendarComponent implements OnInit {
 		// 		overlap: false,
 		// 	})
 		// }
+	}
+
+	updateCalendar(event) {
+		$("#calendar").fullCalendar('removeEvents', 903139168);
+		console.log(event);
+		var timeRanges = this.analyzeDates(event.classTime);
+		console.log(timeRanges);
+		var timeStarts = this.analyzetimeStart(event.classTime);
+		var timeEnds = this.analyzetimeEnd(event.classTime);
+		this.eventsData = [];
+		var randomColor = this.getRandomColor();
+
+		for (var i = 0; i < timeRanges.length; i++) {
+			for (var j = 0; j < timeRanges[i].length; j++) {
+				$("#calendar").fullCalendar('addEventSource', [{
+					id: event.crn,
+					title: event.description,
+					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+					borderColor: 'black',
+					textColor: 'white',
+					color: randomColor,
+					editable: true,
+					overlap: false,
+				}]);
+			}
+		}
+	}
+
+	removeEventCalendar(event) {
+		$("#calendar").fullCalendar('removeEvents', event.crn);
 	}
 
 	// Auto generate random colors
@@ -330,5 +372,9 @@ export class CalendarComponent implements OnInit {
 		// 		}])
 		// 	}
 		// }
+	}
+
+	getUserID(e): void {
+		this.userID = e;
 	}
 }

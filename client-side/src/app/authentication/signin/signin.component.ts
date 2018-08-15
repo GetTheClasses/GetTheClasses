@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { SignupComponent } from '../signup/signup.component';
 import { HttpMethodService } from '../../http-method.service';
@@ -11,6 +11,8 @@ import { environment } from '../../../environments/environment';
   encapsulation: ViewEncapsulation.None
 })
 export class SigninComponent implements OnInit {
+
+  onAdd = new EventEmitter();
 
   constructor(public dialog: MatDialog,
     private methodHelper: HttpMethodService) { }
@@ -33,16 +35,16 @@ export class SigninComponent implements OnInit {
 
   submit(): void {
     this.loading = true;
+    this.error = "";
     this.methodHelper.post(environment.HOST + '/api/login', {
       email: this.signin_email,
       password: this.signin_password
     }).subscribe((result) => {
       if (!result.success) {
-        console.log(this.error);
         this.error = result.error;
       }
       else {
-        this.error = "";
+        this.onAdd.emit(result);
         this.dialog.closeAll();
       }
       this.loading = false;
