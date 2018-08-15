@@ -34,6 +34,11 @@ import { AuthenticationComponent } from './authentication/authentication.compone
 import { NavigationComponent } from './navigation/navigation.component';
 import { FooterComponent } from './footer/footer.component';
 import { LoaderComponent } from './navigation/loader/loader.component';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+
+
 
 @NgModule({
   declarations: [
@@ -73,7 +78,10 @@ import { LoaderComponent } from './navigation/loader/loader.component';
     MatBadgeModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatListModule,
+    MatPaginatorModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent],

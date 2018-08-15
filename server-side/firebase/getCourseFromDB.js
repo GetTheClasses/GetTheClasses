@@ -1,4 +1,4 @@
-const db = require('./database');
+const db = require('./database').database;
 
 async function getCourseDetailFromDB(major, courseNumber) {
 	return new Promise(resolve => {

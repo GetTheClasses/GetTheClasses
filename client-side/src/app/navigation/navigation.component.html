@@ -56,7 +56,7 @@
             </li>
           </ul>
         <!-- <input class="form-control mr-sm-2" type="search" placeholder="Username" aria-label="Search"> -->
-        <app-authentication></app-authentication>
+        <app-authentication (identify)="getUserID($event)"></app-authentication>
       </form>
     </div>
   </nav>

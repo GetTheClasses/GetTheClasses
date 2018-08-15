@@ -1,4 +1,4 @@
-const db = require('./database');
+const db = require('./database').database;
 
 async function getClassDetailWithCrnFromDB(crn) {
 	return new Promise(resolve => {

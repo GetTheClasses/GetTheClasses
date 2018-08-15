@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const main = require('./scripts/getClasses');
 const getInfo = require('./scripts/getInfo');
+const authentication = require('./scripts/authentication');
 require('dotenv').config();
 
 app.use(bodyParser.json());
@@ -109,3 +110,17 @@ app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
         console.log("Returned data from api/getSpecificMajorCourseNumbers")
     });
 });
+
+app.post('/api/saveUserFreeTime', (req,res) => {
+    console.log(req.body);
+})
+
+app.post('/api/login', (req, res) => {
+    console.log("Recieved call to api/login")
+    authentication.signin(req.body.email, req.body.password)
+    .then((result) => {
+        console.log(result)
+        res.send(result);
+        console.log("Returned data from api/login")
+    })
+})
