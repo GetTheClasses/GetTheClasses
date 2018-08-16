@@ -22,7 +22,7 @@ export class CalendarComponent implements OnInit {
 	timeRanges = {};
 	clicked: boolean = false;
 	dateRangeClicked: string = '';
-	private userID = "";
+	private userID: string;
 
 
 	calendarCompo() {
@@ -40,8 +40,6 @@ export class CalendarComponent implements OnInit {
 			snapDuration: '00:05:00',
 			contentHeight: "auto",
 			eventOverlap: false,
-			// defaultDate: '2018-08-20',
-			// eventColor: "red",
 			eventResize: (event) => {
 				// Handle resize issue here (start-end range is too small)
 				console.log(event.start.format("HH:mm"));
@@ -68,14 +66,12 @@ export class CalendarComponent implements OnInit {
 
 				  var start = moment("08:00", "hh:mm");
 					start.day(date.day());
-					// console.log(start);
 				  var end = moment("21:00", "hh:mm");
 					end.day(date.day());
 
 				  $('#calendar').fullCalendar('renderEvent', {
-					id: 903139168,
-					start: start,
-					end: end
+						start: start,
+						end: end
 				  })
 				}
 				else {
@@ -91,7 +87,6 @@ export class CalendarComponent implements OnInit {
 			  }
 			},
 			select: (start, end, event) => {
-				console.log(event);
 				if (!this.calendarHelperService.isValidTime(start, end)) {
 					end = start.clone().add(45, 'm');
 					for (var e of $('#calendar').fullCalendar('clientEvents')) {
@@ -154,7 +149,7 @@ export class CalendarComponent implements OnInit {
 								date ='.fc-sat';
 								break
 						}
-						$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
+						// $(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
 					}
 				}
 				element.find(".timeRangeStyle").on('click', ($event) => {
