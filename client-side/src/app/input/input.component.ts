@@ -380,6 +380,10 @@ export class InputComponent implements OnInit {
 				alert(data.result);
 			else
 				console.log(data.result);
-		});
-  	}
+        });
+    }
+
+    test() {
+        alert(this.userID);
+    }
 }

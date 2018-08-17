@@ -112,7 +112,8 @@ app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
 });
 
 app.post('/api/saveUserFreeTime', (req,res) => {
-    if (req.body.userID != undefined) {
+    console.log("Received call to api/saveUserFreeTime");
+    if (req.body.userID != undefined && req.body.userID != "") {
         require('./firebase/saveUserFreeTime')(req.body.userID, req.body.freeTime);
         res.send({
             success: true,
@@ -125,13 +126,13 @@ app.post('/api/saveUserFreeTime', (req,res) => {
             result: "You have to login first to save."
         })
     }
+    console.log("Returned data from api/saveUserFreeTime")
 })
 
 app.post('/api/login', (req, res) => {
     console.log("Recieved call to api/login")
     authentication.signin(req.body.email, req.body.password)
     .then((result) => {
-        console.log(result)
         res.send(result);
         console.log("Returned data from api/login")
     })
