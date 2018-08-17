@@ -61,6 +61,7 @@ export class InputComponent implements OnInit {
 	courseFilter: Observable<string[]>;
 	courseAutoComplete = new FormControl();
 	typesOfShoes: string[] = ['Option 1'];
+	randomID = 3;
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -344,10 +345,12 @@ export class InputComponent implements OnInit {
 				objectVal = ele[event];
 				if (ele[event]) {
 					objectVal['on/off'] = 1;
+					objectVal['privateID'] = this.randomID;
 					var dataSend = objectVal;
 					console.log(dataSend);
 					this.courseClicked.emit(dataSend);
 				}
+				this.randomID += 3;
 			}
 		} else {
 			for (var ele of this.dataReturned) {

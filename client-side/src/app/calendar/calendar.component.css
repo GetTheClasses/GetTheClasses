@@ -13,4 +13,9 @@
 
 .chip-list {
 	width: 100%;
-  }
+}
+
+.fc-transparent-event {
+	opacity: 0.3;
+	visibility: hidden;
+}
