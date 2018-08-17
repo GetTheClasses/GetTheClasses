@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TransferDataService } from '../services/transfer-data.service';
 import { CalendarHelperService } from '../services/calendar-helper.service';
+import { HttpMethodService } from '../http-method.service';
+import { environment } from '../../environments/environment';
 
 declare var $: any;
 declare var moment: any;
@@ -14,8 +16,9 @@ declare var moment: any;
 export class CalendarComponent implements OnInit {
   dictTime = { 1: 'm', 2: 't', 3: 'w', 4: 'r', 5: 'f', 6: 's' };
 
-  constructor(private transferDataService: TransferDataService,
-	  private calendarHelperService: CalendarHelperService) { }
+	constructor(private transferDataService: TransferDataService,
+		private calendarHelperService: CalendarHelperService,
+		private methodHelper: HttpMethodService) { }
 
 	courseSelected: any;
 	eventsData: any[] = [];
@@ -370,5 +373,18 @@ export class CalendarComponent implements OnInit {
 
 	getUserID(e): void {
 		this.userID = e;
+		this.methodHelper.get(environment.HOST + '/api/fetchDataOfUser/?userID=' + e)
+		.subscribe((result) => {
+			var events = [];
+			result.forEach((event) => {
+				console.log(event);
+				events.push({
+					start: moment(event.start, "d|HHmm"),
+					end: moment(event.end, "d|HHmm")
+				});
+			});
+			$('#calendar').fullCalendar('removeEvents');
+			$('#calendar').fullCalendar('addEventSource', events);
+		});
 	}
 }

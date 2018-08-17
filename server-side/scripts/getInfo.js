@@ -2,6 +2,7 @@ require('dotenv').config();
 const getClass = require('../firebase/getClassFromDB');
 const getCourse = require('../firebase/getCourseFromDB');
 const getCourseCatalog = require('../firebase/getCourseCatalog');
+const db = require('../firebase/database').database;
 
 async function getClassDetailWithCrn(crn) {
 	return await getClass.getClassDetailWithCrnFromDB(crn);
@@ -35,6 +36,19 @@ async function getAllClassesInCourse(major, courseNumber) {
 	return await getClass.getAllClassesInCourse(major, courseNumber);
 }
 
+async function fetchDataOfUser(userID) {
+	return await new Promise(resolve  => {
+		db.ref('users').child(userID).once('value').then(data => {
+			let result = data.val()
+			let response = []
+			Object.keys(result).forEach(key => {
+				response.push(result[key])
+			})
+			resolve(response);
+		})
+	})
+}
+
 module.exports = {
 	getClassDetailWithCrn,
 	getClassGeneral,
@@ -43,5 +57,6 @@ module.exports = {
 	getAllMajorsName,
 	getAllMajorsAndCourseNumbers,
 	getSpecificMajorCourseNumbers,
-	getAllClassesInCourse
+	getAllClassesInCourse,
+	fetchDataOfUser
 }
