@@ -30,6 +30,7 @@ export class AuthenticationComponent {
 
   signout(): void {
     this.identifier = {success: false} 
+    $("#calendar").fullCalendar("removeEvents");
     this.identify.emit("")
   }
 }

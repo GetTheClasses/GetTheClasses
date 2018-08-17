@@ -138,18 +138,26 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+app.post('/api/signup', (req, res) => {
+    console.log("Recieved call to api/signup")
+    authentication.signup(req.body.email, req.body.password)
+    .then((result) => {
+        res.send(result);
+        console.log("Returned data from api/signup")
+    });
+});
+
 app.get('/api/fetchDataOfUser', (req, res) => {
     console.log("Received call to api/fetchDataOfUser");
     try {
-        if (req.query.userID == undefined || req.query.userID == "")
+        if (req.query.userID == undefined || req.query.userID.length < 10)
             throw "Invalid";
         getInfo.fetchDataOfUser(req.query.userID).then(result => {
             res.send(result);
-            console.log("Returned data from api/fetchDataOfUser")
         });
     }
     catch (err) {
-        console.log(err);
         res.send({success: false})
     }
+    console.log("Returned data from api/fetchDataOfUser")
 });

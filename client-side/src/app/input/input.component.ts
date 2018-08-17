@@ -384,6 +384,6 @@ export class InputComponent implements OnInit {
     }
 
     test() {
-        alert("Test");
+        alert(this.userID);
     }
 }

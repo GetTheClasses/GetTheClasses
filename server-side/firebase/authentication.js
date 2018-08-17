@@ -1,4 +1,25 @@
 const db = require('./database').database;
+const firebase = require('../firebase/database').firebase
+
+async function login(email, password) {
+	return new Promise(resolve => {
+		resolve(firebase.auth().signInWithEmailAndPassword(email, password)
+			.catch(err => {
+				return err.code
+            })
+        )
+	})
+}
+
+async function signup(email, password) {
+    return new Promise(resolve => {
+        resolve(firebase.auth().createUserWithEmailAndPassword(email, password)
+            .catch(err => {
+				return err.code
+            })
+        )
+    })
+}
 
 function saveUserFreeTime(userID, freeTime) {
     db.ref("users/").child(userID).set({})
@@ -8,5 +29,7 @@ function saveUserFreeTime(userID, freeTime) {
 }
 
 module.exports = {
+    login,
+    signup,
     saveUserFreeTime
 }

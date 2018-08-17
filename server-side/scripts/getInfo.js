@@ -39,12 +39,14 @@ async function getAllClassesInCourse(major, courseNumber) {
 async function fetchDataOfUser(userID) {
 	return await new Promise(resolve  => {
 		db.ref('users').child(userID).once('value').then(data => {
-			let result = data.val()
-			let response = []
-			Object.keys(result).forEach(key => {
-				response.push(result[key])
-			})
-			resolve(response);
+			if (data.val()) {
+				let result = data.val()
+				let response = []
+				Object.keys(result).forEach(key => {
+					response.push(result[key])
+				})
+				resolve(response);
+			}
 		})
 	})
 }

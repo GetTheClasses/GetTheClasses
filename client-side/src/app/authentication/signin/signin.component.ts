@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Component, OnInit, ViewEncapsulation, EventEmitter } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { SignupComponent } from '../signup/signup.component';
 import { HttpMethodService } from '../../http-method.service';
 import { environment } from '../../../environments/environment';
@@ -12,8 +12,6 @@ import { environment } from '../../../environments/environment';
 })
 export class SigninComponent implements OnInit {
 
-  onAdd = new EventEmitter();
-
   constructor(public dialog: MatDialog,
     private methodHelper: HttpMethodService) { }
 
@@ -24,13 +22,18 @@ export class SigninComponent implements OnInit {
   private signin_email: string;
   private signin_password: string;
   private error: string = "";
+  public onAdd = new EventEmitter();
 
 	openSignup(): void {
   	this.dialog.closeAll();
   	this.dialog.open(SignupComponent, {
   		height: '350px',
   		width: '350px'
-  	})
+  	}).componentInstance.onAdd.subscribe((data) => {
+      if (data.success) {
+        this.onAdd.emit(data);
+      }
+    });
   }
 
   submit(): void {
@@ -44,6 +47,7 @@ export class SigninComponent implements OnInit {
         this.error = result.error;
       }
       else {
+        console.log(result);
         this.onAdd.emit(result);
         this.dialog.closeAll();
       }
