@@ -375,6 +375,11 @@ export class InputComponent implements OnInit {
 			userID: this.userID,
 			freeTime: userFreeTime
 		})
-		.subscribe();
+		.subscribe((data) => {
+			if (!data.success) 
+				alert(data.result);
+			else
+				console.log(data.result);
+		});
   	}
 }

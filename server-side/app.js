@@ -112,7 +112,19 @@ app.get('/api/getSpecificMajorCourseNumbers', (req, res) => {
 });
 
 app.post('/api/saveUserFreeTime', (req,res) => {
-    console.log(req.body);
+    if (req.body.userID != undefined) {
+        require('./firebase/saveUserFreeTime')(req.body.userID, req.body.freeTime);
+        res.send({
+            success: true,
+            result: "Data saved."
+        })
+    }
+    else {
+        res.send({
+            success: false,
+            result: "You have to login first to save."
+        })
+    }
 })
 
 app.post('/api/login', (req, res) => {

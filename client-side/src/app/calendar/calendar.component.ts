@@ -99,7 +99,6 @@ export class CalendarComponent implements OnInit {
 				}
 				$('#calendar').fullCalendar('unselect');
 				$("#calendar").fullCalendar('addEventSource', [{
-					id: 903139168,
 					start: start,
 					end: end,
 					block: true
