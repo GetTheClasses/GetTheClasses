@@ -118,16 +118,16 @@ app.post('/api/saveUserFreeTime', (req,res) => {
         res.send({
             success: true,
             result: "Data saved."
-        })
+        });
     }
     else {
         res.send({
             success: false,
             result: "You have to login first to save."
-        })
+        });
     }
     console.log("Returned data from api/saveUserFreeTime")
-})
+});
 
 app.post('/api/login', (req, res) => {
     console.log("Recieved call to api/login")
@@ -135,5 +135,29 @@ app.post('/api/login', (req, res) => {
     .then((result) => {
         res.send(result);
         console.log("Returned data from api/login")
-    })
-})
+    });
+});
+
+app.post('/api/signup', (req, res) => {
+    console.log("Recieved call to api/signup")
+    authentication.signup(req.body.email, req.body.password)
+    .then((result) => {
+        res.send(result);
+        console.log("Returned data from api/signup")
+    });
+});
+
+app.get('/api/fetchDataOfUser', (req, res) => {
+    console.log("Received call to api/fetchDataOfUser");
+    try {
+        if (req.query.userID == undefined || req.query.userID.length < 10)
+            throw "Invalid";
+        getInfo.fetchDataOfUser(req.query.userID).then(result => {
+            res.send(result);
+        });
+    }
+    catch (err) {
+        res.send({success: false})
+    }
+    console.log("Returned data from api/fetchDataOfUser")
+});

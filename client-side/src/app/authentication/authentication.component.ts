@@ -1,7 +1,8 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { SigninComponent } from './signin/signin.component';
-import { SignupComponent } from './signup/signup.component';
+
+declare var $: any;
 
 @Component({
   selector: 'app-authentication',
@@ -29,6 +30,7 @@ export class AuthenticationComponent {
 
   signout(): void {
     this.identifier = {success: false} 
+    $("#calendar").fullCalendar("removeEvents");
     this.identify.emit("")
   }
 }

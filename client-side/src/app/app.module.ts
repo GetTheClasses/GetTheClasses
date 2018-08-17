@@ -37,6 +37,7 @@ import { LoaderComponent } from './navigation/loader/loader.component';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { CheckMarkComponent } from './navigation/check-mark/check-mark.component';
 
 
 
@@ -52,7 +53,8 @@ import { MatTableModule } from '@angular/material/table';
     AuthenticationComponent,
     NavigationComponent,
     FooterComponent,
-    LoaderComponent
+    LoaderComponent,
+    CheckMarkComponent
   ],
   imports: [
     BrowserModule,
@@ -87,7 +89,8 @@ import { MatTableModule } from '@angular/material/table';
   bootstrap: [AppComponent],
   entryComponents: [
     SigninComponent,
-    SignupComponent
+    SignupComponent,
+    CheckMarkComponent
   ]
 })
 export class AppModule { }
