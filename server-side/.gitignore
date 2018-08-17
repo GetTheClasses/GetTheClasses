@@ -68,3 +68,5 @@ test.js
 # local data
 defaultData
 scripts/crawlFiles
+scripts/getClasses.js
+scripts/crawlData.js
