@@ -26,11 +26,12 @@ export class CalendarComponent implements OnInit {
 	timeRanges = {};
 	clicked: boolean = false;
 	dateRangeClicked: string = '';
-	private userID = "";
 	timeSetEventsSelected = [];
 	selectable = true;
 	removable = true;
 	id = 3;
+	private userID: string;
+
 
 	calendarCompo() {
 		$('#calendar').fullCalendar({

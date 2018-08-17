@@ -24,10 +24,11 @@ export class AuthenticationComponent {
         this.identifier = data;
         this.identify.emit(data.userID);
       }
-    })
+    });
   }
 
   signout(): void {
-    alert("Working on :P")
+    this.identifier = {success: false} 
+    this.identify.emit("")
   }
 }

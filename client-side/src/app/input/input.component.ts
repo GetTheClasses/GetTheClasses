@@ -26,6 +26,7 @@ export interface Course {
 })
 export class InputComponent implements OnInit {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
+	@Input() userID: string;
 
 	// sections = [];
 	defaultCourses = [];
@@ -256,7 +257,6 @@ export class InputComponent implements OnInit {
 	}
 
 	sectionSelected(section: any) {
-		console.log(section)
 		this.section = section;
 		this.CRN = section.crn;
 		var data = section.courseName;
@@ -365,44 +365,6 @@ export class InputComponent implements OnInit {
 		}
 	}
 
-	sample() {
-	    this.methodHelper.get(environment.HOST + '/api/classDetailInfo/?crn=82849')
-	    .subscribe((data) => {
-	      console.log("Class Detail: ");
-	      console.log(data);
-	    });
-	    this.methodHelper.get(environment.HOST + '/api/classGeneralInfo/?major=CS&courseNumber=1331&crn=82849')
-	    .subscribe((data) => {
-	      console.log("Class General: ");
-	      console.log(data);
-	    });
-	    this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=CS&courseNumber=1331')
-	    .subscribe((data) => {
-	      console.log("Course Detail: ");
-	      console.log(data);
-	    });
-	    this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?major=CS&courseNumber=1331')
-	    .subscribe((data) => {
-	      console.log("Course General: ");
-	      console.log(data);
-	    });
-	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
-	    .subscribe((data) => {
-	      console.log("getAllMajorsName: ");
-	      console.log(data);
-	    });
-	    this.methodHelper.get(environment.HOST + '/api/getAllMajorsAndCourseNumbers')
-	    .subscribe((data) => {
-	      console.log("getAllMajorsAndCourseNumbers: ");
-	      console.log(data);
-	    });
-	    this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=CS')
-	    .subscribe((data) => {
-	      console.log("getSpecificMajorCourseNumbers: ");
-	      console.log(data);
-	    });
-  	}
-
   	saveUserFreeTime() {
   		var userFreeTime = []
 		$('#calendar').fullCalendar('clientEvents').forEach((event) => {
@@ -412,7 +374,19 @@ export class InputComponent implements OnInit {
 			}
 			userFreeTime.push(temp);
 		})
-		this.methodHelper.post(environment.HOST + '/api/saveUserFreeTime', userFreeTime)
-		.subscribe();
-  	}
+		this.methodHelper.post(environment.HOST + '/api/saveUserFreeTime', {
+			userID: this.userID,
+			freeTime: userFreeTime
+		})
+		.subscribe((data) => {
+			if (!data.success) 
+				alert(data.result);
+			else
+				console.log(data.result);
+        });
+    }
+
+    test() {
+        alert(this.userID);
+    }
 }
