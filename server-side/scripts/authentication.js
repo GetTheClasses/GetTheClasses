@@ -1,11 +1,9 @@
 const authentication = require('../firebase/authentication');
 
 async function signin(email, password) {
-	console.log(123)
 	var result = await authentication.login(email, password).catch(err => {
 		return err;
-	})
-	console.log(result);
+	});
 	if (result.user != undefined) {
 		var at = result.user.email.indexOf("@");
 		return {
@@ -82,7 +80,37 @@ async function signup(email, password) {
 	}
 }
 
+async function resetPassword(email) {
+	var result = await authentication.resetPassword(email).catch(err => {
+		return err
+	});
+	if (result == undefined) {
+		return {
+			success: true
+		}
+	}
+	else if (result == 'auth/user-not-found') {
+		return {
+			success: false,
+			error: "Email not found."
+		}
+	}
+	else if (result == 'auth/invalid-email') {
+		return {
+			success: false,
+			error: "The email you entered is not valid."
+		}
+	}
+	else {
+		return {
+			success: false,
+			error: "Error."
+		}
+	}
+}
+
 module.exports = {
 	signin,
-	signup
+	signup,
+	resetPassword
 }

@@ -28,8 +28,17 @@ function saveUserFreeTime(userID, freeTime) {
     })
 }
 
+async function resetPassword(email) {
+    return new Promise(resolve => {
+        resolve(firebase.auth().sendPasswordResetEmail(email).catch(err => {
+            return err.code
+        }));
+    })
+}
+
 module.exports = {
     login,
     signup,
-    saveUserFreeTime
+    saveUserFreeTime,
+    resetPassword
 }

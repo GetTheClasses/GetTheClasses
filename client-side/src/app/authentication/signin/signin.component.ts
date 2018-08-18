@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material';
 import { SignupComponent } from '../signup/signup.component';
 import { HttpMethodService } from '../../http-method.service';
 import { environment } from '../../../environments/environment';
+import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 
 @Component({
   selector: 'app-signin',
@@ -27,13 +28,21 @@ export class SigninComponent implements OnInit {
 	openSignup(): void {
   	this.dialog.closeAll();
   	this.dialog.open(SignupComponent, {
-  		height: '350px',
+  		height: '300px',
   		width: '350px'
   	}).componentInstance.onAdd.subscribe((data) => {
       if (data.success) {
         this.onAdd.emit(data);
       }
     });
+  }
+
+  forgotPassword(): void {
+    this.dialog.closeAll();
+    this.dialog.open(ForgotPasswordComponent, {
+      height: '350px',
+      width: '350px'
+    })
   }
 
   submit(): void {
