@@ -36,10 +36,10 @@
 			</div>
 			<app-loader *ngIf="loading"></app-loader>
 			<div *ngIf="error != ''">
-				<p style="color:red; font-size:10px">{{error}}</p>
+				<p style="color:red; font-size:12px; padding-left:20px; padding-top: 10px;">{{error}}</p>
 			</div>
 			<div class="etc-login-form">
-				<p>Forgot your password? <a href="#">click here</a></p>
+				<p>Forgot your password? <a href="#" (click)="forgotPassword()">Click here</a></p>
 				<p>New user? <a href="#" (click)='openSignup()'>Sign up</a></p>
 			</div>
 		</form>

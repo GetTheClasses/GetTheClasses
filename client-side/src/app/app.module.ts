@@ -38,6 +38,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { CheckMarkComponent } from './navigation/check-mark/check-mark.component';
+import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
 
 
 
@@ -54,7 +55,8 @@ import { CheckMarkComponent } from './navigation/check-mark/check-mark.component
     NavigationComponent,
     FooterComponent,
     LoaderComponent,
-    CheckMarkComponent
+    CheckMarkComponent,
+    ForgotPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -90,7 +92,8 @@ import { CheckMarkComponent } from './navigation/check-mark/check-mark.component
   entryComponents: [
     SigninComponent,
     SignupComponent,
-    CheckMarkComponent
+    CheckMarkComponent,
+    ForgotPasswordComponent
   ]
 })
 export class AppModule { }

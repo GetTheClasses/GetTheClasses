@@ -1,6 +1,5 @@
 import { Component, ViewEncapsulation, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { SigninComponent } from '../signin/signin.component';
 import { HttpMethodService } from '../../http-method.service';
 import { environment } from '../../../environments/environment';
 import { CheckMarkComponent } from '../../navigation/check-mark/check-mark.component';
@@ -23,14 +22,6 @@ export class SignupComponent{
   private signup_confirm_password;
   public onAdd = new EventEmitter();
 
-  openSignin(): void {
-  	this.dialog.closeAll();
-  	this.dialog.open(SigninComponent, {
-  		height: '350px',
-  		width: '350px'
-  	})
-  }
-
   submit(): void {
     if (this.signup_confirm_password == this.signup_password) {
       this.loading = true;
@@ -45,7 +36,9 @@ export class SignupComponent{
         else {
           this.onAdd.emit(result);
           this.dialog.closeAll();
-          this.dialog.open(CheckMarkComponent).afterOpen()
+          this.dialog.open(CheckMarkComponent, {
+            data: "Account Created!"
+          }).afterOpen()
           .subscribe(() => {
             setTimeout(() => this.dialog.closeAll(), 1000);
           });
