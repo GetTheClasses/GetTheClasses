@@ -18,7 +18,7 @@ export class AuthenticationComponent {
 
   openSignin(): void {
   	this.dialog.open(SigninComponent, {
-  		height: '350px',
+  		height: '385px',
   		width: '350px'
   	}).componentInstance.onAdd.subscribe((data) => {
       if (data.success) {

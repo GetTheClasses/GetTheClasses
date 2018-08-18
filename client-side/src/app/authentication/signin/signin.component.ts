@@ -28,7 +28,7 @@ export class SigninComponent implements OnInit {
 	openSignup(): void {
   	this.dialog.closeAll();
   	this.dialog.open(SignupComponent, {
-  		height: '300px',
+  		height: '385px',
   		width: '350px'
   	}).componentInstance.onAdd.subscribe((data) => {
       if (data.success) {
@@ -37,10 +37,10 @@ export class SigninComponent implements OnInit {
     });
   }
 
-  forgotPassword(): void {
+  openForgotPassword(): void {
     this.dialog.closeAll();
     this.dialog.open(ForgotPasswordComponent, {
-      height: '350px',
+      height: '325px',
       width: '350px'
     })
   }
