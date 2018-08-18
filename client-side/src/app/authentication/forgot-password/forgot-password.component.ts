@@ -52,7 +52,7 @@ export class ForgotPasswordComponent implements OnInit {
           data: "Verification Sent!"
         }).afterOpen()
         .subscribe(() => {
-          setTimeout(() => this.dialog.closeAll(), 1500);
+          setTimeout(() => this.dialog.closeAll(), 2000);
         });
       }
       else {
