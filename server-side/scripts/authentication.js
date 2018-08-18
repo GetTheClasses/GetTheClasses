@@ -74,7 +74,7 @@ async function signup(email, password) {
 		else {
 			return {
 				success: false,
-				error: "Operation errors."
+				error: "Invalid username/password."
 			}
 		}
 	}
@@ -95,16 +95,10 @@ async function resetPassword(email) {
 			error: "Email not found."
 		}
 	}
-	else if (result == 'auth/invalid-email') {
-		return {
-			success: false,
-			error: "The email you entered is not valid."
-		}
-	}
 	else {
 		return {
 			success: false,
-			error: "Error."
+			error: "Invalid email."
 		}
 	}
 }

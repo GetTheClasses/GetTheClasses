@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material';
 import { HttpMethodService } from '../../http-method.service';
 import { environment } from '../../../environments/environment';
 import { CheckMarkComponent } from '../../navigation/check-mark/check-mark.component';
+import { SigninComponent } from '../signin/signin.component';
+import { SignupComponent } from '../signup/signup.component';
 
 @Component({
   selector: 'app-forgot-password',
@@ -21,8 +23,25 @@ export class ForgotPasswordComponent implements OnInit {
 
   ngOnInit() {
   }
+  
+  openSignIn(): void {
+    this.dialog.closeAll();
+    this.dialog.open(SigninComponent, {
+      height: '380px',
+      width: '350px'
+    });
+  }
+
+  openSignUp(): void {
+    this.dialog.closeAll();
+    this.dialog.open(SignupComponent, {
+      height: '385px',
+      width: '350px'
+    });
+  }
 
   submit(): void {
+    this.error = "";
     this.loading = true;
     this.methodHelper.post(environment.HOST + "/api/resetPassword", {
       email: this.email

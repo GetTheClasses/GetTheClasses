@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material';
 import { HttpMethodService } from '../../http-method.service';
 import { environment } from '../../../environments/environment';
 import { CheckMarkComponent } from '../../navigation/check-mark/check-mark.component';
+import { SigninComponent } from '../signin/signin.component';
+import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 
 @Component({
   selector: 'app-signup',
@@ -21,6 +23,22 @@ export class SignupComponent{
   private signup_password;
   private signup_confirm_password;
   public onAdd = new EventEmitter();
+
+  openSignIn(): void {
+    this.dialog.closeAll();
+    this.dialog.open(SigninComponent, {
+      height: '385px',
+      width: '350px'
+    });
+  }
+
+  openForgotPassword(): void {
+    this.dialog.closeAll();
+    this.dialog.open(ForgotPasswordComponent, {
+      height: '325px',
+      width: '350px'
+    });
+  }
 
   submit(): void {
     if (this.signup_confirm_password == this.signup_password) {
