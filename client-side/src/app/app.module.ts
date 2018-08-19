@@ -37,6 +37,8 @@ import { LoaderComponent } from './navigation/loader/loader.component';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 
 
 
@@ -81,7 +83,8 @@ import { MatTableModule } from '@angular/material/table';
     MatSidenavModule,
     MatListModule,
     MatPaginatorModule,
-    MatTableModule
+    MatTableModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent],
