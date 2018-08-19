@@ -19,3 +19,8 @@
 	opacity: 0.3;
 	visibility: hidden;
 }
+
+
+.fc-scrollable-event {
+	overflow-y: scroll;
+}

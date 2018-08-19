@@ -8,6 +8,7 @@ import { FormControl } from '@angular/forms'
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { runInThisContext } from 'vm';
 
 declare var $: any;
 declare var moment: any;
@@ -63,9 +64,9 @@ export class InputComponent implements OnInit {
 	courseAutoComplete = new FormControl();
 	typesOfShoes: string[] = ['Option 1'];
 	randomID = 3;
+	otherDataReturn = [];
 
-	constructor(private methodHelper: HttpMethodService,
-		private transferDataService: TransferDataService) { }
+	constructor(private methodHelper: HttpMethodService, private transferDataService: TransferDataService) { }
 
 	private result: any[] = [];
 	private criteria: Criteria[] = [];
@@ -73,28 +74,32 @@ export class InputComponent implements OnInit {
 	private courseNumber: string;
 	private timeSchedule;
 
-	// classDetails: string[] = ['ACCT 2101', 'ACCT 2102'];
 	filteredClassDetails: any[];
 	classChoose: string;
 	classSelected: string = '';
 	classClicked: boolean = false;
 
-	cities = [
-		{id: 1, name: ' AE 1355 - MAV', professor: '', time: 'TR|18002045|T|16301720', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-		{id: 2, name: ' AE 1601 - A', professor: '', time: 'TR|0900045', avatar: '//www.gravatar.com/avatar/ddac2aa63ce82315b513be9dc93336e5?d=retro&r=g&s=15'},
-		{id: 3, name: ' AE 1601 - B', professor: '', time: 'TR|12001315', avatar: '//www.gravatar.com/avatar/6acb7abf486516ab7fb0a6efa372042b?d=retro&r=g&s=15'},
-		{id: 4, name: ' AE 1601 - C', professor: '', time: 'MW|15001615', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-		{id: 5, name: ' AE 2010 - A', professor: '', time: 'MWF|09051015', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-		{id: 6, name: ' AE 2010 - B', professor: '', time: 'MW|13551535', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-		{id: 7, name: ' AE 2010 - R', professor: '', time: 'TWR|11001225', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-	];
+	// cities = [
+	// 	{id: 1, name: ' AE 1355 - MAV', professor: '', time: 'TR|18002045|T|16301720', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
+	// 	{id: 2, name: ' AE 1601 - A', professor: '', time: 'TR|0900045', avatar: '//www.gravatar.com/avatar/ddac2aa63ce82315b513be9dc93336e5?d=retro&r=g&s=15'},
+	// 	{id: 3, name: ' AE 1601 - B', professor: '', time: 'TR|12001315', avatar: '//www.gravatar.com/avatar/6acb7abf486516ab7fb0a6efa372042b?d=retro&r=g&s=15'},
+	// 	{id: 4, name: ' AE 1601 - C', professor: '', time: 'MW|15001615', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
+	// 	{id: 5, name: ' AE 2010 - A', professor: '', time: 'MWF|09051015', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
+	// 	{id: 6, name: ' AE 2010 - B', professor: '', time: 'MW|13551535', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
+	// 	{id: 7, name: ' AE 2010 - R', professor: '', time: 'TWR|11001225', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
+	// ];
 
-	courseList = this.cities.slice();
-	selectedCourse = 'Quick Add';
+	// courseList = this.cities.slice();
+	selectedCourse = 'Quick Add Class';
 
 	onCourseSelect($event) {
-		console.log($event);
-		this.courseClicked.emit($event);
+		this.selectedCourse = 'Quick Add';
+		var dataSend = [$event];
+		dataSend["on/off"] = 1;
+		dataSend["privateID"] = this.randomID;
+		this.randomID += 3;
+		console.log(dataSend);
+		this.courseClicked.emit(dataSend);
 	}
 
 	// CHIPS FUNC
@@ -108,6 +113,7 @@ export class InputComponent implements OnInit {
 		if (index >= 0) {
 			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
+			this.outputLength --;
 		}
 		console.log(course.sectionVal.split(' - '));
 		const sectionIndex = this.crnsList.indexOf(course.sectionVal.split(' - ')[2]);
@@ -134,6 +140,12 @@ export class InputComponent implements OnInit {
 				map(value => this._subjectFilter(value))
 			);
 		});
+
+		// Hover view on dropdown event
+		$("dropdownSelect").on("mouseenter", "card-body", function() {
+			// $(this).find(".dropdown").show();
+			// console.log("work");
+		})
 	}
 
 	private _subjectFilter(value: string): string[] {
@@ -154,6 +166,7 @@ export class InputComponent implements OnInit {
 		// this.outputLength = 0;
 		this.COURSE = '';
 		this.coursePosition = new FormControl(this.subjects[0]);
+		this.outputLength = -1;
 	}
 
 	termSelected(term: string) {
@@ -281,30 +294,44 @@ export class InputComponent implements OnInit {
 					}
 				}
 			}
-			// console.log(this.crnsList);
-			// console.log(this.criteria);
 		}
 	}
 
 	getClasses() {
+		this.dataReturned = [];
+		this.otherDataReturn = [];
 		this.timeSchedule = this.transferDataService.getFreeTime();
-		console.log(this.criteria);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
 			crnList: this.crnsList
 		})
 		.subscribe((data) => {
-			console.log(data);
 			if (data.success) {
 				this.dataReturned = this.resultParse(data);
-				console.log(this.resultParse(data));
 				this.outputLength = data.result.length;
 			} else {
 				this.dataReturned = [];
 				this.outputLength = 0;
+				this.newDataGenerate();
 			}
 		});
+	}
+
+	newDataGenerate() {
+		var output = [];
+		for (var i = 0; i < this.courses.length; i++) {
+			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.courses[i].major + '&courseNumber=' + this.courses[i].courseNumber)
+			.subscribe((data) => {
+				for (var section of data) {
+					output.push(section);
+				}
+			})
+		}
+		setTimeout(() => {
+			this.otherDataReturn = output;
+			console.log(this.otherDataReturn);
+		}, 300)
 	}
 
 	resultParse(data) {
@@ -327,6 +354,7 @@ export class InputComponent implements OnInit {
 
 	onAreaListControlChanged(event) {
 		console.log(this.timeSchedule);
+		console.log(event);
 		if (!this.optionSelectedObject.hasOwnProperty(event)) {
 			this.optionSelectedObject[event] = 1;
 		} else {
@@ -340,6 +368,7 @@ export class InputComponent implements OnInit {
 		var objectVal = [];
 
 		// If the key  == 1 => get data from dataReturned => send emit to calendar to update with crn as id number
+		console.log(this.dataReturned);
 		if (this.optionSelectedObject[event] == 1) {
 			for (var ele of this.dataReturned) {
 				objectVal = ele[event];
@@ -379,7 +408,7 @@ export class InputComponent implements OnInit {
 			freeTime: userFreeTime
 		})
 		.subscribe((data) => {
-			if (!data.success) 
+			if (!data.success)
 				alert(data.result);
 			else
 				console.log(data.result);

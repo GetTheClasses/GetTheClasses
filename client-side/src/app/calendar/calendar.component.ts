@@ -1,10 +1,12 @@
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { element } from 'protractor';
 import { TransferDataService } from './../services/transfer-data.service';
-import { Component, OnInit, ViewEncapsulation, Output } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Output} from '@angular/core';
 import { CalendarHelperService } from '../services/calendar-helper.service';
 import { first } from '../../../node_modules/rxjs/operators';
 import { last } from '../../../node_modules/@angular/router/src/utils/collection';
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 declare var $: any;
 declare var moment: any;
@@ -47,6 +49,7 @@ export class CalendarComponent implements OnInit {
 			unselectAuto: false,
 			snapDuration: '00:05:00',
 			contentHeight: "auto",
+			displayEventTime: false,
 			// eventOverlap: false,
 			eventResize: (event) => {
 				// Handle resize issue here (start-end range is too small)
@@ -186,6 +189,7 @@ export class CalendarComponent implements OnInit {
 
 			// Handle mouse over
 			eventMouseover: function (data) {
+				console.log(data);
 				var timeStart = data.start._i;
 				var timeEnd = data.end._i;
 				var title = data.title;
@@ -261,7 +265,6 @@ export class CalendarComponent implements OnInit {
 	}
 
 	updateCalendar(event, _id) {
-		// $("#calendar").fullCalendar('removeEvents', 903139168);
 		console.log(event);
 		var timeRanges = this.analyzeDates(event.classTime);
 		console.log(timeRanges);
@@ -284,6 +287,7 @@ export class CalendarComponent implements OnInit {
 					resourceEditable: false,
 					durationEditable: false,
 					overlap: false,
+					className: '.fc-scrollable-event'
 				}]);
 			}
 		}
@@ -382,7 +386,7 @@ export class CalendarComponent implements OnInit {
 		var letters = '0123456789ABCDEF'; //HEX
 		var color = '#';
 		for (var i = 0; i < 6; i++) {
-		color += letters[Math.floor(Math.random() * 16)];
+			color += letters[Math.floor(Math.random() * 16)];
 		}
 		return color;
 	}
@@ -451,5 +455,21 @@ export class CalendarComponent implements OnInit {
 
 	getUserID(e): void {
 		this.userID = e;
+	}
+
+	printCalendar(): void {
+		var data = document.getElementById('calendar');
+		html2canvas(data).then(canvas => {
+			var imgWidth = 208;
+			// var pageHeight = 295;
+			var imgHeight = canvas.height * imgWidth / canvas.width;
+			// var heighLeft = imgHeight;
+
+			const contentDataURL = canvas.toDataURL('image/png');
+			let pdf = new jsPDF('l', 'mm', 'a4');
+			var position = 0;
+			pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+			pdf.save('fall-2018.pdf');
+		});
 	}
 }

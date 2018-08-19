@@ -83,11 +83,29 @@
                     </mat-list-option>
                 </mat-selection-list>
         </div>
-
         <div *ngIf="outputLength == 0" class="col">
             <p>
-                No options available. Please try other Time Range!!!
+                We could not find available schedule match with your time range!!! You can try to select the time you like below!
             </p>
+            <div class="row">
+                <!-- New view display -->
+                <div *ngIf="otherDataReturn" class="col containner dropdownSelect">
+                    <ng-select [items]="otherDataReturn" [(ngModel)]="selectedCourse" bindLabel="name" (change)="onCourseSelect($event)">
+                        <ng-template ng-option-tmp let-item="item">
+                            <div style="margin: 10px 0;" class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title" [ngOptionHighlight]="search">{{item.description}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"CRN: " + item.crn + " | Section: " + item.section}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Class Type: " + item.classType}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Professor: " + item.professor.split('|')[0]}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Location: " + item.location.split('|')[0]}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Start/End: " + item.startEnd}}</h6>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                </div>
+            </div>
         </div>
     </div>
 </mat-card>
@@ -121,10 +139,6 @@
 
 <button (click)='saveUserFreeTime()'>Save free time to firebase</button>
 <button (click)='test()'>Test</button>
-<!--
-    Binding Data
-    <app-display-data></app-display-data>
-</mat-card> -->
 
 <!-- <mat-card> -->
         <!-- <div class="col"> -->
