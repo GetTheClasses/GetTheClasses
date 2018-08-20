@@ -4,6 +4,7 @@ import { SignupComponent } from '../signup/signup.component';
 import { HttpMethodService } from '../../http-method.service';
 import { environment } from '../../../environments/environment';
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
+import { CheckMarkComponent } from '../../navigation/check-mark/check-mark.component';
 
 @Component({
   selector: 'app-signin',
@@ -56,9 +57,14 @@ export class SigninComponent implements OnInit {
         this.error = result.error;
       }
       else {
-        console.log(result);
         this.onAdd.emit(result);
         this.dialog.closeAll();
+        this.dialog.open(CheckMarkComponent, {
+          data: "Signed in as " + result.name 
+        }).afterOpen()
+        .subscribe(() => {
+          setTimeout(() => this.dialog.closeAll(), 1500);
+        });
       }
       this.loading = false;
     })
