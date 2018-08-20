@@ -8,7 +8,6 @@ async function readSpecific(url, key, value) {
 			for (key in snapshot.val()) {
 				result.push(snapshot.val()[key]);
 			}
-			console.log(result)
 			resolve(result);
 		});
 	})

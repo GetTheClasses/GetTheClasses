@@ -20,7 +20,6 @@ app.get('/api/ping', (req, res) => {
 });
 
 app.route('/api/course').post((req, res) => {
-    console.log(req.body);
     console.log("Recieved call to api/course")
     if (req.body.freeTime == undefined)
         req.body.freeTime = null;
