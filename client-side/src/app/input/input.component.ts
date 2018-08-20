@@ -33,7 +33,6 @@ export class InputComponent implements OnInit {
 	defaultCourses = [];
 	coursePosition = new FormControl(this.defaultCourses[0]);
 	subjects: string[] = ['--'];
-	// terms = ['Fall 2018', 'Summer 2018', 'Spring 2018', 'Fall 2017', 'Summer 2017', 'Spring 2017'];
 	terms = ['Fall 2018'];
 	position = new FormControl(this.terms[0]);
 	filteredsubject: any[];
@@ -79,17 +78,6 @@ export class InputComponent implements OnInit {
 	classSelected: string = '';
 	classClicked: boolean = false;
 
-	// cities = [
-	// 	{id: 1, name: ' AE 1355 - MAV', professor: '', time: 'TR|18002045|T|16301720', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-	// 	{id: 2, name: ' AE 1601 - A', professor: '', time: 'TR|0900045', avatar: '//www.gravatar.com/avatar/ddac2aa63ce82315b513be9dc93336e5?d=retro&r=g&s=15'},
-	// 	{id: 3, name: ' AE 1601 - B', professor: '', time: 'TR|12001315', avatar: '//www.gravatar.com/avatar/6acb7abf486516ab7fb0a6efa372042b?d=retro&r=g&s=15'},
-	// 	{id: 4, name: ' AE 1601 - C', professor: '', time: 'MW|15001615', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-	// 	{id: 5, name: ' AE 2010 - A', professor: '', time: 'MWF|09051015', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-	// 	{id: 6, name: ' AE 2010 - B', professor: '', time: 'MW|13551535', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-	// 	{id: 7, name: ' AE 2010 - R', professor: '', time: 'TWR|11001225', avatar: '//www.gravatar.com/avatar/b0d8c6e5ea589e6fc3d3e08afb1873bb?d=retro&r=g&s=30 2x'},
-	// ];
-
-	// courseList = this.cities.slice();
 	selectedCourse = 'Quick Add Class';
 
 	onCourseSelect($event) {
@@ -98,7 +86,6 @@ export class InputComponent implements OnInit {
 		dataSend["on/off"] = 1;
 		dataSend["privateID"] = this.randomID;
 		this.randomID += 3;
-		console.log(dataSend);
 		this.courseClicked.emit(dataSend);
 	}
 
@@ -111,13 +98,10 @@ export class InputComponent implements OnInit {
 	remove(course: Criteria): void {
 		const index = this.courses.indexOf(course);
 		if (index >= 0) {
-			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
 			this.outputLength --;
 		}
-		console.log(course.sectionVal.split(' - '));
 		const sectionIndex = this.crnsList.indexOf(course.sectionVal.split(' - ')[2]);
-		console.log(sectionIndex);
 		if (sectionIndex >= 0) {
 			this.crnsList.splice(sectionIndex, 1);
 		}
@@ -140,17 +124,10 @@ export class InputComponent implements OnInit {
 				map(value => this._subjectFilter(value))
 			);
 		});
-
-		// Hover view on dropdown event
-		$("dropdownSelect").on("mouseenter", "card-body", function() {
-			// $(this).find(".dropdown").show();
-			// console.log("work");
-		})
 	}
 
 	private _subjectFilter(value: string): string[] {
 		const filterValue = value.toLowerCase();
-		// console.log(this.subjects);
 		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
 	  }
 
@@ -163,20 +140,17 @@ export class InputComponent implements OnInit {
 		this.criteria = [];
 		this.crnsList = [];
 		this.courses = this.criteria;
-		// this.outputLength = 0;
 		this.COURSE = '';
 		this.coursePosition = new FormControl(this.subjects[0]);
 		this.outputLength = -1;
 	}
 
 	termSelected(term: string) {
-		console.log(term);
 		this.TERM = term;
 	}
 
 	// Subject Autocomplete data binding
 	keySubjectSelected(event) {
-		console.log(event.target.value);
 		if (event.code == "Enter") {
 			this.subjectSelected(event.target.value);
 		}
@@ -187,7 +161,6 @@ export class InputComponent implements OnInit {
 	}
 
 	subjectSelected(subject: string) {
-		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
 			this.COURSE = '--';
@@ -206,14 +179,12 @@ export class InputComponent implements OnInit {
 			}
 			else {
 				this.defaultCourses = this.saveSubjects[subject]
-				console.log(this.defaultCourses);
 			}
 		}
 	}
 
 	// Subject Autocomplete data binding
 	keyCourseSelected(event) {
-		console.log(event.target.value);
 		if (event.code == "Enter") {
 			this.courseSelected(event.target.value);
 		}
@@ -255,13 +226,10 @@ export class InputComponent implements OnInit {
 			if (!hasCourse) {
 				this.criteria.push(temp);
 			}
-			console.log(this.criteria);
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
 				this.sectionsData = data;
-				console.log(this.crnsList);
 			})
-			console.log(this.criteria);
 		}
 	}
 
@@ -273,7 +241,6 @@ export class InputComponent implements OnInit {
 		this.section = section;
 		this.CRN = section.crn;
 		var data = section.courseName;
-		// console.log(this.CRN);
 
 		// If section selected
 		if (this.section != '') {
@@ -307,6 +274,7 @@ export class InputComponent implements OnInit {
 			crnList: this.crnsList
 		})
 		.subscribe((data) => {
+			// this.courseClicked.emit("");
 			if (data.success) {
 				this.dataReturned = this.resultParse(data);
 				this.outputLength = data.result.length;
@@ -330,7 +298,6 @@ export class InputComponent implements OnInit {
 		}
 		setTimeout(() => {
 			this.otherDataReturn = output;
-			console.log(this.otherDataReturn);
 		}, 300)
 	}
 
@@ -353,8 +320,6 @@ export class InputComponent implements OnInit {
 	}
 
 	onAreaListControlChanged(event) {
-		console.log(this.timeSchedule);
-		console.log(event);
 		if (!this.optionSelectedObject.hasOwnProperty(event)) {
 			this.optionSelectedObject[event] = 1;
 		} else {
@@ -364,7 +329,6 @@ export class InputComponent implements OnInit {
 		var remi = value % 2;
 		// Update object
 		this.optionSelectedObject[event] = remi;
-		console.log(this.optionSelectedObject);
 		var objectVal = [];
 
 		// If the key  == 1 => get data from dataReturned => send emit to calendar to update with crn as id number
@@ -387,7 +351,6 @@ export class InputComponent implements OnInit {
 				if (ele[event]) {
 					objectVal['on/off'] = 0;
 					var dataSend = objectVal;
-					console.log(dataSend);
 					this.courseClicked.emit(dataSend);
 				}
 			}
