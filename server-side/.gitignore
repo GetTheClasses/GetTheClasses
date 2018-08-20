@@ -68,3 +68,4 @@ test.js
 # local data
 defaultData/newCoursesData.json
 defaultData/oldCoursesData.json
+scripts/crawlData.js
