@@ -16,8 +16,8 @@
 }
 
 .fc-transparent-event {
-	opacity: 0.3;
-	visibility: hidden;
+	opacity: 1;
+	/* visibility: hidden; */
 }
 
 
