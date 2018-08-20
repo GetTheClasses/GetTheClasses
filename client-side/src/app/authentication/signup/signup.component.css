@@ -295,3 +295,13 @@ label:hover:before {
   border-radius: 15px;
   background-color: #F7F7F7;
 }
+
+a {
+  color: #428bca;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}

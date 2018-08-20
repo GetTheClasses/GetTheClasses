@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { SigninComponent } from './signin/signin.component';
-import { SignupComponent } from './signup/signup.component';
+
+declare var $: any;
 
 @Component({
   selector: 'app-authentication',
@@ -10,19 +11,26 @@ import { SignupComponent } from './signup/signup.component';
 })
 export class AuthenticationComponent {
 
+  @Output() identify = new EventEmitter();
+
   constructor(public dialog: MatDialog) { }
+  private identifier = {success:false};
 
   openSignin(): void {
   	this.dialog.open(SigninComponent, {
-  		height: '350px',
+  		height: '385px',
   		width: '350px'
-  	})
-  } 
+  	}).componentInstance.onAdd.subscribe((data) => {
+      if (data.success) {
+        this.identifier = data;
+        this.identify.emit(data.userID);
+      }
+    });
+  }
 
-  openSignup(): void {
-  	this.dialog.open(SignupComponent, {
-  		height: '350px',
-  		width: '350px'
-  	})
-  } 
+  signout(): void {
+    this.identifier = {success: false} 
+    $("#calendar").fullCalendar("removeEvents");
+    this.identify.emit("");
+  }
 }

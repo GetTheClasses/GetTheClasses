@@ -1,4 +1,4 @@
-const database = require('./database');
+const database = require('./database').database;
 
 async function readSpecific(url, key, value) {
 	return new Promise((resolve) => {
@@ -8,7 +8,6 @@ async function readSpecific(url, key, value) {
 			for (key in snapshot.val()) {
 				result.push(snapshot.val()[key]);
 			}
-			console.log(result)
 			resolve(result);
 		});
 	})

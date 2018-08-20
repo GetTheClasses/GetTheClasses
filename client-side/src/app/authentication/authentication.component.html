@@ -1,3 +1,5 @@
-<button class="btn btn-outline-primary my-2 my-sm-0" (click)="openSignin()">Sign in</button> 
-&nbsp;or&nbsp;
-<button class="btn btn-outline-primary my-2 my-sm-0" (click)="openSignup()">Sign up</button>
+<button *ngIf="!identifier.success" class="btn btn-outline-primary my-2 my-sm-0" (click)="openSignin()" style="font-family: 'Roboto', sans-serif;">Login</button>
+<div *ngIf="identifier.success">
+	Hi, <span>{{identifier.name}}</span> &nbsp;
+	<button class="btn btn-outline-primary my-2 my-sm-0" (click)="signout()" style="font-family: 'Roboto', sans-serif;">Sign out</button>
+</div>

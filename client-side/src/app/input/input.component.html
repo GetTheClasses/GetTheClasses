@@ -36,10 +36,8 @@
                 </mat-autocomplete>
             </mat-form-field>
         </div>
-    </div>
 
-    <div *ngIf="COURSE != '' && COURSE != '--'" class="form-row">
-        <div class="col containner">
+        <div  *ngIf="COURSE != '' && COURSE != '--'" class="col containner">
             <mat-form-field appearance="outline">
                 <mat-label>sections (Optional)</mat-label>
                 <mat-select placeholder="Select section" (selectionChange)="sectionSelected($event.value)">
@@ -78,30 +76,42 @@
 
 <mat-card *ngIf="outputLength >= 0">
     <div class="form-row">
+        <mat-slide-toggle>Fix Time Select</mat-slide-toggle>
         <div *ngIf="outputLength > 0" class="col">
-            <p>
-                We found some available options
-                <button mat-raised-button color="primary"
-                    matBadge="{{outputLength}}" matBadgePosition="before" matBadgeColor="accent" (click)="viewDetailsClicked()">
-                    View Detail
-                </button>
-            </p>
+                <mat-selection-list #option>
+                    <mat-list-option *ngFor="let option of keysListOption; let i = index" [attr.data-index]="i" (click)="onAreaListControlChanged(option)">
+                        {{option}}
+                    </mat-list-option>
+                </mat-selection-list>
         </div>
-
         <div *ngIf="outputLength == 0" class="col">
             <p>
-                No options available. Please try other Time Range!!!
+                We could not find available schedule match with your time range!!! You can try to select the time you like below!
             </p>
-        </div>
-    </div>
-    <div *ngIf="viewDetails" class="form-row">
-        <div class="col" *ngFor="let data of dataReturned; let i = index">
-            {{i}}
+            <div class="row">
+                <!-- New view display -->
+                <div *ngIf="otherDataReturn" class="col containner dropdownSelect">
+                    <ng-select [items]="otherDataReturn" [(ngModel)]="selectedCourse" bindLabel="name" (change)="onCourseSelect($event)">
+                        <ng-template ng-option-tmp let-item="item">
+                            <div style="margin: 10px 0;" class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title" [ngOptionHighlight]="search">{{item.description}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"CRN: " + item.crn + " | Section: " + item.section}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Class Type: " + item.classType}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Professor: " + item.professor.split('|')[0]}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Location: " + item.location.split('|')[0]}}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{"Start/End: " + item.startEnd}}</h6>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                </div>
+            </div>
         </div>
     </div>
 </mat-card>
 
-<mat-card>
+<!-- <mat-card>
     <p> Test component </p>
      <div class="row">
         <div class="col">
@@ -126,9 +136,17 @@
             <p> Thinh nguyen</p>
         </div>
     </div> <br><br>
-</mat-card> <br>
+</mat-card> <br> -->
 
-<mat-card>
-    Binding Data
-    <app-display-data></app-display-data>
-</mat-card>
+<button (click)='saveUserFreeTime()'>Save free time to firebase</button>
+<button (click)='test()'>Test</button>
+
+<!-- <mat-card> -->
+        <!-- <div class="col"> -->
+                <!-- <mat-selection-list #option>
+                        <mat-list-option *ngFor="let option of typesOfShoes" (click)="onAreaListControlChanged(option)">
+                            {{option}}
+                        </mat-list-option>
+                    </mat-selection-list> -->
+        <!-- </div> -->
+<!-- </mat-card> -->

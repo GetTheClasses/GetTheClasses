@@ -34,6 +34,15 @@ import { AuthenticationComponent } from './authentication/authentication.compone
 import { NavigationComponent } from './navigation/navigation.component';
 import { FooterComponent } from './footer/footer.component';
 import { LoaderComponent } from './navigation/loader/loader.component';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { CheckMarkComponent } from './navigation/check-mark/check-mark.component';
+import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
+
+
 
 @NgModule({
   declarations: [
@@ -47,7 +56,9 @@ import { LoaderComponent } from './navigation/loader/loader.component';
     AuthenticationComponent,
     NavigationComponent,
     FooterComponent,
-    LoaderComponent
+    LoaderComponent,
+    CheckMarkComponent,
+    ForgotPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -73,13 +84,20 @@ import { LoaderComponent } from './navigation/loader/loader.component';
     MatBadgeModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatListModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent],
   entryComponents: [
     SigninComponent,
-    SignupComponent
+    SignupComponent,
+    CheckMarkComponent,
+    ForgotPasswordComponent
   ]
 })
 export class AppModule { }

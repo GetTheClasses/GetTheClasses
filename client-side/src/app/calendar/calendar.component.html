@@ -1,10 +1,26 @@
+<app-navigation (userID)="getUserID($event)" (pdfJS)="printCalendar()"></app-navigation>
+<br>
 <div class="row">
 	<div class="col-8">
 		<mat-card>
-			<div style="color:blue;" id="calendar"></div>
+				<!-- <div class="row">
+					<mat-form-field *ngIf="timeSetEventsSelected.length > 0" class="chip-list" style="overflow-x: scroll;">
+						<mat-label>Time Selected</mat-label>
+						<mat-chip-list #chipList style="overflow-x: scroll;">
+							<mat-chip style="overflow-x: scroll;" *ngFor="let time of timeSetEventsSelected" [selectable]="selectable"
+									[removable]="removable" (removed)="remove(time)" selected [color]="accent" >
+									{{time.date + " : " + time.time}}
+								<mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+							</mat-chip>
+						</mat-chip-list>
+					</mat-form-field>
+				</div> -->
+				<div class="row">
+					<div style="color:blue;" id="calendar"></div>
+				</div>
 		</mat-card>
 	</div>
 	<div class="col-4">
-		<app-input (courseClicked)="recieveMess($event)"></app-input>
+		<app-input [userID]="userID" (courseClicked)="recieveMess($event)"></app-input>
 	</div>
 </div>

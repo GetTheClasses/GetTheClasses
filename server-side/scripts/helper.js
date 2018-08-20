@@ -138,7 +138,6 @@ function reformatDate(str) {
 
 // Get out the credit number
 function findCredit(str) {
-    console.log(str);
     return str.slice(str.indexOf('.000 Credits') - 1, str.indexOf('.000 Credits')) + '.00';
 }
 // console.log(findCredit(    "Aero Sys Design Comp I \nAssociated Term: Fall 2018 \nRegistration Dates: Mar 26, 2018 to Aug 24, 2018 \nLevels: Graduate Semester, Undergraduate Semester \n\nGeorgia Tech-Atlanta * Campus \nLecture/Supervised Lab* Schedule Type \n3.000 Credits \nGrade Basis: L \nView Catalog Entry \n\nScheduled Meeting Times\nType\tTime\tDays\tWhere\tDate Range\tSchedule Type\tInstructors\nClass\t6:00 pm - 8:45 pm\tTR\tGuggenheim 244\tAug 20, 2018 - Dec 13, 2018\tSupervised Laboratory*\tDimitrios N Mavris (P), Carl Christopher Johnson \nClass\t4:30 pm - 5:20 pm\tT\tGuggenheim 244\tAug 20, 2018 - Dec 13, 2018\tLecture*\tDimitrios N Mavris (P), Carl Christopher Johnson \n\n\n"
@@ -206,6 +205,25 @@ function scheduleData(str) {
     return output;
 }
 
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
+
 setInterval(() => {
     http.get(process.env.HOST + "/api/ping");
 }, 900000);
@@ -221,5 +239,6 @@ module.exports = {
 	classNumber,
     reformatDate,
     findCredit,
-    scheduleData
+    scheduleData,
+    shuffle
 }
