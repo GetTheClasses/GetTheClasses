@@ -15,3 +15,12 @@
 	width: 100%;
 }
 
+.fc-transparent-event {
+	opacity: 1;
+	/* visibility: hidden; */
+}
+
+
+.fc-scrollable-event {
+	overflow-y: scroll;
+}

@@ -37,6 +37,8 @@ import { LoaderComponent } from './navigation/loader/loader.component';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CheckMarkComponent } from './navigation/check-mark/check-mark.component';
 import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
 
@@ -85,7 +87,9 @@ import { ForgotPasswordComponent } from './authentication/forgot-password/forgot
     MatSidenavModule,
     MatListModule,
     MatPaginatorModule,
-    MatTableModule
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent],
