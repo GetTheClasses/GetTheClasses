@@ -57,7 +57,6 @@ export class SigninComponent implements OnInit {
         this.error = result.error;
       }
       else {
-        console.log(result);
         this.onAdd.emit(result);
         this.dialog.closeAll();
         this.dialog.open(CheckMarkComponent, {

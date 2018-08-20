@@ -327,6 +327,7 @@ export class InputComponent implements OnInit {
 		}
 		var value = this.optionSelectedObject[event];
 		var remi = value % 2;
+
 		// Update object
 		this.optionSelectedObject[event] = remi;
 		var objectVal = [];
@@ -340,7 +341,6 @@ export class InputComponent implements OnInit {
 					objectVal['on/off'] = 1;
 					objectVal['privateID'] = this.randomID;
 					var dataSend = objectVal;
-					console.log(dataSend);
 					this.courseClicked.emit(dataSend);
 				}
 				this.randomID += 3;
@@ -373,8 +373,6 @@ export class InputComponent implements OnInit {
 		.subscribe((data) => {
 			if (!data.success)
 				alert(data.result);
-			else
-				console.log(data.result);
         });
     }
 
@@ -383,6 +381,6 @@ export class InputComponent implements OnInit {
 	}
 	hoverOption(index) {
 		var item = this.dataReturned[index];
-		console.log(item[Object.keys(item)[0]])
+		// console.log(item[Object.keys(item)[0]])
 	}
 }
