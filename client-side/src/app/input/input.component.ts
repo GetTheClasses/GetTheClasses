@@ -92,7 +92,6 @@ export class InputComponent implements OnInit {
 	selectedCourse = 'Quick Add';
 
 	onCourseSelect($event) {
-		console.log($event);
 		this.courseClicked.emit($event);
 	}
 
@@ -108,9 +107,7 @@ export class InputComponent implements OnInit {
 			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
 		}
-		console.log(course.sectionVal.split(' - '));
 		const sectionIndex = this.crnsList.indexOf(course.sectionVal.split(' - ')[2]);
-		console.log(sectionIndex);
 		if (sectionIndex >= 0) {
 			this.crnsList.splice(sectionIndex, 1);
 		}
@@ -137,7 +134,6 @@ export class InputComponent implements OnInit {
 
 	private _subjectFilter(value: string): string[] {
 		const filterValue = value.toLowerCase();
-		// console.log(this.subjects);
 		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
 	  }
 
@@ -156,13 +152,11 @@ export class InputComponent implements OnInit {
 	}
 
 	termSelected(term: string) {
-		console.log(term);
 		this.TERM = term;
 	}
 
 	// Subject Autocomplete data binding
 	keySubjectSelected(event) {
-		console.log(event.target.value);
 		if (event.code == "Enter") {
 			this.subjectSelected(event.target.value);
 		}
@@ -173,7 +167,6 @@ export class InputComponent implements OnInit {
 	}
 
 	subjectSelected(subject: string) {
-		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
 			this.COURSE = '--';
@@ -199,7 +192,6 @@ export class InputComponent implements OnInit {
 
 	// Subject Autocomplete data binding
 	keyCourseSelected(event) {
-		console.log(event.target.value);
 		if (event.code == "Enter") {
 			this.courseSelected(event.target.value);
 		}
@@ -241,13 +233,10 @@ export class InputComponent implements OnInit {
 			if (!hasCourse) {
 				this.criteria.push(temp);
 			}
-			console.log(this.criteria);
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
 				this.sectionsData = data;
-				console.log(this.crnsList);
 			})
-			console.log(this.criteria);
 		}
 	}
 
@@ -259,7 +248,6 @@ export class InputComponent implements OnInit {
 		this.section = section;
 		this.CRN = section.crn;
 		var data = section.courseName;
-		// console.log(this.CRN);
 
 		// If section selected
 		if (this.section != '') {
@@ -280,24 +268,19 @@ export class InputComponent implements OnInit {
 					}
 				}
 			}
-			// console.log(this.crnsList);
-			// console.log(this.criteria);
 		}
 	}
 
 	getClasses() {
 		this.timeSchedule = this.transferDataService.getFreeTime();
-		console.log(this.criteria);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
 			crnList: this.crnsList
 		})
 		.subscribe((data) => {
-			console.log(data);
 			if (data.success) {
 				this.dataReturned = this.resultParse(data);
-				console.log(this.resultParse(data));
 				this.outputLength = data.result.length;
 			} else {
 				this.dataReturned = [];
@@ -325,7 +308,6 @@ export class InputComponent implements OnInit {
 	}
 
 	onAreaListControlChanged(event) {
-		console.log(this.timeSchedule);
 		if (!this.optionSelectedObject.hasOwnProperty(event)) {
 			this.optionSelectedObject[event] = 1;
 		} else {
@@ -333,9 +315,9 @@ export class InputComponent implements OnInit {
 		}
 		var value = this.optionSelectedObject[event];
 		var remi = value % 2;
+
 		// Update object
 		this.optionSelectedObject[event] = remi;
-		console.log(this.optionSelectedObject);
 		var objectVal = [];
 
 		// If the key  == 1 => get data from dataReturned => send emit to calendar to update with crn as id number
@@ -345,7 +327,6 @@ export class InputComponent implements OnInit {
 				if (ele[event]) {
 					objectVal['on/off'] = 1;
 					var dataSend = objectVal;
-					console.log(dataSend);
 					this.courseClicked.emit(dataSend);
 				}
 			}
@@ -355,7 +336,6 @@ export class InputComponent implements OnInit {
 				if (ele[event]) {
 					objectVal['on/off'] = 0;
 					var dataSend = objectVal;
-					console.log(dataSend);
 					this.courseClicked.emit(dataSend);
 				}
 			}
@@ -378,8 +358,6 @@ export class InputComponent implements OnInit {
 		.subscribe((data) => {
 			if (!data.success) 
 				alert(data.result);
-			else
-				console.log(data.result);
         });
     }
 
@@ -388,6 +366,6 @@ export class InputComponent implements OnInit {
 	}
 	hoverOption(index) {
 		var item = this.dataReturned[index];
-		console.log(item[Object.keys(item)[0]])
+		// console.log(item[Object.keys(item)[0]])
 	}
 }

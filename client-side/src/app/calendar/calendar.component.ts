@@ -45,8 +45,6 @@ export class CalendarComponent implements OnInit {
 			eventOverlap: false,
 			eventResize: (event) => {
 				// Handle resize issue here (start-end range is too small)
-				console.log(event.start.format("HH:mm"));
-				console.log(event.end.format("HH:mm"));
 			},
 			selectConstraint: {
 				start: "08:00",
@@ -183,7 +181,6 @@ export class CalendarComponent implements OnInit {
 	}
 
 	recieveMess($event) {
-		console.log($event);
 		var eventCloseorOpen = $event["on/off"];
 		// if status == 1 then update
 		if (eventCloseorOpen == 1) {
@@ -246,9 +243,7 @@ export class CalendarComponent implements OnInit {
 
 	updateCalendar(event) {
 		$("#calendar").fullCalendar('removeEvents', 903139168);
-		console.log(event);
 		var timeRanges = this.analyzeDates(event.classTime);
-		console.log(timeRanges);
 		var timeStarts = this.analyzetimeStart(event.classTime);
 		var timeEnds = this.analyzetimeEnd(event.classTime);
 		this.eventsData = [];
@@ -376,15 +371,16 @@ export class CalendarComponent implements OnInit {
 		this.methodHelper.get(environment.HOST + '/api/fetchDataOfUser/?userID=' + e)
 		.subscribe((result) => {
 			var events = [];
-			result.forEach((event) => {
-				console.log(event);
-				events.push({
-					start: moment(event.start, "d|HHmm"),
-					end: moment(event.end, "d|HHmm")
+			if (result.success) {
+				result.forEach((event) => {
+					events.push({
+						start: moment(event.start, "d|HHmm"),
+						end: moment(event.end, "d|HHmm")
+					});
 				});
-			});
-			$('#calendar').fullCalendar('removeEvents');
-			$('#calendar').fullCalendar('addEventSource', events);
+				$('#calendar').fullCalendar('removeEvents');
+				$('#calendar').fullCalendar('addEventSource', events);
+			}
 		});
 	}
 }
