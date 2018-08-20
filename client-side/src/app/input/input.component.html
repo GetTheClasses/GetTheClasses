@@ -36,10 +36,8 @@
                 </mat-autocomplete>
             </mat-form-field>
         </div>
-    </div>
 
-    <div *ngIf="COURSE != '' && COURSE != '--'" class="form-row">
-        <div class="col containner">
+        <div  *ngIf="COURSE != '' && COURSE != '--'" class="col containner">
             <mat-form-field appearance="outline">
                 <mat-label>sections (Optional)</mat-label>
                 <mat-select placeholder="Select section" (selectionChange)="sectionSelected($event.value)">
@@ -79,13 +77,11 @@
 <mat-card *ngIf="outputLength >= 0">
     <div class="form-row">
         <div *ngIf="outputLength > 0" class="col">
-            <p>
-                We found some available options
-                <button mat-raised-button color="primary"
-                    matBadge="{{outputLength}}" matBadgePosition="before" matBadgeColor="accent" (click)="viewDetailsClicked()">
-                    View Detail
-                </button>
-            </p>
+                <mat-selection-list #option>
+                    <mat-list-option *ngFor="let option of keysListOption; let i = index" [attr.data-index]="i" (click)="onAreaListControlChanged(option)">
+                        {{option}}
+                    </mat-list-option>
+                </mat-selection-list>
         </div>
 
         <div *ngIf="outputLength == 0" class="col">
@@ -94,14 +90,9 @@
             </p>
         </div>
     </div>
-    <div *ngIf="viewDetails" class="form-row">
-        <div class="col" *ngFor="let data of dataReturned; let i = index">
-            {{i}}
-        </div>
-    </div>
 </mat-card>
 
-<mat-card>
+<!-- <mat-card>
     <p> Test component </p>
      <div class="row">
         <div class="col">
@@ -126,9 +117,21 @@
             <p> Thinh nguyen</p>
         </div>
     </div> <br><br>
-</mat-card> <br>
+</mat-card> <br> -->
 
-<mat-card>
+<button (click)='saveUserFreeTime()'>Save free time to firebase</button>
+<button (click)='test()'>Test</button>
+<!--
     Binding Data
     <app-display-data></app-display-data>
-</mat-card>
+</mat-card> -->
+
+<!-- <mat-card> -->
+        <!-- <div class="col"> -->
+                <!-- <mat-selection-list #option>
+                        <mat-list-option *ngFor="let option of typesOfShoes" (click)="onAreaListControlChanged(option)">
+                            {{option}}
+                        </mat-list-option>
+                    </mat-selection-list> -->
+        <!-- </div> -->
+<!-- </mat-card> -->

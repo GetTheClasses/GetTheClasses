@@ -66,5 +66,5 @@ scripts/text.txt
 test.js
 
 # local data
-defaultData
-scripts/crawlFiles
+defaultData/newCoursesData.json
+defaultData/oldCoursesData.json

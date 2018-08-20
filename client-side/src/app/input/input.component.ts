@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, ChangeDetectionStrategy, EventEmitter, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { Criteria } from '../models/criteria';
 import { HttpMethodService } from '../http-method.service';
 import { CourseCriteria } from '../models/courseCriteria';
@@ -9,6 +9,9 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
+declare var $: any;
+declare var moment: any;
+
 export interface Course {
 	name: string;
 	courseNum: string;
@@ -17,12 +20,13 @@ export interface Course {
 	selector: 'app-input',
 	templateUrl: './input.component.html',
 	styleUrls: [
-					'./input.component.css',
-					"../../../node_modules/primeng/resources/themes/bootstrap/theme.css"
+		'./input.component.css',
+		"../../../node_modules/primeng/resources/themes/bootstrap/theme.css"
 	]
 })
-export class InputComponent {
+export class InputComponent implements OnInit {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
+	@Input() userID: string;
 
 	// sections = [];
 	defaultCourses = [];
@@ -50,11 +54,14 @@ export class InputComponent {
 	saveSubjects = {};
 	sectionsData = [];
 	crnsList = [];
+	keysListOption = [];
+	optionSelectedObject = {};
 	// AutoComplete
 	filteredOptions: Observable<string[]>;
 	subjectAutoComplete = new FormControl();
 	courseFilter: Observable<string[]>;
 	courseAutoComplete = new FormControl();
+	typesOfShoes: string[] = ['Option 1'];
 
 	constructor(private methodHelper: HttpMethodService,
 		private transferDataService: TransferDataService) { }
@@ -100,9 +107,7 @@ export class InputComponent {
 			// this.defaultCourses.push(course.courseNumber);
 			this.courses.splice(index, 1);
 		}
-		console.log(course.sectionVal.split(' - '));
 		const sectionIndex = this.crnsList.indexOf(course.sectionVal.split(' - ')[2]);
-		console.log(sectionIndex);
 		if (sectionIndex >= 0) {
 			this.crnsList.splice(sectionIndex, 1);
 		}
@@ -129,7 +134,6 @@ export class InputComponent {
 
 	private _subjectFilter(value: string): string[] {
 		const filterValue = value.toLowerCase();
-		console.log(this.subjects);
 		return this.subjects.filter(option => option.toLowerCase().includes(filterValue));
 	  }
 
@@ -148,13 +152,11 @@ export class InputComponent {
 	}
 
 	termSelected(term: string) {
-		console.log(term);
 		this.TERM = term;
 	}
 
 	// Subject Autocomplete data binding
 	keySubjectSelected(event) {
-		console.log(event.target.value);
 		if (event.code == "Enter") {
 			this.subjectSelected(event.target.value);
 		}
@@ -165,7 +167,6 @@ export class InputComponent {
 	}
 
 	subjectSelected(subject: string) {
-		console.log(subject);
 		if (subject == '' || subject == '--') {
 			this.SUBJECT = '';
 			this.COURSE = '--';
@@ -191,7 +192,6 @@ export class InputComponent {
 
 	// Subject Autocomplete data binding
 	keyCourseSelected(event) {
-		console.log(event.target.value);
 		if (event.code == "Enter") {
 			this.courseSelected(event.target.value);
 		}
@@ -233,13 +233,10 @@ export class InputComponent {
 			if (!hasCourse) {
 				this.criteria.push(temp);
 			}
-			console.log(this.criteria);
 			this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=' + this.SUBJECT +'&courseNumber=' + course)
 			.subscribe((data) => {
 				this.sectionsData = data;
-				console.log(this.crnsList);
 			})
-			console.log(this.criteria);
 		}
 	}
 
@@ -248,11 +245,9 @@ export class InputComponent {
 	}
 
 	sectionSelected(section: any) {
-		console.log(section)
 		this.section = section;
 		this.CRN = section.crn;
 		var data = section.courseName;
-		// console.log(this.CRN);
 
 		// If section selected
 		if (this.section != '') {
@@ -273,25 +268,20 @@ export class InputComponent {
 					}
 				}
 			}
-			// console.log(this.crnsList);
-			// console.log(this.criteria);
 		}
 	}
 
 	getClasses() {
 		this.timeSchedule = this.transferDataService.getFreeTime();
-		console.log(this.criteria);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
 			crnList: this.crnsList
 		})
 		.subscribe((data) => {
-			console.log(data);
 			if (data.success) {
-				this.dataReturned = data.result;
-				console.log(this.dataReturned);
-				this.outputLength = this.dataReturned.length;
+				this.dataReturned = this.resultParse(data);
+				this.outputLength = data.result.length;
 			} else {
 				this.dataReturned = [];
 				this.outputLength = 0;
@@ -299,45 +289,83 @@ export class InputComponent {
 		});
 	}
 
+	resultParse(data) {
+		var datas = data.result;
+		var output = [];
+		this.keysListOption = [];
+		for (var i = 0; i < datas.length; i++) {
+			var dict = {};
+			var key = "Option " + (i+1);
+			this.keysListOption.push(key);
+			dict[key] = datas[i];
+			output.push(dict);
+		}
+		return output;
+	}
+
 	viewDetailsClicked() {
 		this.viewDetails = true;
 	}
 
-	sample() {
-    this.methodHelper.get(environment.HOST + '/api/classDetailInfo/?crn=82849')
-    .subscribe((data) => {
-      console.log("Class Detail: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/classGeneralInfo/?major=CS&courseNumber=1331&crn=82849')
-    .subscribe((data) => {
-      console.log("Class General: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/courseDetailInfo/?major=CS&courseNumber=1331')
-    .subscribe((data) => {
-      console.log("Course Detail: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/courseGeneralInfo/?major=CS&courseNumber=1331')
-    .subscribe((data) => {
-      console.log("Course General: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/getAllMajorsName')
-    .subscribe((data) => {
-      console.log("getAllMajorsName: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/getAllMajorsAndCourseNumbers')
-    .subscribe((data) => {
-      console.log("getAllMajorsAndCourseNumbers: ");
-      console.log(data);
-    });
-    this.methodHelper.get(environment.HOST + '/api/getSpecificMajorCourseNumbers/?major=CS')
-    .subscribe((data) => {
-      console.log("getSpecificMajorCourseNumbers: ");
-      console.log(data);
-    });
-  }
+	onAreaListControlChanged(event) {
+		if (!this.optionSelectedObject.hasOwnProperty(event)) {
+			this.optionSelectedObject[event] = 1;
+		} else {
+			this.optionSelectedObject[event] += 1;
+		}
+		var value = this.optionSelectedObject[event];
+		var remi = value % 2;
+
+		// Update object
+		this.optionSelectedObject[event] = remi;
+		var objectVal = [];
+
+		// If the key  == 1 => get data from dataReturned => send emit to calendar to update with crn as id number
+		if (this.optionSelectedObject[event] == 1) {
+			for (var ele of this.dataReturned) {
+				objectVal = ele[event];
+				if (ele[event]) {
+					objectVal['on/off'] = 1;
+					var dataSend = objectVal;
+					this.courseClicked.emit(dataSend);
+				}
+			}
+		} else {
+			for (var ele of this.dataReturned) {
+				objectVal = ele[event];
+				if (ele[event]) {
+					objectVal['on/off'] = 0;
+					var dataSend = objectVal;
+					this.courseClicked.emit(dataSend);
+				}
+			}
+		}
+	}
+
+  	saveUserFreeTime() {
+  		var userFreeTime = []
+		$('#calendar').fullCalendar('clientEvents').forEach((event) => {
+			var temp = {
+				start: event.start.format("d|HHmm"),
+				end: event.end.format("d|HHmm")
+			}
+			userFreeTime.push(temp);
+		})
+		this.methodHelper.post(environment.HOST + '/api/saveUserFreeTime', {
+			userID: this.userID,
+			freeTime: userFreeTime
+		})
+		.subscribe((data) => {
+			if (!data.success) 
+				alert(data.result);
+        });
+    }
+
+    test() {
+        alert(this.userID);
+	}
+	hoverOption(index) {
+		var item = this.dataReturned[index];
+		// console.log(item[Object.keys(item)[0]])
+	}
 }

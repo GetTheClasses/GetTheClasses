@@ -1,3 +1,5 @@
+<app-navigation (userID)="getUserID($event)"></app-navigation>
+<br>
 <div class="row">
 	<div class="col-8">
 		<mat-card>
@@ -5,6 +7,6 @@
 		</mat-card>
 	</div>
 	<div class="col-4">
-		<app-input (courseClicked)="recieveMess($event)"></app-input>
+		<app-input [userID]="userID" (courseClicked)="recieveMess($event)"></app-input>
 	</div>
 </div>

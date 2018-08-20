@@ -13,4 +13,7 @@ firebase.initializeApp({
 
 let database = firebase.database();
 
-module.exports = firebase.database();
+module.exports = {
+	database,
+	firebase
+}

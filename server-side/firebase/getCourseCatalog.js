@@ -1,4 +1,4 @@
-const db = require('./database');
+const db = require('./database').database;
 
 async function getMajors() {
 	return new Promise(resolve => {

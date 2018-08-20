@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TransferDataService } from '../services/transfer-data.service';
 import { CalendarHelperService } from '../services/calendar-helper.service';
+import { HttpMethodService } from '../http-method.service';
+import { environment } from '../../environments/environment';
 
 declare var $: any;
 declare var moment: any;
@@ -14,13 +16,17 @@ declare var moment: any;
 export class CalendarComponent implements OnInit {
   dictTime = { 1: 'm', 2: 't', 3: 'w', 4: 'r', 5: 'f', 6: 's' };
 
-  constructor(private transferDataService: TransferDataService,
-	  private calendarHelperService: CalendarHelperService) { }
-	  	courseSelected: any;
-		eventsData: any[] = [];
-		timeRanges = {};
-		clicked: boolean = false;
-		dateRangeClicked: string = '';
+	constructor(private transferDataService: TransferDataService,
+		private calendarHelperService: CalendarHelperService,
+		private methodHelper: HttpMethodService) { }
+
+	courseSelected: any;
+	eventsData: any[] = [];
+	timeRanges = {};
+	clicked: boolean = false;
+	dateRangeClicked: string = '';
+	private userID: string;
+
 
 	calendarCompo() {
 		$('#calendar').fullCalendar({
@@ -37,12 +43,8 @@ export class CalendarComponent implements OnInit {
 			snapDuration: '00:05:00',
 			contentHeight: "auto",
 			eventOverlap: false,
-			// defaultDate: '2018-08-20',
-			// eventColor: "red",
 			eventResize: (event) => {
 				// Handle resize issue here (start-end range is too small)
-				console.log(event.start.format("HH:mm"));
-				console.log(event.end.format("HH:mm"));
 			},
 			selectConstraint: {
 				start: "08:00",
@@ -65,13 +67,12 @@ export class CalendarComponent implements OnInit {
 
 				  var start = moment("08:00", "hh:mm");
 					start.day(date.day());
-					// console.log(start);
 				  var end = moment("21:00", "hh:mm");
 					end.day(date.day());
 
 				  $('#calendar').fullCalendar('renderEvent', {
-					start: start,
-					end: end
+						start: start,
+						end: end
 				  })
 				}
 				else {
@@ -86,7 +87,7 @@ export class CalendarComponent implements OnInit {
 				}
 			  }
 			},
-			select: (start, end) => {
+			select: (start, end, event) => {
 				if (!this.calendarHelperService.isValidTime(start, end)) {
 					end = start.clone().add(45, 'm');
 					for (var e of $('#calendar').fullCalendar('clientEvents')) {
@@ -148,7 +149,7 @@ export class CalendarComponent implements OnInit {
 								date ='.fc-sat';
 								break
 						}
-						$(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
+						// $(".fc-body " + ".fc-row " + date).prepend("<div align='center'><button class='timeRangeStyle' mat-button>Select All</button></div>")
 					}
 				}
 				element.find(".timeRangeStyle").on('click', ($event) => {
@@ -180,42 +181,46 @@ export class CalendarComponent implements OnInit {
 	}
 
 	recieveMess($event) {
-		console.log($event);
-		// var timeData = $event.time.split('|');
-		var timeRanges = this.analyzeDates($event.time);
-		console.log(timeRanges);
-		var timeStarts = this.analyzetimeStart($event.time);
-		var timeEnds = this.analyzetimeEnd($event.time);
-		this.eventsData = [];
-		var randomColor = this.getRandomColor();
-
-		for (var i = 0; i < timeRanges.length; i++) {
-			for (var j = 0; j < timeRanges[i].length; j++) {
-				// console.log(timeRanges[i][j]);
-				// console.log(timeStarts[i]);
-				// console.log(timeEnds[i]);
-				$("#calendar").fullCalendar('addEventSource', [{
-					title: 'Need to update',
-					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
-					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
-					borderColor: 'black',
-					textColor: 'white',
-					color: randomColor,
-					editable: true,
-					overlap: false,
-				}]);
-				// this.eventsData.push({
-				// 	title: 'Need to update',
-				// 	start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
-				// 	end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
-				// 	borderColor: 'black',
-				// 	textColor: 'white',
-				// 	color: randomColor,
-				// 	editable: true,
-				// 	overlap: false,
-				// })
+		var eventCloseorOpen = $event["on/off"];
+		// if status == 1 then update
+		if (eventCloseorOpen == 1) {
+			for (var ele of $event) {
+				if (typeof(ele) === 'object') {
+					this.updateCalendar(ele);
+				}
 			}
 		}
+		// else status == 0 then remove event
+		else {
+			for (var ele of $event) {
+				if (typeof(ele) === 'object') {
+					this.removeEventCalendar(ele);
+				}
+			}
+		}
+
+		// var timeRanges = this.analyzeDates($event.time);
+		// console.log(timeRanges);
+		// var timeStarts = this.analyzetimeStart($event.time);
+		// var timeEnds = this.analyzetimeEnd($event.time);
+		// this.eventsData = [];
+		// var randomColor = this.getRandomColor();
+
+		// WORKING
+		// for (var i = 0; i < timeRanges.length; i++) {
+		// 	for (var j = 0; j < timeRanges[i].length; j++) {
+		// 		$("#calendar").fullCalendar('addEventSource', [{
+		// 			title: 'Need to update',
+		// 			start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+		// 			end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+		// 			borderColor: 'black',
+		// 			textColor: 'white',
+		// 			color: randomColor,
+		// 			editable: true,
+		// 			overlap: false,
+		// 		}]);
+		// 	}
+		// }
 
 		// console.log(this.eventsData);
 		// for (var ele of this.eventsData) {
@@ -234,6 +239,35 @@ export class CalendarComponent implements OnInit {
 		// 		overlap: false,
 		// 	})
 		// }
+	}
+
+	updateCalendar(event) {
+		$("#calendar").fullCalendar('removeEvents', 903139168);
+		var timeRanges = this.analyzeDates(event.classTime);
+		var timeStarts = this.analyzetimeStart(event.classTime);
+		var timeEnds = this.analyzetimeEnd(event.classTime);
+		this.eventsData = [];
+		var randomColor = this.getRandomColor();
+
+		for (var i = 0; i < timeRanges.length; i++) {
+			for (var j = 0; j < timeRanges[i].length; j++) {
+				$("#calendar").fullCalendar('addEventSource', [{
+					id: event.crn,
+					title: event.description,
+					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+					borderColor: 'black',
+					textColor: 'white',
+					color: randomColor,
+					editable: true,
+					overlap: false,
+				}]);
+			}
+		}
+	}
+
+	removeEventCalendar(event) {
+		$("#calendar").fullCalendar('removeEvents', event.crn);
 	}
 
 	// Auto generate random colors
@@ -330,5 +364,23 @@ export class CalendarComponent implements OnInit {
 		// 		}])
 		// 	}
 		// }
+	}
+
+	getUserID(e): void {
+		this.userID = e;
+		this.methodHelper.get(environment.HOST + '/api/fetchDataOfUser/?userID=' + e)
+		.subscribe((result) => {
+			var events = [];
+			if (result.success) {
+				result.forEach((event) => {
+					events.push({
+						start: moment(event.start, "d|HHmm"),
+						end: moment(event.end, "d|HHmm")
+					});
+				});
+				$('#calendar').fullCalendar('removeEvents');
+				$('#calendar').fullCalendar('addEventSource', events);
+			}
+		});
 	}
 }
