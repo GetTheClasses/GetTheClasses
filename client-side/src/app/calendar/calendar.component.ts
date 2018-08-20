@@ -7,6 +7,8 @@ import { first } from '../../../node_modules/rxjs/operators';
 import { last } from '../../../node_modules/@angular/router/src/utils/collection';
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { HttpMethodService } from '../http-method.service';
+import { environment } from '../../environments/environment';
 
 declare var $: any;
 declare var moment: any;
@@ -20,8 +22,9 @@ declare var moment: any;
 export class CalendarComponent implements OnInit {
   dictTime = { 1: 'm', 2: 't', 3: 'w', 4: 'r', 5: 'f', 6: 's' };
 
-  constructor(private transferDataService: TransferDataService,
-	  private calendarHelperService: CalendarHelperService) { }
+	constructor(private transferDataService: TransferDataService,
+		private calendarHelperService: CalendarHelperService,
+		private methodHelper: HttpMethodService) { }
 
 	courseSelected: any;
 	eventsData: any[] = [];
@@ -136,7 +139,7 @@ export class CalendarComponent implements OnInit {
 				}
 				element.find(".closeon").on('click', () => {
 					console.log(event);
-					$('#calendar').fullCalendar('removeEvents',event.id);
+					$('#calendar').fullCalendar('removeEvents',event._id);
 					// if (this.timeSetEventsSelected.length > 0) {
 						// this.closeOnRemoveChip(event);
 					// }
@@ -338,14 +341,14 @@ export class CalendarComponent implements OnInit {
 	// 	$("#calendar").fullCalendar('removeEvents', time.id);
 	// }
 
-	closeOnRemoveChip(timeEvent) {
-		for (var i = 0; i < this.timeSetEventsSelected.length; i++) {
-			if (this.timeSetEventsSelected[i].id === timeEvent._id) {
-				this.timeSetEventsSelected.splice(i, 1);
-				break;
-			}
-		}
-	}
+	// closeOnRemoveChip(timeEvent) {
+	// 	for (var i = 0; i < this.timeSetEventsSelected.length; i++) {
+	// 		if (this.timeSetEventsSelected[i].id === timeEvent._id) {
+	// 			this.timeSetEventsSelected.splice(i, 1);
+	// 			break;
+	// 		}
+	// 	}
+	// }
 
 	removeEventCalendar(event) {
 		$("#calendar").fullCalendar('removeEvents', event['privateID']);
@@ -455,6 +458,19 @@ export class CalendarComponent implements OnInit {
 
 	getUserID(e): void {
 		this.userID = e;
+		this.methodHelper.get(environment.HOST + '/api/fetchDataOfUser/?userID=' + e)
+		.subscribe((result) => {
+			var events = [];
+			result.forEach((event) => {
+				console.log(event);
+				events.push({
+					start: moment(event.start, "d|HHmm"),
+					end: moment(event.end, "d|HHmm")
+				});
+			});
+			$('#calendar').fullCalendar('removeEvents');
+			$('#calendar').fullCalendar('addEventSource', events);
+		});
 	}
 
 	printCalendar(): void {

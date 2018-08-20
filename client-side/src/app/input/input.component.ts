@@ -398,8 +398,8 @@ export class InputComponent implements OnInit {
   		var userFreeTime = []
 		$('#calendar').fullCalendar('clientEvents').forEach((event) => {
 			var temp = {
-				start: event.start.day() + '|' + event.start.hours() + event.start.minutes(),
-				end: event.end.day() + '|' + event.end.hours() + event.end.minutes()
+				start: event.start.format("d|HHmm"),
+				end: event.end.format("d|HHmm")
 			}
 			userFreeTime.push(temp);
 		})
@@ -417,5 +417,9 @@ export class InputComponent implements OnInit {
 
     test() {
         alert(this.userID);
-    }
+	}
+	hoverOption(index) {
+		var item = this.dataReturned[index];
+		console.log(item[Object.keys(item)[0]])
+	}
 }

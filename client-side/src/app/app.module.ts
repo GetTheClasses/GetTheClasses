@@ -39,6 +39,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { CheckMarkComponent } from './navigation/check-mark/check-mark.component';
+import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
 
 
 
@@ -54,7 +56,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     AuthenticationComponent,
     NavigationComponent,
     FooterComponent,
-    LoaderComponent
+    LoaderComponent,
+    CheckMarkComponent,
+    ForgotPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -90,7 +94,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   bootstrap: [AppComponent],
   entryComponents: [
     SigninComponent,
-    SignupComponent
+    SignupComponent,
+    CheckMarkComponent,
+    ForgotPasswordComponent
   ]
 })
 export class AppModule { }

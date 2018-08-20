@@ -78,7 +78,7 @@
     <div class="form-row">
         <div *ngIf="outputLength > 0" class="col">
                 <mat-selection-list #option>
-                    <mat-list-option *ngFor="let option of keysListOption" (click)="onAreaListControlChanged(option)">
+                    <mat-list-option *ngFor="let option of keysListOption; let i = index" [attr.data-index]="i" (click)="onAreaListControlChanged(option)">
                         {{option}}
                     </mat-list-option>
                 </mat-selection-list>
