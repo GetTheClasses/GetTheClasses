@@ -13,4 +13,4 @@ Go to the client-side folder and type in the following line
 ```
 ng serve
 ```
-![Screenshot][pictures/client_side_env.png]
+![Screenshot](pictures/client_side_env.png)
