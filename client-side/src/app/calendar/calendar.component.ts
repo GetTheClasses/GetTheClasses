@@ -52,8 +52,7 @@ export class CalendarComponent implements OnInit {
 			unselectAuto: false,
 			snapDuration: '00:05:00',
 			contentHeight: "auto",
-			displayEventTime: false,
-			// eventOverlap: false,
+			displayEventTime: true,
 			eventResize: (event) => {
 				// Handle resize issue here (start-end range is too small)
 			},
