@@ -85,6 +85,9 @@ export class CalendarComponent implements OnInit {
 					end: end,
 					className: 'fc-transparent-event',
 					// rendering: 'background',
+					textColor: 'black',
+					borderColor: '#ADD8E6',
+					color: '#E0FFFF'
 				  })
 				  	// Add to chips
 					// var evento = $("#calendar").fullCalendar('clientEvents');
@@ -119,6 +122,9 @@ export class CalendarComponent implements OnInit {
 					end: end,
 					block: true,
 					className: 'fc-transparent-event',
+					textColor: 'black',
+					borderColor: '#ADD8E6',
+					color: '#E0FFFF'
 					// rendering: 'background',
 				}]);
 				// Add to chips
@@ -188,36 +194,39 @@ export class CalendarComponent implements OnInit {
 			// 	})
 			// },
 
-			// Handle mouse over
-			eventMouseover: function (data) {
-				console.log(data);
-				var timeStart = data.start._i;
-				var timeEnd = data.end._i;
-				var title = data.title;
-				var datas = title.split('-');
-				var crn = datas[1];
-				var courseTitle = datas[0];
-				var className = datas[2];
-				var classSection = datas[3];
-				var tooltip = '<div class="tooltiptopicevent" style="width:auto; height:auto; background:white; border-radius: 25px; border: 2px solid #73AD21; padding: 20px;' +
-				'position:absolute; z-index:10001; padding:10px 10px 10px 10px ;' + 'line-height: 200%;">' +
-				'Title: ' + ': ' + courseTitle + '</br>' + 'Time Start: ' + timeStart + '</br>' +
-				'Time End: ' + timeEnd + '</br>' + 'Class Name: ' + className + '</br>' + 'Class Section: ' + classSection +
-				'</br>' + 'CRN: ' + crn + '</br>' + '</div>';
+			// // Handle mouse over
+			// eventMouseover: function (data) {
+			// 	console.log(data);
+			// 	var timeStart = data.start._i;
+			// 	var timeEnd = data.end._i;
+			// 	var title = data.title;
+			// 	var datas = title.split('-');
+			// 	var crn = datas[1];
+			// 	var courseTitle = datas[0];
+			// 	var className = datas[2];
+			// 	var classSection = datas[3];
+			// 	var tooltip = '<div class="tooltiptopicevent" style="width:auto; height:auto; background:white; border-radius: 25px; border: 2px solid #73AD21; padding: 20px;' +
+			// 	'position:absolute; z-index:10001; padding:10px 10px 10px 10px ;' + 'line-height: 200%;">' +
+			// 	'Title: ' + ': ' + courseTitle + '</br>' + 'Time Start: ' + timeStart + '</br>' +
+			// 	'Time End: ' + timeEnd + '</br>' + 'Class Name: ' + className + '</br>' + 'Class Section: ' + classSection +
+			// 	'</br>' + 'CRN: ' + crn + '</br>' + '</div>';
 
-				$("body").append(tooltip);
-				$(this).mouseover(function (e) {
-					$(this).css('z-index', 10000);
-					$('.tooltiptopicevent').fadeIn('500');
-					$('.tooltiptopicevent').fadeTo('10', 1.9);
-				}).mousemove(function (e) {
-					$('.tooltiptopicevent').css('top', e.pageY + 10);
-					$('.tooltiptopicevent').css('left', e.pageX + 20);
-				});
-			},
-			eventMouseout: function (data, event, view) {
-				$(this).css('z-index', 8);
-				$('.tooltiptopicevent').remove();
+			// 	$("body").append(tooltip);
+			// 	$(this).mouseover(function (e) {
+			// 		$(this).css('z-index', 10000);
+			// 		$('.tooltiptopicevent').fadeIn('500');
+			// 		$('.tooltiptopicevent').fadeTo('10', 1.9);
+			// 	}).mousemove(function (e) {
+			// 		$('.tooltiptopicevent').css('top', e.pageY + 10);
+			// 		$('.tooltiptopicevent').css('left', e.pageX + 20);
+			// 	});
+			// },
+			// eventMouseout: function (data, event, view) {
+			// 	$(this).css('z-index', 8);
+			// 	$('.tooltiptopicevent').remove();
+			// },
+			eventAfterRender: function(event, element) {
+				$(element).addClass('full-width');
 			}
 		});
 	}
@@ -252,7 +261,7 @@ export class CalendarComponent implements OnInit {
 			// 		if (this.equalTime(allEvents[index], time)) {}
 			// 	}
 			// })
-			$('#calendar').fullCalendar('removeEvents');
+			// $('#calendar').fullCalendar('removeEvents');
 			var events = []
 			for (var ele of $event) {
 				if (typeof(ele) === 'object') {
@@ -291,9 +300,6 @@ export class CalendarComponent implements OnInit {
 		var timeStarts = this.analyzetimeStart(event.classTime);
 		var timeEnds = this.analyzetimeEnd(event.classTime);
 		var randomColor = this.getRandomColor();
-		console.log(timeRanges);
-		console.log(timeStarts);
-		console.log(timeEnds);
 
 		for (var i = 0; i < timeRanges.length; i++) {
 			for (var j = 0; j < timeRanges[i].length; j++) {
@@ -304,7 +310,7 @@ export class CalendarComponent implements OnInit {
 					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
 					borderColor: 'black',
 					textColor: 'black',
-					color: 'yellow',
+					color: randomColor,
 					resourceEditable: false
 				}]);
 			}
@@ -316,6 +322,7 @@ export class CalendarComponent implements OnInit {
 		var timeRanges = this.analyzeDates(event.classTime);
 		var timeStarts = this.analyzetimeStart(event.classTime);
 		var timeEnds = this.analyzetimeEnd(event.classTime);
+		var randomColor = this.getRandomColor();
 		for (var i = 0; i < timeRanges.length; i++) {
 			for (var j = 0; j < timeRanges[i].length; j++) {
 				events.push({
@@ -324,8 +331,8 @@ export class CalendarComponent implements OnInit {
 					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
 					borderColor: 'black',
 					textColor: 'black',
-					color: 'yellow',
-					resourceEditable: false
+					color: randomColor,
+					className: 'hover-event'
 				});
 			}
 		}

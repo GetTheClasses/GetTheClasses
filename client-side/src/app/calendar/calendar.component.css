@@ -20,7 +20,19 @@
 	/* visibility: hidden; */
 }
 
+.fc-event .fc-bg {
+	color: #E0FFFF;
+}
 
 .fc-scrollable-event {
 	overflow-y: scroll;
+}
+
+.hover-event {
+	opacity: 0.5;
+}
+
+.full-width {
+	left: 0% !important;
+	width: 100% !important;
 }

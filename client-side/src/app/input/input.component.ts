@@ -387,15 +387,14 @@ export class InputComponent implements OnInit {
 		var item = temp[Object.keys(temp)[0]];
 		item['hover'] = true;
 		this.courseClicked.emit(item);
-		console.log(item);
 		// console.log(item[Object.keys(item)[0]])
 	}
 	displayFreeTime() {
 		$('#calendar').fullCalendar('removeEvents');
-		setTimeout(() => {
-			if ($('#calendar').fullCalendar('clientEvents').length == 0) {
+		// setTimeout(() => {
+		// 	if ($('#calendar').fullCalendar('clientEvents').length == 0) {
 				$('#calendar').fullCalendar('addEventSource', this.userFreeTimeEvents);
-			}
-		}, 2);
+		// 	}
+		// }, 2);
 	}
 }
