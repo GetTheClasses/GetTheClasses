@@ -50,38 +50,38 @@ function putClass(scheduleRoot, classTimeString) {
 // Compare desired classes with available time, modify available time for each class.
 function syncSchedule(courseList, freeTime, crnList = []) {
     if (courseList.length == 0) {
-        var unusedTime = 0;
-        Object.keys(freeTime).forEach(key => {
-            if (freeTime[key].length > 0 && freeTime[key][0][0] != inputTime[key][0][0] && freeTime[key][freeTime[key].length - 1][1] != inputTime[key][inputTime[key].length - 1][1]) {
-                var start = 0;
-                while (start < freeTime[key].length) {
-                    unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
-                    start += 1;
-                }
-            }
-            else if (freeTime[key].length > 1 && freeTime[key][0][0] != inputTime[key][0][0]) {
-                var start = 0;
-                while (start < freeTime[key].length - 1) {
-                    unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
-                    start += 1;
-                }
-            }
-            else if (freeTime[key].length > 1 && freeTime[key][freeTime[key].length - 1][1] != inputTime[key][inputTime[key].length - 1][1]) {
-                var start = 1;
-                while (start < freeTime[key].length) {
-                    unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
-                    start += 1;
-                }
-            }
-            else if (freeTime[key].length > 2) {
-                var start = 1;
-                while (start < freeTime[key].length - 1) {
-                    unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
-                    start += 1;
-                }
-            }
-        })
-        crnList.push(unusedTime);
+        // var unusedTime = 0;
+        // Object.keys(freeTime).forEach(key => {
+        //     if (freeTime[key].length > 0 && freeTime[key][0][0] != inputTime[key][0][0] && freeTime[key][freeTime[key].length - 1][1] != inputTime[key][inputTime[key].length - 1][1]) {
+        //         var start = 0;
+        //         while (start < freeTime[key].length) {
+        //             unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
+        //             start += 1;
+        //         }
+        //     }
+        //     else if (freeTime[key].length > 1 && freeTime[key][0][0] != inputTime[key][0][0]) {
+        //         var start = 0;
+        //         while (start < freeTime[key].length - 1) {
+        //             unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
+        //             start += 1;
+        //         }
+        //     }
+        //     else if (freeTime[key].length > 1 && freeTime[key][freeTime[key].length - 1][1] != inputTime[key][inputTime[key].length - 1][1]) {
+        //         var start = 1;
+        //         while (start < freeTime[key].length) {
+        //             unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
+        //             start += 1;
+        //         }
+        //     }
+        //     else if (freeTime[key].length > 2) {
+        //         var start = 1;
+        //         while (start < freeTime[key].length - 1) {
+        //             unusedTime += (freeTime[key][start][1] - freeTime[key][start][0]);
+        //             start += 1;
+        //         }
+        //     }
+        // })
+        // crnList.push(unusedTime);
         combinations.push(crnList);
         return;
     }
@@ -157,23 +157,27 @@ async function main(course, freeTime = defaultFreeTime, requiredCrn = [], ) {
         }
     });
     for (combination of combinations) {
-        for (var i = 0; i < combination.length - 1; i++) {
+        // for (var i = 0; i < combination.length - 1; i++) {
+        //     combination[i] = runtimeDict[combination[i]];
+        // }
+        for (var i = 0; i < combination.length; i++) {
             combination[i] = runtimeDict[combination[i]];
         }
     }
-    combinations.sort(function(a, b) {
-        return a[a.length - 1] - b[b.length - 1]
-    })
+    // combinations.sort(function(a, b) {
+    //     return a[a.length - 1] - b[b.length - 1]
+    // })
     var index = 0;
     while (index < combinations.length) {
         if (combinations[index].includes(undefined))
             combinations.splice(index, 1);
         else {
-            combinations[index].pop();
+        //     combinations[index].pop();
             index += 1
         }
     }
     // helper.shuffle(combinations);
+    // console.log(combinations);
     if (combinations.length > 10)
         combinations = combinations.slice(0,10);
     return combinations;

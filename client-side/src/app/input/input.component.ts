@@ -72,6 +72,7 @@ export class InputComponent implements OnInit {
 	private major: string;
 	private courseNumber: string;
 	private timeSchedule;
+	private userFreeTimeEvents = [];
 
 	filteredClassDetails: any[];
 	classChoose: string;
@@ -267,7 +268,9 @@ export class InputComponent implements OnInit {
 	getClasses() {
 		this.dataReturned = [];
 		this.otherDataReturn = [];
+		this.userFreeTimeEvents = $('#calendar').fullCalendar('clientEvents');
 		this.timeSchedule = this.transferDataService.getFreeTime();
+		console.log(this.timeSchedule);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
@@ -380,7 +383,19 @@ export class InputComponent implements OnInit {
         alert(this.userID);
 	}
 	hoverOption(index) {
-		var item = this.dataReturned[index];
+		var temp = JSON.parse(JSON.stringify(this.dataReturned[index]));
+		var item = temp[Object.keys(temp)[0]];
+		item['hover'] = true;
+		this.courseClicked.emit(item);
+		console.log(item);
 		// console.log(item[Object.keys(item)[0]])
+	}
+	displayFreeTime() {
+		$('#calendar').fullCalendar('removeEvents');
+		setTimeout(() => {
+			if ($('#calendar').fullCalendar('clientEvents').length == 0) {
+				$('#calendar').fullCalendar('addEventSource', this.userFreeTimeEvents);
+			}
+		}, 2);
 	}
 }

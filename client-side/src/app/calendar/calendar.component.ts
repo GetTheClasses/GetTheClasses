@@ -36,6 +36,7 @@ export class CalendarComponent implements OnInit {
 	removable = true;
 	id = 3;
 	private userID: string;
+	private saveEventsForDelete = [];
 
 
 	calendarCompo() {
@@ -243,33 +244,56 @@ export class CalendarComponent implements OnInit {
 	}
 
 	recieveMess($event) {
-		var eventCloseorOpen = $event["on/off"];
-		var id = $event['privateID'];
-		// if status == 1 then update
-		if (eventCloseorOpen == 1) {
+		if ($event['hover'] == true) {
+			// var allEvents = $('#calendar').fullCalendar('clientEvents');
+			// this.saveEventsForDelete.forEach((time) => {
+			// 	var index = 0;
+			// 	while (index < allEvents.length) {
+			// 		if (this.equalTime(allEvents[index], time)) {}
+			// 	}
+			// })
+			$('#calendar').fullCalendar('removeEvents');
+			var events = []
 			for (var ele of $event) {
 				if (typeof(ele) === 'object') {
-					this.updateCalendar(ele, id);
+					this.updateEvent(ele, events);
 				}
 			}
+			$('#calendar').fullCalendar('addEventSource', events);
 		}
-		// else status == 0 then remove event
 		else {
-			for (var ele of $event) {
-				if (typeof(ele) === 'object') {
-					this.removeEventCalendar($event);
+			console.log("Not hover");
+			var eventCloseorOpen = $event["on/off"];
+			var id = $event['privateID'];
+			if (id == undefined)
+				id = 100;
+			// if status == 1 then update
+			if (eventCloseorOpen == 1) {
+				for (var ele of $event) {
+					if (typeof(ele) === 'object') {
+						this.updateCalendar(ele, id);
+					}
+				}
+			}
+			// else status == 0 then remove event
+			else {
+				for (var ele of $event) {
+					if (typeof(ele) === 'object') {
+						this.removeEventCalendar($event);
+					}
 				}
 			}
 		}
 	}
 
 	updateCalendar(event, _id) {
-		console.log(event);
 		var timeRanges = this.analyzeDates(event.classTime);
 		var timeStarts = this.analyzetimeStart(event.classTime);
 		var timeEnds = this.analyzetimeEnd(event.classTime);
-		this.eventsData = [];
 		var randomColor = this.getRandomColor();
+		console.log(timeRanges);
+		console.log(timeStarts);
+		console.log(timeEnds);
 
 		for (var i = 0; i < timeRanges.length; i++) {
 			for (var j = 0; j < timeRanges[i].length; j++) {
@@ -280,16 +304,31 @@ export class CalendarComponent implements OnInit {
 					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
 					borderColor: 'black',
 					textColor: 'black',
-					color: randomColor,
-					startEditable: false,
-					resourceEditable: false,
-					durationEditable: false,
-					overlap: false,
-					className: '.fc-scrollable-event'
+					color: 'yellow',
+					resourceEditable: false
 				}]);
 			}
 		}
 		this.id += 3;
+	}
+
+	updateEvent(event, events) {
+		var timeRanges = this.analyzeDates(event.classTime);
+		var timeStarts = this.analyzetimeStart(event.classTime);
+		var timeEnds = this.analyzetimeEnd(event.classTime);
+		for (var i = 0; i < timeRanges.length; i++) {
+			for (var j = 0; j < timeRanges[i].length; j++) {
+				events.push({
+					title: event.description,
+					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+					borderColor: 'black',
+					textColor: 'black',
+					color: 'yellow',
+					resourceEditable: false
+				});
+			}
+		}
 	}
 
 	// dayAdd(event) {
@@ -483,5 +522,11 @@ export class CalendarComponent implements OnInit {
 			pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
 			pdf.save('fall-2018.pdf');
 		});
+	}
+
+	equalTime(a, b): boolean {
+		var sameStart = a.start.hours() == b.start.hours() && a.start.minutes() == b.start.minutes() && a.start.days() == b.start.days();
+		var sameEnd = a.end.hours() == b.end.hours() && a.end.minutes() == b.end.minutes() && a.end.days() == b.end.days()
+		return sameStart && sameEnd;
 	}
 }
