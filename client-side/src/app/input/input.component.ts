@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { runInThisContext } from 'vm';
+import { MatSelectionListChange, MatSelectionList } from '@angular/material';
 
 declare var $: any;
 declare var moment: any;
@@ -28,6 +29,7 @@ export interface Course {
 export class InputComponent implements OnInit {
 	@Output() courseClicked: EventEmitter<any> = new EventEmitter();
 	@Input() userID: string;
+	@ViewChild(MatSelectionList) option: MatSelectionList;
 
 	// sections = [];
 	defaultCourses = [];
@@ -62,7 +64,6 @@ export class InputComponent implements OnInit {
 	courseFilter: Observable<string[]>;
 	courseAutoComplete = new FormControl();
 	typesOfShoes: string[] = ['Option 1'];
-	randomID = 3;
 	otherDataReturn = [];
 
 	constructor(private methodHelper: HttpMethodService, private transferDataService: TransferDataService) { }
@@ -73,6 +74,7 @@ export class InputComponent implements OnInit {
 	private courseNumber: string;
 	private timeSchedule;
 	private userFreeTimeEvents = [];
+	private staticScheduleEvents = [];
 
 	filteredClassDetails: any[];
 	classChoose: string;
@@ -85,8 +87,6 @@ export class InputComponent implements OnInit {
 		this.selectedCourse = 'Quick Add';
 		var dataSend = [$event];
 		dataSend["on/off"] = 1;
-		dataSend["privateID"] = this.randomID;
-		this.randomID += 3;
 		this.courseClicked.emit(dataSend);
 	}
 
@@ -270,7 +270,6 @@ export class InputComponent implements OnInit {
 		this.otherDataReturn = [];
 		this.userFreeTimeEvents = $('#calendar').fullCalendar('clientEvents');
 		this.timeSchedule = this.transferDataService.getFreeTime();
-		console.log(this.timeSchedule);
 		this.methodHelper.post(environment.HOST + '/api/course', {
 			criteria: this.criteria,
 			freeTime: this.timeSchedule,
@@ -281,6 +280,34 @@ export class InputComponent implements OnInit {
 			if (data.success) {
 				this.dataReturned = this.resultParse(data);
 				this.outputLength = data.result.length;
+				setTimeout(() => {
+					var temp = null;
+					this.option.selectionChange.subscribe((s: MatSelectionListChange) => {
+						if (temp != null && temp == s.option.value) {
+							this.staticScheduleEvents = [];
+							s.option.selected = false;
+							temp = null;
+							this.attachEventsToCalendar();
+						}
+						else {
+							if (this.staticScheduleEvents.length > 0) {
+								this.staticScheduleEvents = [];
+								this.attachEventsToCalendar();
+							}
+							this.option.deselectAll();
+							s.option.selected = true;
+							temp = s.option.value;
+							var index = parseInt(s.option.value.slice(-1)) - 1;
+							var data = JSON.parse(JSON.stringify(this.dataReturned[index]));
+							var item = data[Object.keys(data)[0]];
+							item['hover'] = false;
+							this.courseClicked.emit(item);
+							this.staticScheduleEvents = $('#calendar').fullCalendar('clientEvents');
+							this.attachEventsToCalendar();
+							console.log(this.userFreeTimeEvents, this.staticScheduleEvents)
+						}
+					});
+				}, 10);
 			} else {
 				this.dataReturned = [];
 				this.outputLength = 0;
@@ -336,23 +363,19 @@ export class InputComponent implements OnInit {
 		var objectVal = [];
 
 		// If the key  == 1 => get data from dataReturned => send emit to calendar to update with crn as id number
-		console.log(this.dataReturned);
+		// console.log(this.dataReturned);
 		if (this.optionSelectedObject[event] == 1) {
 			for (var ele of this.dataReturned) {
 				objectVal = ele[event];
 				if (ele[event]) {
-					objectVal['on/off'] = 1;
-					objectVal['privateID'] = this.randomID;
 					var dataSend = objectVal;
 					this.courseClicked.emit(dataSend);
 				}
-				this.randomID += 3;
 			}
 		} else {
 			for (var ele of this.dataReturned) {
 				objectVal = ele[event];
 				if (ele[event]) {
-					objectVal['on/off'] = 0;
 					var dataSend = objectVal;
 					this.courseClicked.emit(dataSend);
 				}
@@ -380,7 +403,7 @@ export class InputComponent implements OnInit {
     }
 
     test() {
-        alert(this.userID);
+        console.log($('#option').selection)
 	}
 	hoverOption(index) {
 		var temp = JSON.parse(JSON.stringify(this.dataReturned[index]));
@@ -389,12 +412,8 @@ export class InputComponent implements OnInit {
 		this.courseClicked.emit(item);
 		// console.log(item[Object.keys(item)[0]])
 	}
-	displayFreeTime() {
+	attachEventsToCalendar() {
 		$('#calendar').fullCalendar('removeEvents');
-		// setTimeout(() => {
-		// 	if ($('#calendar').fullCalendar('clientEvents').length == 0) {
-				$('#calendar').fullCalendar('addEventSource', this.userFreeTimeEvents);
-		// 	}
-		// }, 2);
+		$('#calendar').fullCalendar('addEventSource', this.userFreeTimeEvents.concat(this.staticScheduleEvents));
 	}
 }

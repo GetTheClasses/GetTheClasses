@@ -79,8 +79,8 @@
         <mat-slide-toggle>Fix Time Select</mat-slide-toggle>
         <div *ngIf="outputLength > 0" class="col">
                 <mat-selection-list #option>
-                    <mat-list-option *ngFor="let option of keysListOption; let i = index" [attr.data-index]="i" (click)="onAreaListControlChanged(option)"
-                    (mouseenter)="hoverOption(i)" (mouseleave)="displayFreeTime()">
+                    <mat-list-option *ngFor="let option of keysListOption; let i = index" [attr.data-index]="i"
+                    (mouseenter)="hoverOption(i)" (mouseleave)="attachEventsToCalendar()" [value]="option">
                         {{option}}
                     </mat-list-option>
                 </mat-selection-list>

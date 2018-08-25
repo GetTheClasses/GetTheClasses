@@ -34,9 +34,7 @@ export class CalendarComponent implements OnInit {
 	// timeSetEventsSelected = [];
 	selectable = true;
 	removable = true;
-	id = 3;
 	private userID: string;
-	private saveEventsForDelete = [];
 
 
 	calendarCompo() {
@@ -142,7 +140,6 @@ export class CalendarComponent implements OnInit {
 					element.find(".fc-content").prepend("<button class='closeon'>X</button>")
 				}
 				element.find(".closeon").on('click', () => {
-					console.log(event);
 					$('#calendar').fullCalendar('removeEvents',event._id);
 					// if (this.timeSetEventsSelected.length > 0) {
 						// this.closeOnRemoveChip(event);
@@ -253,72 +250,37 @@ export class CalendarComponent implements OnInit {
 	}
 
 	recieveMess($event) {
-		if ($event['hover'] == true) {
-			// var allEvents = $('#calendar').fullCalendar('clientEvents');
-			// this.saveEventsForDelete.forEach((time) => {
-			// 	var index = 0;
-			// 	while (index < allEvents.length) {
-			// 		if (this.equalTime(allEvents[index], time)) {}
-			// 	}
-			// })
-			// $('#calendar').fullCalendar('removeEvents');
-			var events = []
-			for (var ele of $event) {
-				if (typeof(ele) === 'object') {
-					this.updateEvent(ele, events);
-				}
-			}
-			$('#calendar').fullCalendar('addEventSource', events);
-		}
-		else {
-			console.log("Not hover");
-			var eventCloseorOpen = $event["on/off"];
-			var id = $event['privateID'];
-			if (id == undefined)
-				id = 100;
-			// if status == 1 then update
-			if (eventCloseorOpen == 1) {
-				for (var ele of $event) {
-					if (typeof(ele) === 'object') {
-						this.updateCalendar(ele, id);
-					}
-				}
-			}
-			// else status == 0 then remove event
-			else {
-				for (var ele of $event) {
-					if (typeof(ele) === 'object') {
-						this.removeEventCalendar($event);
-					}
-				}
+		var events = [];
+		for (var ele of $event) {
+			if (typeof(ele) === 'object') {
+				this.updateEvent(ele, events, $event['hover']);
 			}
 		}
+		$('#calendar').fullCalendar('addEventSource', events);
 	}
 
-	updateCalendar(event, _id) {
-		var timeRanges = this.analyzeDates(event.classTime);
-		var timeStarts = this.analyzetimeStart(event.classTime);
-		var timeEnds = this.analyzetimeEnd(event.classTime);
-		var randomColor = this.getRandomColor();
+	// updateCalendar(event, events, hover) {
+	// 	var timeRanges = this.analyzeDates(event.classTime);
+	// 	var timeStarts = this.analyzetimeStart(event.classTime);
+	// 	var timeEnds = this.analyzetimeEnd(event.classTime);
+	// 	var randomColor = this.getRandomColor();
 
-		for (var i = 0; i < timeRanges.length; i++) {
-			for (var j = 0; j < timeRanges[i].length; j++) {
-				$("#calendar").fullCalendar('addEventSource', [{
-					id: _id,
-					title: event.description,
-					start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
-					end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
-					borderColor: 'black',
-					textColor: 'black',
-					color: randomColor,
-					resourceEditable: false
-				}]);
-			}
-		}
-		this.id += 3;
-	}
+	// 	for (var i = 0; i < timeRanges.length; i++) {
+	// 		for (var j = 0; j < timeRanges[i].length; j++) {
+	// 			events.push({
+	// 				title: event.description,
+	// 				start: moment(timeStarts[i], "hh:mm").day(timeRanges[i][j]),
+	// 				end: moment(timeEnds[i], "hh:mm").day(timeRanges[i][j]),
+	// 				borderColor: 'black',
+	// 				textColor: 'black',
+	// 				color: randomColor,
+	// 				resourceEditable: false
+	// 			});
+	// 		}
+	// 	}
+	// }
 
-	updateEvent(event, events) {
+	updateEvent(event, events, hover) {
 		var timeRanges = this.analyzeDates(event.classTime);
 		var timeStarts = this.analyzetimeStart(event.classTime);
 		var timeEnds = this.analyzetimeEnd(event.classTime);
@@ -332,98 +294,15 @@ export class CalendarComponent implements OnInit {
 					borderColor: 'black',
 					textColor: 'black',
 					color: randomColor,
-					className: 'hover-event'
+					className: hover ? 'hover-event' : ''
 				});
 			}
 		}
 	}
 
-	// dayAdd(event) {
-	// 	console.log(event);
-	// 	var lastEle = event[event.length - 1];
-	// 	var uniqueID = lastEle._id;
-	// 	var timeStart = lastEle.start._i;
-	// 	var timeEnd = lastEle.end._i;
-	// 	var finalTime = timeStart + ' -> ' + timeEnd;
-	// 	var dateChose = lastEle.end._d.toString();
-	// 	dateChose = dateChose.slice(0, 3);
-	// 	var output = {
-	// 		id: uniqueID,
-	// 		date: dateChose,
-	// 		time: finalTime
-	// 	}
-	// 	this.insertTimeInSortedOrder(output);
-	// }
-
-	// add(event, startTime, endTime) :void {
-	// 	var lastEle = event[event.length - 1];
-	// 	var uniqueID = lastEle.eventDefs[0].uid;
-	// 	startTime = startTime._d.toString();
-	// 	endTime = endTime._d.toString();
-	// 	var timeStart = this.getLocalTime(startTime);
-	// 	var timeEnd = this.getLocalTime(endTime);
-	// 	var dateChose = startTime.slice(0, 3).trim();
-	// 	var finalTime = timeStart + ' -> ' + timeEnd;
-	// 	var output = {
-	// 		id: uniqueID,
-	// 		date: dateChose,
-	// 		time: finalTime
-	// 	}
-	// 	// this.insertTimeInSortedOrder(output);
-	// }
-
-	// Chips removal
-	// remove(time): void {
-	// 	const index = this.timeSetEventsSelected.indexOf(time);
-	// 	if (index >= 0) {
-	// 		this.timeSetEventsSelected.splice(index, 1);
-	// 	}
-	// 	// Remove Event in calendar view
-	// 	$("#calendar").fullCalendar('removeEvents', time.id);
-	// }
-
-	// closeOnRemoveChip(timeEvent) {
-	// 	for (var i = 0; i < this.timeSetEventsSelected.length; i++) {
-	// 		if (this.timeSetEventsSelected[i].id === timeEvent._id) {
-	// 			this.timeSetEventsSelected.splice(i, 1);
-	// 			break;
-	// 		}
-	// 	}
-	// }
-
 	removeEventCalendar(event) {
 		$("#calendar").fullCalendar('removeEvents', event['privateID']);
-
-		// need to fix if we delete in calendar then will disable in input select
 	}
-
-	// getLocalTime(str) {
-	// 	var indexStart = str.indexOf(':') - 2;
-	// 	var indexEnd = str.indexOf(':') + 1;
-	// 	var localStart = (parseInt((str.slice(indexStart, indexStart + 2)) + '') + 4) + '';
-	// 	var localEnd = str.slice(indexEnd, indexEnd + 2);
-	// 	return localStart + ':' + localEnd;
-	// }
-
-	// Make the chips append in order
-	// insertTimeInSortedOrder(object) {
-	// 	var added = false;
-	// 	if (this.timeSetEventsSelected.length == 0) {
-	// 		this.timeSetEventsSelected.push(object);
-	// 	}
-	// 	else if (this.timeSetEventsSelected.length > 0) {
-	// 		for (var i = 0; i < this.timeSetEventsSelected.length; i++) {
-	// 			if (this.timeSetEventsSelected[i].date == object.date) {
-	// 				this.timeSetEventsSelected.splice(i + 1, 0, object);
-	// 				added = true;
-	// 				break;
-	// 			}
-	// 		}
-	// 		if (!added) {
-	// 			this.timeSetEventsSelected.push(object);
-	// 		}
-	// 	}
-	// }
 
 	// Auto generate random colors
 	getRandomColor() {
@@ -529,11 +408,5 @@ export class CalendarComponent implements OnInit {
 			pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
 			pdf.save('fall-2018.pdf');
 		});
-	}
-
-	equalTime(a, b): boolean {
-		var sameStart = a.start.hours() == b.start.hours() && a.start.minutes() == b.start.minutes() && a.start.days() == b.start.days();
-		var sameEnd = a.end.hours() == b.end.hours() && a.end.minutes() == b.end.minutes() && a.end.days() == b.end.days()
-		return sameStart && sameEnd;
 	}
 }
